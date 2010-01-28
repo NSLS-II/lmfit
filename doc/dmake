@@ -1,0 +1,18 @@
+#!/bin/sh
+
+ASCIIDOC_HTML="asciidoc --unsafe --backend=xhtml11 -a latexmath"
+
+# -attribute=encoding=latin-1"
+#  --conf-file=layout1.conf --attribute=badges --attribute icons --attribute iconsdir=./images/icons
+
+echo "dmake / a2x ..."
+ASCIIDOC_MAN="a2x --format=manpage"
+
+echo "dmake / asciidoc ..."
+$ASCIIDOC_HTML -d manpage -o lmfit.html lmfit.txt 
+
+# echo "dmake / rsync ..."
+# rsync -L html/* wuttke@sirup:public_html/slaw/
+
+echo "dmake / asciidoc -D man ... "
+$ASCIIDOC_MAN  -d manpage lmfit.txt 

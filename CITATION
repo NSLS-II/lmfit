@@ -1,0 +1,5 @@
+To refer to this code, the preferred citation is:
+
+J. Wuttke: lmfit — a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by
+B. S. Garbow, K. E. Hillstrom, J. J. More, and S. Moshier.
+Version <..>, retrieved on <..> from http://www.messen-und-deuten.de/lmfit/.
