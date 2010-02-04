@@ -4,6 +4,7 @@ Joachim Wuttke <j.wuttke@fz-juelich.de>
 
 NAME
 ----
+
 lmfit - Levenberg-Marquardt minimization and curve fitting
 
 SYNOPSIS
@@ -33,6 +34,7 @@ Status messages (indexed by +control.info+):
 
 DESCRIPTION
 -----------
+
 Determine a parameter vector +par+ (of dimension +n_par+) that minimizes
 a norm (usually the sum of squares) of a vector +fvec+
 (of dimension +m_dat+ ≥ +n_par+).
@@ -99,16 +101,18 @@ Print +lm_infmsg[control.info]+ to inform about convergence
 
 RESSOURCES
 ----------
+
 lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.
 
 Main web site: http://www.messen-und-deuten.de/lmfit/
 
-Download location: http://www.messen-und-deuten.de/lmfit/src/ (old download location at sourceforge.net no longer maintained - too much advertisment there, too slow, too complicated)
+Download location: http://www.messen-und-deuten.de/lmfit/src/
 
-Development snapshot: http://iffwww.iff.kfa-juelich.de/~wuttke/lmfit.git/
+The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)
 
 FAQ
 ---
+
 *Is it possible to impose constraints on the fit parameters (like p0>=0 or -10<p1<10) ?*
 
 There is no mechanism to impose constraints within
@@ -171,14 +175,13 @@ Joachim Wuttke: lmfit --- a C/C++ routine for Levenberg-Marquardt minimization w
 BUGS
 ----
 
-This documentation is freshly rewritten. It is highly likely that it contains errors. Help is welcome.
-
 This documentation is written with asciidoc, which is hopelessly flawed. Nice output, but brain-damaged mark-up. I would be grateful for recommendations: which other tool should I use to convert ascii to HTML and to POD man pages ?
 
 The source code of this man page is part of the distribution. However, a compiled version in POD man page format should also be distributed, and by default it should install to /usr/local/share/man. To implement this, help is needed.
 
 AUTHOR
 ------
+
 This implementation is based on lmdif and other routines from the
 public-domain library netlib::minpack, Argonne National Laboratories,
 March 1980, by Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More.
@@ -188,6 +191,7 @@ Joachim Wuttke 2004- <j.wuttke@fz-juelich.de>.
 
 COPYING
 -------
+
 Documentation: Copyright (C) 2009 Joachim Wuttke.
 
 Software: Public Domain.

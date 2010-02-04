@@ -3,8 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.4.4" />
-<title>LMFIT(3)</title>
+<meta name="generator" content="AsciiDoc 8.2.7" />
 <style type="text/css">
 /* Debug borders */
 p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
@@ -111,13 +110,11 @@ div#footer-badges {
   padding-bottom: 0.5em;
 }
 
-div#preamble {
-  margin-top: 1.5em;
-  margin-bottom: 1.5em;
-}
+div#preamble,
 div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
+  margin-right: 10%;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
@@ -159,6 +156,9 @@ div.sidebarblock > div.content {
   padding: 0.5em;
 }
 
+div.listingblock {
+  margin-right: 0%;
+}
 div.listingblock > div.content {
   border: 1px solid silver;
   background: #f4f4f4;
@@ -167,7 +167,6 @@ div.listingblock > div.content {
 
 div.quoteblock {
   padding-left: 2.0em;
-  margin-right: 10%;
 }
 div.quoteblock > div.attribution {
   padding-top: 0.5em;
@@ -176,7 +175,6 @@ div.quoteblock > div.attribution {
 
 div.verseblock {
   padding-left: 2.0em;
-  margin-right: 10%;
 }
 div.verseblock > div.content {
   white-space: pre;
@@ -220,7 +218,6 @@ dt {
   margin-top: 0.5em;
   margin-bottom: 0;
   font-style: normal;
-  color: navy;
 }
 dd > *:first-child {
   margin-top: 0.1em;
@@ -229,27 +226,11 @@ dd > *:first-child {
 ul, ol {
     list-style-position: outside;
 }
-ol.arabic {
+div.olist > ol {
   list-style-type: decimal;
 }
-ol.loweralpha {
+div.olist2 > ol {
   list-style-type: lower-alpha;
-}
-ol.upperalpha {
-  list-style-type: upper-alpha;
-}
-ol.lowerroman {
-  list-style-type: lower-roman;
-}
-ol.upperroman {
-  list-style-type: upper-roman;
-}
-
-div.compact ul, div.compact ol,
-div.compact p, div.compact p,
-div.compact div, div.compact div {
-  margin-top: 0.1em;
-  margin-bottom: 0.1em;
 }
 
 div.tableblock > table {
@@ -262,52 +243,21 @@ thead {
 tfoot {
   font-weight: bold;
 }
-td > div.verse {
-  white-space: pre;
-}
-p.table {
-  margin-top: 0;
-}
-/* Because the table frame attribute is overriden by CSS in most browsers. */
-div.tableblock > table[frame="void"] {
-  border-style: none;
-}
-div.tableblock > table[frame="hsides"] {
-  border-left-style: none;
-  border-right-style: none;
-}
-div.tableblock > table[frame="vsides"] {
-  border-top-style: none;
-  border-bottom-style: none;
-}
 
-
-div.hdlist {
+div.hlist {
   margin-top: 0.8em;
   margin-bottom: 0.8em;
 }
-div.hdlist tr {
+div.hlist td {
   padding-bottom: 15px;
 }
-dt.hdlist1.strong, td.hdlist1.strong {
-  font-weight: bold;
-}
-td.hdlist1 {
+td.hlist1 {
   vertical-align: top;
   font-style: normal;
   padding-right: 0.8em;
-  color: navy;
 }
-td.hdlist2 {
+td.hlist2 {
   vertical-align: top;
-}
-div.hdlist.compact tr {
-  margin: 0;
-  padding-bottom: 0;
-}
-
-.comment {
-  background: yellow;
 }
 
 @media print {
@@ -398,6 +348,14 @@ div.exampleblock-content {
 
 /* IE6 sets dynamically generated links as visited. */
 div#toc a:visited { color: blue; }
+
+/* Because IE6 child selector is broken. */
+div.olist2 ol {
+  list-style-type: lower-alpha;
+}
+div.olist2 div.olist ol {
+  list-style-type: decimal;
+}
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
@@ -1626,6 +1584,7 @@ else
 }
 /*]]>*/
 </script>
+<title>LMFIT(3)</title>
 </head>
 <body>
 <div id="header">
@@ -1641,133 +1600,82 @@ LMFIT(3) Manual Page
 </div>
 <h2>SYNOPSIS</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><tt><strong>#include &lt;lmmin.h&gt;</strong></tt></p></div>
-<div class="paragraph"><p><tt>void <strong>lm_minimize</strong> (int m_dat, int n_par, double *par, void (*evaluate) (double *par, int m_dat, double *fvec, void *data, int *info), void (*printout) (int n_par, double *par, int m_dat, double *fvec, void *data, int iflag, int iter, int nfev), void *data, lm_control_type *control);</tt></p></div>
-<div class="paragraph"><p>where</p></div>
-<div class="paragraph"><p><tt>typedef struct { double ftol; double xtol; double gtol; double epsilon; double stepbound; double fnorm; int maxcall; int nfev; int info; } <strong>lm_control_type</strong>;</tt></p></div>
-<div class="paragraph"><p>Defaults for curve fitting:</p></div>
-<div class="paragraph"><p><tt>void <strong>lm_initialize_control</strong> (lm_control_type *control);</tt></p></div>
-<div class="paragraph"><p><tt>typedef struct { double *tvec; double *yvec; double (*f) (double t, double *par); } <strong>lm_data_type_default</strong>;</tt></p></div>
-<div class="paragraph"><p><tt>void <strong>lm_evaluate_default</strong> (double *par, int m_dat, double *fvec, void *data, int *info);</tt></p></div>
-<div class="paragraph"><p><tt>void <strong>lm_print_default</strong> (int n_par, double *par, int m_dat, double *fvec, void *data, int iflag, int iter, int nfev);</tt></p></div>
-<div class="paragraph"><p>Status messages (indexed by <tt>control.info</tt>):</p></div>
-<div class="paragraph"><p><tt>extern const char *lm_infmsg[];</tt></p></div>
+<div class="para"><p><tt><strong>#include &lt;lmmin.h&gt;</strong></tt></p></div>
+<div class="para"><p><tt>void <strong>lm_minimize</strong> (int m_dat, int n_par, double *par, void (*evaluate) (double *par, int m_dat, double *fvec, void *data, int *info), void (*printout) (int n_par, double *par, int m_dat, double *fvec, void *data, int iflag, int iter, int nfev), void *data, lm_control_type *control);</tt></p></div>
+<div class="para"><p>where</p></div>
+<div class="para"><p><tt>typedef struct { double ftol; double xtol; double gtol; double epsilon; double stepbound; double fnorm; int maxcall; int nfev; int info; } <strong>lm_control_type</strong>;</tt></p></div>
+<div class="para"><p>Defaults for curve fitting:</p></div>
+<div class="para"><p><tt>void <strong>lm_initialize_control</strong> (lm_control_type *control);</tt></p></div>
+<div class="para"><p><tt>typedef struct { double *tvec; double *yvec; double (*f) (double t, double *par); } *lm_data_type_default*;</tt></p></div>
+<div class="para"><p><tt>void <strong>lm_evaluate_default</strong> (double *par, int m_dat, double *fvec, void *data, int *info);</tt></p></div>
+<div class="para"><p><tt>void <strong>lm_print_default</strong> (int n_par, double *par, int m_dat, double *fvec, void *data, int iflag, int iter, int nfev);</tt></p></div>
+<div class="para"><p>Status messages (indexed by <tt>control.info</tt>):</p></div>
+<div class="para"><p><tt>extern const char *lm_infmsg[];</tt></p></div>
 </div>
 <h2 id="_description">DESCRIPTION</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Determine a parameter vector <tt>par</tt> (of dimension <tt>n_par</tt>) that minimizes
+<div class="para"><p>Determine a parameter vector <tt>par</tt> (of dimension <tt>n_par</tt>) that minimizes
 a norm (usually the sum of squares) of a vector <tt>fvec</tt>
 (of dimension <tt>m_dat</tt> ≥ <tt>n_par</tt>).</p></div>
-<div class="paragraph"><p>The most important application is curve fitting: to approximate data y(t) by a function f(t;p), one minimizes the norm of the residual vector v = y(t) – f(t;p).</p></div>
-<div class="paragraph"><p>The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method.</p></div>
-<div class="paragraph"><p>The minimization routine <tt>lm_minimize</tt> requires the following parameters:</p></div>
-<div class="dlist"><dl>
-<dt class="hdlist1">
-<tt>m_dat</tt> 
-</dt>
-<dd>
-<p>
-dimension of residue vector <tt>fvec</tt> (in curve fitting equal to dimension of data vector <tt>yvec</tt>);
-</p>
-</dd>
-<dt class="hdlist1">
-<tt>n_par</tt> 
-</dt>
-<dd>
-<p>
-dimension of parameter vector <tt>par</tt>;
-</p>
-</dd>
-<dt class="hdlist1">
-<tt>par</tt> 
-</dt>
-<dd>
-<p>
-parameter vector, will be changed: on input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<tt>fvec</tt>||;
-</p>
-</dd>
-<dt class="hdlist1">
-<tt>evaluate</tt> 
-</dt>
-<dd>
-<p>
-a routine that calculates the residue vector <tt>fvec</tt> for given parameter vector <tt>par</tt>; setting <tt>*info</tt> to a negative value causes <tt>lm_minimize</tt> to terminate;
-</p>
-</dd>
-<dt class="hdlist1">
-<tt>printout</tt> 
-</dt>
-<dd>
-<p>
-a routine that can be used to inform about the progress of the minimization (<tt>iflag</tt>: location of call within <tt>lm_minimize</tt>, <tt>iter</tt>: outer loop counter, <tt>nfev</tt>: number of calls to <tt>evaluate</tt>);
-</p>
-</dd>
-<dt class="hdlist1">
-<tt>data</tt> 
-</dt>
-<dd>
-<p>
-<tt>lm_minimize</tt> does not care about this pointer; it just forwards it to <tt>evaluate</tt> and <tt>printout</tt>; in curve fitting it is used to hold the data to be fitted;
-</p>
-</dd>
-<dt class="hdlist1">
-<tt>control</tt> 
-</dt>
-<dd>
-<p>
-a record holding parameters that control the fit algorithm, as described in file <tt>lmmin.h</tt>.
-</p>
-</dd>
-</dl></div>
-<div class="paragraph"><p>For least-squares fitting of a data set y(t) by a function f(t;p), default implementations of <tt>evaluate</tt> and <tt>printout</tt> and a default setting of <tt>control</tt> are provided. Proceed as follows:</p></div>
-<div class="paragraph"><p>Declare and implement model function</p></div>
-<div class="paragraph"><p><tt>double f (double t, double *par)
+<div class="para"><p>The most important application is curve fitting: to approximate data y(t) by a function f(t;p), one minimizes the norm of the residual vector v = y(t) – f(t;p).</p></div>
+<div class="para"><p>The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method.</p></div>
+<div class="para"><p>The minimization routine <tt>lm_minimize</tt> requires the following parameters:</p></div>
+<div class="para"><p><tt>m_dat</tt> :: dimension of residue vector <tt>fvec</tt> (in curve fitting equal to dimension of data vector <tt>yvec</tt>);
+<tt>n_par</tt> :: dimension of parameter vector <tt>par</tt>;
+<tt>par</tt> :: parameter vector, will be changed: on input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<tt>fvec</tt>||;
+<tt>evaluate</tt> :: a routine that calculates the residue vector <tt>fvec</tt> for given parameter vector <tt>par</tt>; setting <tt>*info</tt> to a negative value causes <tt>lm_minimize</tt> to terminate;
+<tt>printout</tt> :: a routine that can be used to inform about the progress of the minimization (<tt>iflag</tt>: location of call within <tt>lm_minimize</tt>, <tt>iter</tt>: outer loop counter, <tt>nfev</tt>: number of calls to <tt>evaluate</tt>);
+<tt>data</tt> :: <tt>lm_minimize</tt> does not care about this pointer; it just forwards it to <tt>evaluate</tt> and <tt>printout</tt>; in curve fitting it is used to hold the data to be fitted;
+<tt>control</tt> :: a record holding parameters that control the fit algorithm, as described in file <tt>lmmin.h</tt>.</p></div>
+<div class="para"><p>For least-squares fitting of a data set y(t) by a function f(t;p), default implementations of <tt>evaluate</tt> and <tt>printout</tt> and a default setting of <tt>control</tt> are provided. Proceed as follows:</p></div>
+<div class="para"><p>Declare and implement model function</p></div>
+<div class="para"><p><tt>double f (double t, double *par)
 {
  /* &#8230; */
 }</tt></p></div>
-<div class="paragraph"><p>Declare</p></div>
-<div class="paragraph"><p><tt>lm_control_type control;</tt></p></div>
-<div class="paragraph"><p><tt>lm_data_type_default data;</tt></p></div>
-<div class="paragraph"><p><tt>int m_dat, n_par;</tt></p></div>
-<div class="paragraph"><p><tt>double par[/*maximum number of parameters*/];</tt></p></div>
-<div class="paragraph"><p><tt>double t[/*maximum number of data points*/], y[/*dito*/];</tt></p></div>
-<div class="paragraph"><p>Let</p></div>
-<div class="paragraph"><p><tt>m_dat  = /\* number of empirical data pairs \*/;</tt></p></div>
-<div class="paragraph"><p><tt>n_par  = /\* number of parameter values used in model \*/</tt></p></div>
-<div class="paragraph"><p><tt>data.tvec = /\* points where data have been taken \*/;</tt></p></div>
-<div class="paragraph"><p><tt>data.yvec = /\* empirical data \*/;</tt></p></div>
-<div class="paragraph"><p><tt>data.f = f;</tt></p></div>
-<div class="paragraph"><p><tt>par = /\* starting values \*/;</tt></p></div>
-<div class="paragraph"><p>Initialize control parameters:</p></div>
-<div class="paragraph"><p><tt>lm_initialize_control( &amp;control );</tt></p></div>
-<div class="paragraph"><p>Call minimization:</p></div>
-<div class="paragraph"><p><tt>lm_minimize (m_dat, n_par, par, lm_evaluate_default, lm_print_default, &amp;data, &amp;control );</tt></p></div>
-<div class="paragraph"><p>Print <tt>lm_infmsg[control.info]</tt> to inform about convergence</p></div>
+<div class="para"><p>Declare</p></div>
+<div class="para"><p><tt>lm_control_type control;</tt></p></div>
+<div class="para"><p><tt>lm_data_type_default data;</tt></p></div>
+<div class="para"><p><tt>int m_dat, n_par;</tt></p></div>
+<div class="para"><p><tt>double par[/*maximum number of parameters*/];</tt></p></div>
+<div class="para"><p><tt>double t[/*maximum number of data points*/], y[/*dito*/];</tt></p></div>
+<div class="para"><p>Let</p></div>
+<div class="para"><p><tt>m_dat  = /* number of empirical data pairs */;</tt></p></div>
+<div class="para"><p><tt>n_par  = /* number of parameter values used in model */</tt></p></div>
+<div class="para"><p><tt>data.tvec = /* points where data have been taken */;</tt></p></div>
+<div class="para"><p><tt>data.yvec = /* empirical data */;</tt></p></div>
+<div class="para"><p><tt>data.f = f;</tt></p></div>
+<div class="para"><p><tt>par = /* starting values */;</tt></p></div>
+<div class="para"><p>Initialize control parameters:</p></div>
+<div class="para"><p><tt>lm_initialize_control( &amp;control );</tt></p></div>
+<div class="para"><p>Call minimization:</p></div>
+<div class="para"><p><tt>lm_minimize (m_dat, n_par, par, lm_evaluate_default, lm_print_default, &amp;data, &amp;control );</tt></p></div>
+<div class="para"><p>Print <tt>lm_infmsg[control.info]</tt> to inform about convergence</p></div>
 </div>
 <h2 id="_ressources">RESSOURCES</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.</p></div>
-<div class="paragraph"><p>Main web site: <a href="http://www.messen-und-deuten.de/lmfit/">http://www.messen-und-deuten.de/lmfit/</a></p></div>
-<div class="paragraph"><p>Download location: <a href="http://www.messen-und-deuten.de/lmfit/src/">http://www.messen-und-deuten.de/lmfit/src/</a> (old download location at sourceforge.net no longer maintained - too much advertisment there, too slow, too complicated)</p></div>
-<div class="paragraph"><p>Development snapshot: <a href="http://iffwww.iff.kfa-juelich.de/~wuttke/lmfit.git/">http://iffwww.iff.kfa-juelich.de/~wuttke/lmfit.git/</a></p></div>
+<div class="para"><p>lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.</p></div>
+<div class="para"><p>Main web site: <a href="http://www.messen-und-deuten.de/lmfit/">http://www.messen-und-deuten.de/lmfit/</a></p></div>
+<div class="para"><p>Download location: <a href="http://www.messen-und-deuten.de/lmfit/src/">http://www.messen-und-deuten.de/lmfit/src/</a></p></div>
+<div class="para"><p>The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)</p></div>
 </div>
 <h2 id="_faq">FAQ</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><strong>Is it possible to impose constraints on the fit parameters (like p0&gt;=0 or -10&lt;p1&lt;10) ?</strong></p></div>
-<div class="paragraph"><p>There is no mechanism to impose constraints within
+<div class="para"><p><strong>Is it possible to impose constraints on the fit parameters (like p0&gt;=0 or -10&lt;p1&lt;10) ?</strong></p></div>
+<div class="para"><p>There is no mechanism to impose constraints within
 the Levenberg-Marquardt algorithm.</p></div>
-<div class="paragraph"><p>According to my experience, no such mechanism is needed.
+<div class="para"><p>According to my experience, no such mechanism is needed.
 Constraints can be imposed by variable transform [in
-the above examples: use p0\^2 and 10\*tanh(p1) instead of p0 and p1]
+the above examples: use p0^2 and 10*tanh(p1) instead of p0 and p1]
 or by adding a penalty to the sum of squares.</p></div>
-<div class="paragraph"><p>If you think your problem cannot be handled in such a way,
+<div class="para"><p>If you think your problem cannot be handled in such a way,
 I would be interested to learn why. Please send me
 one data set
 (plain ASCII, two columns, blank separated) along
 with the fit function and a brief explanation of
 the application context.</p></div>
-<div class="paragraph"><p><strong>Is there a way to obtain error estimates for fit parameters ?</strong></p></div>
-<div class="paragraph"><p>The problem is only well posed if the covariance matrix
+<div class="para"><p><strong>Is there a way to obtain error estimates for fit parameters ?</strong></p></div>
+<div class="para"><p>The problem is only well posed if the covariance matrix
 of the input data is known.
 In this case,
 the error propagation towards the output parameters
@@ -1775,7 +1683,7 @@ can be calculated in linear approximation
 (<a href="http://en.wikipedia.org/wiki/Linear_least_squares">http://en.wikipedia.org/wiki/Linear_least_squares</a>).
 Note that fit parameters are correlated with each other
 even if the input covariance matrix is diagonal.</p></div>
-<div class="paragraph"><p>In linear approximation, the output covariance matrix
+<div class="para"><p>In linear approximation, the output covariance matrix
 depends mainly on the Jacobian of the fit function
 (evaluated for all data points) versus the fit parameters
 (at their optimum values).
@@ -1783,33 +1691,32 @@ It seems not advisable to use the Jacobian fjac
 that is calculated in the beginning of the main iteration in
 lm_lmdif(), as it is only returned
 after some transformations.</p></div>
-<div class="paragraph"><p>I would be glad to include code for the calculation of
+<div class="para"><p>I would be glad to include code for the calculation of
 parameter covariances in this distribution;
 contributions would be highly welcome.</p></div>
-<div class="paragraph"><p><strong>How should I cite lmfit in scientific publications ?</strong></p></div>
-<div class="paragraph"><p>If fit results are robust, it does not matter
+<div class="para"><p><strong>How should I cite lmfit in scientific publications ?</strong></p></div>
+<div class="para"><p>If fit results are robust, it does not matter
 by which implementation they have been obtained.
 If the results are not robust,
 they should not be published anyway.
 Therefore,
 in publishing fit results obtained with lmfit
 it is generally not necessary to cite the software.</p></div>
-<div class="paragraph"><p>However, in methodological publications
+<div class="para"><p>However, in methodological publications
 that describe software and data analysis procedures
 based on lmfit, it might be appropriate
 to provide a reference.
 The preferred form of citation is:</p></div>
-<div class="paragraph"><p>Joachim Wuttke: lmfit --- a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. More, and S. Moshier. Version &lt;..&gt;, retrieved on &lt;..&gt; from <a href="http://www.messen-und-deuten.de/lmfit/">http://www.messen-und-deuten.de/lmfit/</a>.</p></div>
+<div class="para"><p>Joachim Wuttke: lmfit --- a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. More, and S. Moshier. Version &lt;..&gt;, retrieved on &lt;..&gt; from <a href="http://www.messen-und-deuten.de/lmfit/">http://www.messen-und-deuten.de/lmfit/</a>.</p></div>
 </div>
 <h2 id="_bugs">BUGS</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This documentation is freshly rewritten. It is highly likely that it contains errors. Help is welcome.</p></div>
-<div class="paragraph"><p>This documentation is written with asciidoc, which is hopelessly flawed. Nice output, but brain-damaged mark-up. I would be grateful for recommendations: which other tool should I use to convert ascii to HTML and to POD man pages ?</p></div>
-<div class="paragraph"><p>The source code of this man page is part of the distribution. However, a compiled version in POD man page format should also be distributed, and by default it should install to /usr/local/share/man. To implement this, help is needed.</p></div>
+<div class="para"><p>This documentation is written with asciidoc, which is hopelessly flawed. Nice output, but brain-damaged mark-up. I would be grateful for recommendations: which other tool should I use to convert ascii to HTML and to POD man pages ?</p></div>
+<div class="para"><p>The source code of this man page is part of the distribution. However, a compiled version in POD man page format should also be distributed, and by default it should install to /usr/local/share/man. To implement this, help is needed.</p></div>
 </div>
 <h2 id="_author">AUTHOR</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This implementation is based on lmdif and other routines from the
+<div class="para"><p>This implementation is based on lmdif and other routines from the
 public-domain library netlib::minpack, Argonne National Laboratories,
 March 1980, by Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More.
 C translation by Steve Moshier.
@@ -1818,12 +1725,12 @@ Joachim Wuttke 2004- &lt;<a href="mailto:j.wuttke@fz-juelich.de">j.wuttke@fz-jue
 </div>
 <h2 id="_copying">COPYING</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Documentation: Copyright &#169; 2009 Joachim Wuttke.</p></div>
-<div class="paragraph"><p>Software: Public Domain.</p></div>
+<div class="para"><p>Documentation: Copyright &#169; 2009 Joachim Wuttke.</p></div>
+<div class="para"><p>Software: Public Domain.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2009-09-29 07:47:12 CEST
+Last updated 2010-02-04 10:16:08 CEST
 </div>
 </div>
 </body>
