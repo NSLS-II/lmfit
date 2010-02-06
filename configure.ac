@@ -1,4 +1,5 @@
 AC_INIT([lmfit], [<version>], [http://www.messen-und-deuten.de/lmfit])
+AC_MSG_NOTICE([Now configuring lmfit])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([lib/lmmin.c]) # assure we have the right src dir
 AC_CONFIG_HEADERS([config.h])
