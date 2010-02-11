@@ -400,7 +400,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 /*** lmdif: evaluate function at starting point and calculate norm. ***/
 
     *info = 0;
-    (*evaluate) (x, m, fvec, data, info); ++(*nfev);
+    (*evaluate) (x, m, fvec, data, info);
+    ++(*nfev);
     if( printout )
         (*printout) (n, x, m, fvec, data, 0, 0, *nfev);
     if (*info < 0)
@@ -425,6 +426,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    x[j] = temp + step;
 	    *info = 0;
 	    (*evaluate) (x, m, wa4, data, info);
+            ++(*nfev);
             if( printout )
                 (*printout) (n, x, m, wa4, data, 1, iter, ++(*nfev));
 	    if (*info < 0)
@@ -534,13 +536,14 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 /*** inner: on the first iteration, adjust the initial step bound. ***/
 
-	    if (*nfev <= 1 + n)
+	    if (*nfev <= 1+n)
 		delta = MIN(delta, pnorm);
 
             /* evaluate the function at x + p and calculate its norm. */
 
 	    *info = 0;
-	    (*evaluate) (wa2, m, wa4, data, info); ++(*nfev);
+	    (*evaluate) (wa2, m, wa4, data, info);
+            ++(*nfev);
             if( printout )
                 (*printout) (n, x, m, wa4, data, 2, iter, *nfev);
 	    if (*info < 0)
