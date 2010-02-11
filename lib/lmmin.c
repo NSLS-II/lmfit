@@ -523,15 +523,12 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 /*** inner: determine the levenberg-marquardt parameter. ***/
 
 	    lm_lmpar(n, fjac, m, ipvt, diag, qtf, delta, &par,
-		     wa1, wa2, wa3, wa4);
-            /* return values are fjac (partly), par, wa1=x, wa2=sdiag */
+		     wa1, wa2, wa4, wa3);
+            /* return values are fjac (partly), par, wa1=x, wa3=diag*x */
 
-/*** inner: store the direction p and x + p; calculate the norm of p. ***/
-
-	    for (j = 0; j < n; j++) {
-		wa2[j] = x[j] - wa1[j];
-		wa3[j] = - diag[j] * wa1[j];
-	    }
+	    for (j = 0; j < n; j++)
+		wa2[j] = x[j] - wa1[j]; /* new parameter vector ? */
+            
 	    pnorm = lm_enorm(n, wa3);
 
 /*** inner: on the first iteration, adjust the initial step bound. ***/
@@ -727,12 +724,12 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *	  squares solution of the system a*x = b, sqrt(par)*d*x = 0,
  *	  for the output par.
  *
- *	sdiag is an OUTPUT array of length n which contains the
+ *	sdiag is an array of length n which contains the
  *	  diagonal elements of the upper triangular matrix s.
  *
  *	aux is a multi-purpose work array of length n.
  *
- *	xdi is a work array of length n mainly used to store diag[j] * x[j].
+ *	xdi is a work array of length n. On OUTPUT: diag[j] * x[j].
  *
  */
     int i, iter, j, nsing;
@@ -843,7 +840,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
         /* return values are r, x, sdiag */
 
 	for (j = 0; j < n; j++)
-	    xdi[j] = diag[j] * x[j];
+	    xdi[j] = diag[j] * x[j]; /* used as output */
 	dxnorm = lm_enorm(n, xdi);
 	fp_old = fp;
 	fp = dxnorm - delta;
