@@ -11,7 +11,7 @@
  *           netlib::minpack, Argonne National Laboratories, March 1980);
  *           Steve Moshier (initial C translation);
  *           Joachim Wuttke (conversion into C++ compatible ANSI style,
- *           corrections, comments, wrappers, hosting).
+ *           corrections, comments, wrappers, packaging, hosting).
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
@@ -695,7 +695,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *
  *	r is an n by n array. on input the full upper triangle
  *	  must contain the full upper triangle of the matrix r.
- *	  on output the full upper triangle is unaltered, and the
+ *	  on OUTPUT the full upper triangle is unaltered, and the
  *	  strict lower triangle contains the strict upper triangle
  *	  (transposed) of the upper triangular matrix s.
  *
@@ -717,13 +717,13 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *
  *	par is a nonnegative variable. on input par contains an
  *	  initial estimate of the levenberg-marquardt parameter.
- *	  on output par contains the final estimate.
+ *	  on OUTPUT par contains the final estimate.
  *
- *	x is an output array of length n which contains the least
+ *	x is an OUTPUT array of length n which contains the least
  *	  squares solution of the system a*x = b, sqrt(par)*d*x = 0,
  *	  for the output par.
  *
- *	sdiag is an output array of length n which contains the
+ *	sdiag is an OUTPUT array of length n which contains the
  *	  diagonal elements of the upper triangular matrix s.
  *
  *	wa1 and wa2 are work arrays of length n.
