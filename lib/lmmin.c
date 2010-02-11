@@ -520,7 +520,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 	    for (j = 0; j < n; j++)
 		wa2[j] = x[j] - wa1[j]; /* new parameter vector ? */
-            
+
 	    pnorm = lm_enorm(n, wa3);
 
             /* at first call, adjust the initial step bound. */

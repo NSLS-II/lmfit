@@ -19,7 +19,7 @@ Changes in lmfit-2.5, released 20sep09:
 - allow printout=NULL (suggestion J. Lodewyck)
 - improve infmsg (correspondence B. McHoull)
 - eliminate some static variables (p25, p5, p75, ..)
-- elimiate function data types; they obscure more than they help
+- eliminate function data types; they obscure more than they help
 
 Changes in lmfit-2.4, released 27jul2008:
 
