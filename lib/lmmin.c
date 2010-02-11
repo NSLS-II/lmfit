@@ -519,15 +519,15 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 /*** inner: determine the levenberg-marquardt parameter. ***/
 
+            /* return values stored in fjac (partly), par, wa1, wa2 */
 	    lm_lmpar(n, fjac, m, ipvt, diag, qtf, delta, &par,
 		     wa1, wa2, wa3, wa4);
 
 /*** inner: store the direction p and x + p; calculate the norm of p. ***/
 
 	    for (j = 0; j < n; j++) {
-		wa1[j] = -wa1[j];
-		wa2[j] = x[j] + wa1[j];
-		wa3[j] = diag[j] * wa1[j];
+		wa2[j] = x[j] - wa1[j];
+		wa3[j] = - diag[j] * wa1[j];
 	    }
 	    pnorm = lm_enorm(n, wa3);
 
@@ -656,7 +656,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	      double *qtb, double delta, double *par, double *x,
-	      double *sdiag, double *wa1, double *wa2)
+	      double *sdiag, double *aux, double *xdi)
 {
 /*     Given an m by n matrix a, an n by n nonsingular diagonal
  *     matrix d, an m-vector b, and a positive number delta,
@@ -726,7 +726,9 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *	sdiag is an OUTPUT array of length n which contains the
  *	  diagonal elements of the upper triangular matrix s.
  *
- *	wa1 and wa2 are work arrays of length n.
+ *	aux is a multi-purpose work array of length n.
+ *
+ *	xdi is a work array of length n used to store diag[j] * x[j].
  *
  */
     int i, iter, j, nsing;
@@ -743,32 +745,32 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 
     nsing = n;
     for (j = 0; j < n; j++) {
-	wa1[j] = qtb[j];
+	aux[j] = qtb[j];
 	if (r[j * ldr + j] == 0 && nsing == n)
 	    nsing = j;
 	if (nsing < n)
-	    wa1[j] = 0;
+	    aux[j] = 0;
     }
 #if BUG
     printf("nsing %d ", nsing);
 #endif
     for (j = nsing - 1; j >= 0; j--) {
-	wa1[j] = wa1[j] / r[j + ldr * j];
-	temp = wa1[j];
+	aux[j] = aux[j] / r[j + ldr * j];
+	temp = aux[j];
 	for (i = 0; i < j; i++)
-	    wa1[i] -= r[j * ldr + i] * temp;
+	    aux[i] -= r[j * ldr + i] * temp;
     }
 
     for (j = 0; j < n; j++)
-	x[ipvt[j]] = wa1[j];
+	x[ipvt[j]] = aux[j];
 
 /*** lmpar: initialize the iteration counter, evaluate the function at the
      origin, and test for acceptance of the gauss-newton direction. ***/
 
     iter = 0;
     for (j = 0; j < n; j++)
-	wa2[j] = diag[j] * x[j];
-    dxnorm = lm_enorm(n, wa2);
+	xdi[j] = diag[j] * x[j];
+    dxnorm = lm_enorm(n, xdi);
     fp = dxnorm - delta;
     if (fp <= p1 * delta) {
 #if BUG
@@ -785,15 +787,15 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     parl = 0;
     if (nsing >= n) {
 	for (j = 0; j < n; j++)
-	    wa1[j] = diag[ipvt[j]] * wa2[ipvt[j]] / dxnorm;
+	    aux[j] = diag[ipvt[j]] * xdi[ipvt[j]] / dxnorm;
 
 	for (j = 0; j < n; j++) {
 	    sum = 0.;
 	    for (i = 0; i < j; i++)
-		sum += r[j * ldr + i] * wa1[i];
-	    wa1[j] = (wa1[j] - sum) / r[j + ldr * j];
+		sum += r[j * ldr + i] * aux[i];
+	    aux[j] = (aux[j] - sum) / r[j + ldr * j];
 	}
-	temp = lm_enorm(n, wa1);
+	temp = lm_enorm(n, aux);
 	parl = fp / delta / temp / temp;
     }
 
@@ -803,9 +805,9 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	sum = 0;
 	for (i = 0; i <= j; i++)
 	    sum += r[j * ldr + i] * qtb[i];
-	wa1[j] = sum / diag[ipvt[j]];
+	aux[j] = sum / diag[ipvt[j]];
     }
-    gnorm = lm_enorm(n, wa1);
+    gnorm = lm_enorm(n, aux);
     paru = gnorm / delta;
     if (paru == 0.)
 	paru = LM_DWARF / MIN(delta, p1);
@@ -831,11 +833,11 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	    *par = MAX(LM_DWARF, 0.001 * paru);
 	temp = sqrt(*par);
 	for (j = 0; j < n; j++)
-	    wa1[j] = temp * diag[j];
-	lm_qrsolv(n, r, ldr, ipvt, wa1, qtb, x, sdiag, wa2);
+	    aux[j] = temp * diag[j];
+	lm_qrsolv(n, r, ldr, ipvt, aux, qtb, x, sdiag, xdi);
 	for (j = 0; j < n; j++)
-	    wa2[j] = diag[j] * x[j];
-	dxnorm = lm_enorm(n, wa2);
+	    xdi[j] = diag[j] * x[j];
+	dxnorm = lm_enorm(n, xdi);
 	fp_old = fp;
 	fp = dxnorm - delta;
         
@@ -851,14 +853,14 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
         /** compute the Newton correction. **/
 
 	for (j = 0; j < n; j++)
-	    wa1[j] = diag[ipvt[j]] * wa2[ipvt[j]] / dxnorm;
+	    aux[j] = diag[ipvt[j]] * xdi[ipvt[j]] / dxnorm;
 
 	for (j = 0; j < n; j++) {
-	    wa1[j] = wa1[j] / sdiag[j];
+	    aux[j] = aux[j] / sdiag[j];
 	    for (i = j + 1; i < n; i++)
-		wa1[i] -= r[j * ldr + i] * wa1[j];
+		aux[i] -= r[j * ldr + i] * aux[j];
 	}
-	temp = lm_enorm(n, wa1);
+	temp = lm_enorm(n, aux);
 	parc = fp / delta / temp / temp;
 
         /** depending on the sign of the function, update parl or paru. **/
