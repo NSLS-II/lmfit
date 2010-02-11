@@ -161,13 +161,13 @@ const char *lm_shortmsg[] = {
 #include <stdio.h>
 #endif
 
+void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
+	      double *qtb, double delta, double *par, double *x,
+	      double *sdiag, double *aux, double *xdi);
 void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 	      double *rdiag, double *acnorm, double *wa);
 void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 	       double *qtb, double *x, double *sdiag, double *wa);
-void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
-	      double *qtb, double delta, double *par, double *x,
-	      double *sdiag, double *wa1, double *wa2);
 
 #define MIN(a,b) (((a)<=(b)) ? (a) : (b))
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
@@ -328,7 +328,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *
  *	wa1, wa2, and wa3 are work arrays of length n.
  *
- *	wa4 is a work array of length m.
+ *	wa4 is a work array of length m, used among others to hold
+ *        residuals from evaluate.
  *
  *   The following parameters are newly introduced in this C translation:
  *
@@ -485,7 +486,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    qtf[j] = wa4[j];
 	}
 
-/** outer: compute norm of scaled gradient and test for convergence. ***/
+/*** outer: compute norm of scaled gradient and test for convergence. ***/
 
 	gnorm = 0;
 	if (fnorm != 0) {
