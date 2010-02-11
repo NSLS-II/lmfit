@@ -156,8 +156,7 @@ const char *lm_shortmsg[] = {
 
 /* ************************** implementation ******************************* */
 
-#define BUG 0
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
 #include <stdio.h>
 #endif
 
@@ -394,7 +393,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    }
 	}
     }
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
     printf("lmdif\n");
 #endif
 
@@ -411,7 +410,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 /*** lmdif: the outer loop. ***/
 
     do {
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
 	printf("lmdif/ outer loop iter=%d nfev=%d fnorm=%.10e\n",
 	       iter, *nfev, fnorm);
 #endif
@@ -434,8 +433,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 		fjac[j * m + i] = (wa4[i] - fvec[i]) / (x[j] - temp);
 	    x[j] = temp;
 	}
-#if BUG>1
-	/* DEBUG: print the entire matrix */
+#ifdef LMFIT_DEBUG_MATRIX
+	/* print the entire matrix */
 	for (i = 0; i < m; i++) {
 	    for (j = 0; j < n; j++)
 		printf("%.5e ", fjac[j * m + i]);
@@ -515,7 +514,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 /*** the inner loop. ***/
 	do {
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
 	    printf("lmdif/ inner loop iter=%d nfev=%d\n", iter, *nfev);
 #endif
 
@@ -548,7 +547,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 		return; /* user requested break. */
 
 	    fnorm1 = lm_enorm(m, wa4);
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
 	    printf("lmdif/ pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
 		   " delta=%.10e par=%.10e\n",
 		   pnorm, fnorm1, fnorm, delta, par);
@@ -577,7 +576,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 /*** inner: compute the ratio of the actual to the predicted reduction. ***/
 
 	    ratio = prered != 0 ? actred / prered : 0;
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
 	    printf("lmdif/ actred=%.10e prered=%.10e ratio=%.10e"
 		   " sq(1)=%.10e sq(2)=%.10e dd=%.10e\n",
 		   actred, prered, prered != 0 ? ratio : 0.,
@@ -614,7 +613,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 		fnorm = fnorm1;
 		iter++;
 	    }
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
 	    else {
 		printf("ATTN: iteration considered unsuccessful\n");
 	    }
@@ -738,7 +737,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     double sum, temp;
     static double p1 = 0.1;
 
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
     printf("lmpar\n");
 #endif
 
@@ -753,7 +752,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	if (nsing < n)
 	    aux[j] = 0;
     }
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
     printf("nsing %d ", nsing);
 #endif
     for (j = nsing - 1; j >= 0; j--) {
@@ -775,7 +774,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     dxnorm = lm_enorm(n, xdi);
     fp = dxnorm - delta;
     if (fp <= p1 * delta) {
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
 	printf("lmpar/ terminate (fp<p1*delta)\n");
 #endif
 	*par = 0;
@@ -821,7 +820,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     *par = MIN(*par, paru);
     if (*par == 0.)
 	*par = gnorm / dxnorm;
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
     printf("lmpar/ parl %.4e  par %.4e  paru %.4e\n", parl, *par, paru);
 #endif
 
@@ -954,7 +953,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 	if (pivot)
 	    ipvt[j] = j;
     }
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
     printf("qrfac\n");
 #endif
 
@@ -1112,7 +1111,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 	x[j] = r[j * ldr + j];
 	wa[j] = qtb[j];
     }
-#if BUG
+#ifdef LMFIT_DEBUG_MESSAGES
     printf("qrsolv\n");
 #endif
 
