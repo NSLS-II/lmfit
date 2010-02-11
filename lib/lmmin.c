@@ -445,6 +445,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 /*** outer: compute the qr factorization of the jacobian. ***/
 
 	lm_qrfac(m, n, fjac, 1, ipvt, wa1, wa2, wa3);
+        /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
 	if (iter == 1) { /* first iteration */
 	    if (mode != 2) {
@@ -521,7 +522,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 	    lm_lmpar(n, fjac, m, ipvt, diag, qtf, delta, &par,
 		     wa1, wa2, wa3, wa4);
-            /* return values are in fjac (partly), par, wa1, wa2 */
+            /* return values are fjac (partly), par, wa1=x, wa2=sdiag */
 
 /*** inner: store the direction p and x + p; calculate the norm of p. ***/
 
@@ -728,7 +729,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *
  *	aux is a multi-purpose work array of length n.
  *
- *	xdi is a work array of length n used to store diag[j] * x[j].
+ *	xdi is a work array of length n mainly used to store diag[j] * x[j].
  *
  */
     int i, iter, j, nsing;
@@ -834,7 +835,10 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	temp = sqrt(*par);
 	for (j = 0; j < n; j++)
 	    aux[j] = temp * diag[j];
+
 	lm_qrsolv(n, r, ldr, ipvt, aux, qtb, x, sdiag, xdi);
+        /* return values are r, x, sdiag */
+
 	for (j = 0; j < n; j++)
 	    xdi[j] = diag[j] * x[j];
 	dxnorm = lm_enorm(n, xdi);

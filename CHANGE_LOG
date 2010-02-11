@@ -1,5 +1,6 @@
 Changes in lmfit-2.7
 
+- eliminate unncessary wa1 = -wa1 computation
 - avoid passing wa3 to wa1, choose better names for work arrays in lm_par
 
 Changes in lmfit-2.6, released 29sep09:
