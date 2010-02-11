@@ -216,42 +216,36 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *	n is a positive integer input variable set to the number
  *	  of variables; n must not exceed m.
  *
- *	x is an array of length n. On input x must contain
- *	  an initial estimate of the solution vector. on OUTPUT x
- *	  contains the final estimate of the solution vector.
+ *	x is an array of length n. On input x must contain an initial
+ *        estimate of the solution vector. On OUTPUT x contains the
+ *        final estimate of the solution vector.
  *
  *	fvec is an OUTPUT array of length m which contains
  *	  the functions evaluated at the output x.
  *
- *	ftol is a nonnegative input variable. termination
- *	  occurs when both the actual and predicted relative
- *	  reductions in the sum of squares are at most ftol.
- *	  Therefore, ftol measures the relative error desired
- *	  in the sum of squares.
+ *	ftol is a nonnegative input variable. Termination occurs when
+ *        both the actual and predicted relative reductions in the sum
+ *        of squares are at most ftol. Therefore, ftol measures the
+ *        relative error desired in the sum of squares.
  *
- *	xtol is a nonnegative input variable. Termination
- *	  occurs when the relative error between two consecutive
- *	  iterates is at most xtol. Therefore, xtol measures the
- *	  relative error desired in the approximate solution.
+ *	xtol is a nonnegative input variable. Termination occurs when
+ *        the relative error between two consecutive iterates is at
+ *        most xtol. Therefore, xtol measures the relative error desired
+ *        in the approximate solution.
  *
- *	gtol is a nonnegative input variable. Termination
- *	  occurs when the cosine of the angle between fvec and
- *	  any column of the jacobian is at most gtol in absolute
- *	  value. Therefore, gtol measures the orthogonality
- *	  desired between the function vector and the columns
- *	  of the jacobian.
+ *	gtol is a nonnegative input variable. Termination occurs when
+ *        the cosine of the angle between fvec and any column of the
+ *        jacobian is at most gtol in absolute value. Therefore, gtol
+ *        measures the orthogonality desired between the function vector
+ *        and the columns of the jacobian.
  *
  *	maxfev is a positive integer input variable. Termination
  *	  occurs when the number of calls to lm_fcn is at least
  *	  maxfev by the end of an iteration.
  *
- *	epsfcn is an input variable used in determining a suitable
- *	  step length for the forward-difference approximation. This
- *	  approximation assumes that the relative errors in the
- *	  functions are of the order of epsfcn. If epsfcn is less
- *	  than the machine precision, it is assumed that the relative
- *	  errors in the functions are of the order of the machine
- *	  precision.
+ *	epsfcn is an input variable used in choosing a step length for
+ *        the forward-difference approximation. The relative errors in
+ *        the functions are assumed to be of the order of epsfcn.
  *
  *	diag is an array of length n. If mode = 1 (see below), diag is
  *        internally set. If mode = 2, diag must contain positive entries
@@ -259,8 +253,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *
  *	mode is an integer input variable. If mode = 1, the
  *	  variables will be scaled internally. If mode = 2,
- *	  the scaling is specified by the input diag. other
- *	  values of mode are equivalent to mode = 1.
+ *	  the scaling is specified by the input diag.
  *
  *	factor is a positive input variable used in determining the
  *	  initial step bound. This bound is set to the product of
@@ -993,7 +986,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 	    continue;
 	}
 
-	if (a[j*m +j] < 0.)
+	if (a[j*m+j] < 0.)
 	    ajnorm = -ajnorm;
 	for (i = j; i < m; i++)
 	    a[j*m+i] /= ajnorm;
