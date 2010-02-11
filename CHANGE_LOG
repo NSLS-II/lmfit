@@ -1,5 +1,7 @@
 Changes in lmfit-2.7
 
+- for parameter close to zero, change step width for calculation of jabobian
+- outer iteration counter starting at zero (C style)
 - correct function evaluation count; standard demo needs 73, not 46
 - replace BUG by LMFIT_DEBUG_MESSAGES and .._MATRIX to allow control by -D
 - remove redundant calculation by exchanging workspaces and lm_lmpar output

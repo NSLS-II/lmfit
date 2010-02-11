@@ -365,7 +365,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
     static double p0001 = 1.0e-4;
 
     *nfev = 0;			/* function evaluation counter */
-    iter = 1;			/* outer loop counter */
+    iter = 0;			/* outer loop counter */
     par = 0;			/* levenberg-marquardt parameter */
     delta = 0;	 /* to prevent a warning (initialization within if-clause) */
     xnorm = 0;	 /* ditto */
@@ -414,10 +414,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 	for (j = 0; j < n; j++) {
 	    temp = x[j];
-	    step = eps * fabs(temp);
-	    if (step == 0.)
-		step = eps;
-	    x[j] = temp + step;
+	    step = MAX(eps*eps, eps * fabs(temp));
+	    x[j] = temp + step; /* replace temporarily */
 	    *info = 0;
 	    (*evaluate) (x, m, wa4, data, info);
             ++(*nfev);
@@ -426,8 +424,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    if (*info < 0)
 		return;	/* user requested break */
 	    for (i = 0; i < m; i++)
-		fjac[j*m+i] = (wa4[i] - fvec[i]) / (x[j] - temp);
-	    x[j] = temp;
+		fjac[j*m+i] = (wa4[i] - fvec[i]) / step;
+	    x[j] = temp; /* restore */
 	}
 #ifdef LMFIT_DEBUG_MATRIX
 	/* print the entire matrix */
@@ -443,7 +441,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	lm_qrfac(m, n, fjac, 1, ipvt, wa1, wa2, wa3);
         /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
-	if (iter == 1) { /* first iteration */
+	if (!iter) { /* first iteration */
 	    if (mode != 2) {
                 /* diag := norms of the columns of the initial jacobian */
 		for (j = 0; j < n; j++) {
@@ -518,19 +516,19 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 	    lm_lmpar(n, fjac, m, ipvt, diag, qtf, delta, &par,
 		     wa1, wa2, wa4, wa3);
-            /* return values are fjac (partly), par, wa1=x, wa3=diag*x */
+            /* used return values are fjac (partly), par, wa1=x, wa3=diag*x */
 
 	    for (j = 0; j < n; j++)
 		wa2[j] = x[j] - wa1[j]; /* new parameter vector ? */
             
 	    pnorm = lm_enorm(n, wa3);
 
-/*** inner: on the first iteration, adjust the initial step bound. ***/
+            /* at first call, adjust the initial step bound. */
 
 	    if (*nfev <= 1+n)
 		delta = MIN(delta, pnorm);
 
-            /* evaluate the function at x + p and calculate its norm. */
+/*** inner: evaluate the function at x + p and calculate its norm. ***/
 
 	    *info = 0;
 	    (*evaluate) (wa2, m, wa4, data, info);
