@@ -429,15 +429,15 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
                 (*printout) (n, x, m, wa4, data, 1, iter, ++(*nfev));
 	    if (*info < 0)
 		return;	/* user requested break */
-	    for (i = 0; i < m; i++) /* changed in 2.3, Mark Bydder */
-		fjac[j * m + i] = (wa4[i] - fvec[i]) / (x[j] - temp);
+	    for (i = 0; i < m; i++)
+		fjac[j*m+i] = (wa4[i] - fvec[i]) / (x[j] - temp);
 	    x[j] = temp;
 	}
 #ifdef LMFIT_DEBUG_MATRIX
 	/* print the entire matrix */
 	for (i = 0; i < m; i++) {
 	    for (j = 0; j < n; j++)
-		printf("%.5e ", fjac[j * m + i]);
+		printf("%.5e ", fjac[j*m+i]);
 	    printf("\n");
 	}
 #endif
@@ -472,16 +472,16 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    wa4[i] = fvec[i];
 
 	for (j = 0; j < n; j++) {
-	    temp3 = fjac[j * m + j];
+	    temp3 = fjac[j*m+j];
 	    if (temp3 != 0.) {
 		sum = 0;
 		for (i = j; i < m; i++)
-		    sum += fjac[j * m + i] * wa4[i];
+		    sum += fjac[j*m+i] * wa4[i];
 		temp = -sum / temp3;
 		for (i = j; i < m; i++)
-		    wa4[i] += fjac[j * m + i] * temp;
+		    wa4[i] += fjac[j*m+i] * temp;
 	    }
-	    fjac[j * m + j] = wa1[j];
+	    fjac[j*m+j] = wa1[j];
 	    qtf[j] = wa4[j];
 	}
 
@@ -495,7 +495,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 		sum = 0.;
 		for (i = 0; i <= j; i++)
-		    sum += fjac[j * m + i] * qtf[i] / fnorm;
+		    sum += fjac[j*m+i] * qtf[i] / fnorm;
 		gnorm = MAX(gnorm, fabs(sum / wa2[ipvt[j]]));
 	    }
 	}
@@ -566,7 +566,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    for (j = 0; j < n; j++) {
 		wa3[j] = 0;
 		for (i = 0; i <= j; i++)
-		    wa3[i] -= fjac[j * m + i] * wa1[ipvt[j]];
+		    wa3[i] -= fjac[j*m+i] * wa1[ipvt[j]];
 	    }
 	    temp1 = lm_enorm(n, wa3) / fnorm;
 	    temp2 = sqrt(par) * pnorm / fnorm;
@@ -947,7 +947,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 /*** qrfac: compute initial column norms and initialize several arrays. ***/
 
     for (j = 0; j < n; j++) {
-	acnorm[j] = lm_enorm(m, &a[j * m]);
+	acnorm[j] = lm_enorm(m, &a[j*m]);
 	rdiag[j] = acnorm[j];
 	wa[j] = rdiag[j];
 	if (pivot)
@@ -974,9 +974,9 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 	    goto pivot_ok;
 
 	for (i = 0; i < m; i++) {
-	    temp = a[j * m + i];
-	    a[j * m + i] = a[kmax * m + i];
-	    a[kmax * m + i] = temp;
+	    temp = a[j*m+i];
+	    a[j*m+i] = a[kmax*m+i];
+	    a[kmax*m+i] = temp;
 	}
 	rdiag[kmax] = rdiag[j];
 	wa[kmax] = wa[j];
@@ -988,17 +988,17 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
         /** compute the Householder transformation to reduce the
             j-th column of a to a multiple of the j-th unit vector. **/
 
-	ajnorm = lm_enorm(m - j, &a[j * m + j]);
+	ajnorm = lm_enorm(m-j, &a[j*m+j]);
 	if (ajnorm == 0.) {
 	    rdiag[j] = 0;
 	    continue;
 	}
 
-	if (a[j * m + j] < 0.)
+	if (a[j*m +j] < 0.)
 	    ajnorm = -ajnorm;
 	for (i = j; i < m; i++)
-	    a[j * m + i] /= ajnorm;
-	a[j * m + j] += 1;
+	    a[j*m+i] /= ajnorm;
+	a[j*m+j] += 1;
 
         /** apply the transformation to the remaining columns
             and update the norms. **/
@@ -1007,12 +1007,12 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 	    sum = 0;
 
 	    for (i = j; i < m; i++)
-		sum += a[j * m + i] * a[k * m + i];
+		sum += a[j*m+i] * a[k*m+i];
 
 	    temp = sum / a[j + m * j];
 
 	    for (i = j; i < m; i++)
-		a[k * m + i] -= temp * a[j * m + i];
+		a[k*m+i] -= temp * a[j*m+i];
 
 	    if (pivot && rdiag[k] != 0.) {
 		temp = a[m * k + j] / rdiag[k];
@@ -1020,7 +1020,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 		rdiag[k] *= sqrt(temp);
 		temp = rdiag[k] / wa[k];
 		if (p05 * SQR(temp) <= LM_MACHEP) {
-		    rdiag[k] = lm_enorm(m - j - 1, &a[m * k + j + 1]);
+		    rdiag[k] = lm_enorm(m-j-1, &a[m*k+j+1]);
 		    wa[k] = rdiag[k];
 		}
 	    }
