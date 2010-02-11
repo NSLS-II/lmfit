@@ -306,8 +306,9 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *	  of fjac contains an upper triangular matrix r with
  *	  diagonal elements of nonincreasing magnitude such that
  *
- *		 t     t	   t
- *		p *(jac *jac)*p = r *r,
+ *		pT*(jacT*jac)*p = rT*r
+ *
+ *              (NOTE: T stands for matrix transposition),
  *
  *	  where p is a permutation matrix and jac is the final
  *	  calculated jacobian. Column j of p is column ipvt(j)
@@ -677,11 +678,10 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *     columns, and r is an upper triangular matrix with diagonal
  *     elements of nonincreasing magnitude, then lmpar expects
  *     the full upper triangle of r, the permutation matrix p,
- *     and the first n components of (q transpose)*b. On output
+ *     and the first n components of qT*b. On output
  *     lmpar also provides an upper triangular matrix s such that
  *
- *	     t	 t		     t
- *	    p *(a *a + par*d*d)*p = s *s.
+ *	    pT*(aT*a + par*d*d)*p = sT*s.
  *
  *     s is employed within lmpar and may be of separate interest.
  *
@@ -897,8 +897,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
  *     such that a*p = q*r. The householder transformation for
  *     column k, k = 1,2,...,min(m,n), is of the form
  *
- *			    t
- *	    i - (1/u(k))*u*u
+ *	    i - (1/u(k))*u*uT
  *
  *     where u has zeroes in the first k-1 positions. The form of
  *     this transformation and the method of pivoting first
@@ -1054,15 +1053,13 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
  *     and the first n components of (q transpose)*b. The system
  *     a*x = b, d*x = 0, is then equivalent to
  *
- *		   t	  t
- *	    r*z = q *b,  p *d*p*z = 0,
+ *	    r*z = qT*b,  pT*d*p*z = 0,
  *
  *     where x = p*z. If this system does not have full rank,
  *     then a least squares solution is obtained. On output qrsolv
  *     also provides an upper triangular matrix s such that
  *
- *	     t	 t		 t
- *	    p *(a *a + d*d)*p = s *s.
+ *	    pT *(aT *a + d*d)*p = sT *s.
  *
  *     s is computed within qrsolv and may be of separate interest.
  *
