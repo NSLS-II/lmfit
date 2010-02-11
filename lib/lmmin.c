@@ -218,10 +218,10 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *	  of variables; n must not exceed m.
  *
  *	x is an array of length n. On input x must contain
- *	  an initial estimate of the solution vector. on output x
+ *	  an initial estimate of the solution vector. on OUTPUT x
  *	  contains the final estimate of the solution vector.
  *
- *	fvec is an output array of length m which contains
+ *	fvec is an OUTPUT array of length m which contains
  *	  the functions evaluated at the output x.
  *
  *	ftol is a nonnegative input variable. termination
@@ -269,7 +269,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *	  to factor itself. In most cases factor should lie in the
  *	  interval (0.1,100.0). Generally, the value 100.0 is recommended.
  *
- *	info is an integer output variable that indicates the termination
+ *	info is an integer OUTPUT variable that indicates the termination
  *        status of lm_lmdif as follows:
  *
  *        info < 0  termination requested by user-supplied routine *evaluate;
@@ -300,10 +300,10 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *	  info = 8  gtol is too small: fvec is orthogonal to the
  *		    columns of the jacobian to machine precision;
  *
- *	nfev is an output variable set to the number of calls to the
+ *	nfev is an OUTPUT variable set to the number of calls to the
  *        user-supplied routine *evaluate.
  *
- *	fjac is an output m by n array. The upper n by n submatrix
+ *	fjac is an OUTPUT m by n array. The upper n by n submatrix
  *	  of fjac contains an upper triangular matrix r with
  *	  diagonal elements of nonincreasing magnitude such that
  *
@@ -316,14 +316,14 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *	  part of fjac contains information generated during
  *	  the computation of r.
  *
- *	ipvt is an integer output array of length n. It defines a
+ *	ipvt is an integer OUTPUT array of length n. It defines a
  *        permutation matrix p such that jac*p = q*r, where jac is
  *        the final calculated jacobian, q is orthogonal (not stored),
  *        and r is upper triangular with diagonal elements of
  *        nonincreasing magnitude. Column j of p is column ipvt(j)
  *        of the identity matrix.
  *
- *	qtf is an output array of length n which contains
+ *	qtf is an OUTPUT array of length n which contains
  *	  the first n elements of the vector (q transpose)*fvec.
  *
  *	wa1, wa2, and wa3 are work arrays of length n.
@@ -907,7 +907,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
  *	  of columns of a.
  *
  *	a is an m by n array. On input a contains the matrix for
- *	  which the qr factorization is to be computed. On output
+ *	  which the qr factorization is to be computed. On OUTPUT
  *	  the strict upper trapezoidal part of a contains the strict
  *	  upper trapezoidal part of r, and the lower trapezoidal
  *	  part of a contains a factored form of q (the non-trivial
@@ -917,15 +917,15 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
  *	  then column pivoting is enforced. If pivot is set false,
  *	  then no column pivoting is done.
  *
- *	ipvt is an integer output array of length lipvt. This array
+ *	ipvt is an integer OUTPUT array of length lipvt. This array
  *	  defines the permutation matrix p such that a*p = q*r.
  *	  Column j of p is column ipvt(j) of the identity matrix.
  *	  If pivot is false, ipvt is not referenced.
  *
- *	rdiag is an output array of length n which contains the
+ *	rdiag is an OUTPUT array of length n which contains the
  *	  diagonal elements of r.
  *
- *	acnorm is an output array of length n which contains the
+ *	acnorm is an OUTPUT array of length n which contains the
  *	  norms of the corresponding columns of the input matrix a.
  *	  If this information is not needed, then acnorm can coincide
  *	  with rdiag.
@@ -1066,7 +1066,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
  *
  *	r is an n by n array. On input the full upper triangle
  *	  must contain the full upper triangle of the matrix r.
- *	  On output the full upper triangle is unaltered, and the
+ *	  On OUTPUT the full upper triangle is unaltered, and the
  *	  strict lower triangle contains the strict upper triangle
  *	  (transposed) of the upper triangular matrix s.
  *
@@ -1083,10 +1083,10 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
  *	qtb is an input array of length n which must contain the first
  *	  n elements of the vector (q transpose)*b.
  *
- *	x is an output array of length n which contains the least
+ *	x is an OUTPUT array of length n which contains the least
  *	  squares solution of the system a*x = b, d*x = 0.
  *
- *	sdiag is an output array of length n which contains the
+ *	sdiag is an OUTPUT array of length n which contains the
  *	  diagonal elements of the upper triangular matrix s.
  *
  *	wa is a work array of length n.
