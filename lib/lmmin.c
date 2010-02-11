@@ -519,9 +519,9 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 /*** inner: determine the levenberg-marquardt parameter. ***/
 
-            /* return values stored in fjac (partly), par, wa1, wa2 */
 	    lm_lmpar(n, fjac, m, ipvt, diag, qtf, delta, &par,
 		     wa1, wa2, wa3, wa4);
+            /* return values are in fjac (partly), par, wa1, wa2 */
 
 /*** inner: store the direction p and x + p; calculate the norm of p. ***/
 
@@ -565,7 +565,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    for (j = 0; j < n; j++) {
 		wa3[j] = 0;
 		for (i = 0; i <= j; i++)
-		    wa3[i] += fjac[j * m + i] * wa1[ipvt[j]];
+		    wa3[i] -= fjac[j * m + i] * wa1[ipvt[j]];
 	    }
 	    temp1 = lm_enorm(n, wa3) / fnorm;
 	    temp2 = sqrt(par) * pnorm / fnorm;

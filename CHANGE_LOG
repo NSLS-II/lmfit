@@ -1,3 +1,7 @@
+Changes in lmfit-2.7
+
+- avoid passing wa3 to wa1, choose better names for work arrays in lm_par
+
 Changes in lmfit-2.6, released 29sep09:
 
 - nfev incrementation even if printout=0 (bug report Chr. Tanner)
