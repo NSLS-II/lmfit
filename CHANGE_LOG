@@ -1,7 +1,8 @@
 Changes in lmfit-2.7
 
-- correct function evaluation count; standard demo needs 73, not 46.
+- correct function evaluation count; standard demo needs 73, not 46
 - replace BUG by LMFIT_DEBUG_MESSAGES and .._MATRIX to allow control by -D
+- remove redundant calculation by exchanging workspaces and lm_lmpar output
 - eliminate unncessary wa1 = -wa1 computation
 - avoid passing wa3 to wa1, choose better names for work arrays in lm_par
 
