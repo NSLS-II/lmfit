@@ -29,11 +29,6 @@
 	<ul>
 
 		<li><a href="#version_3_0">Version 3.0</a></li>
-	</ul>
-
-	<li><a href="#description">DESCRIPTION</a></li>
-	<ul>
-
 		<li><a href="#purpose_">Purpose:</a></li>
 		<li><a href="#algorithm_">Algorithm:</a></li>
 		<li><a href="#generic_minimization_routine_">Generic minimization routine:</a></li>
@@ -95,6 +90,7 @@
 <p>
 </p>
 <h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>
+<p><strong>#include &lt;lmfit.h</strong>&gt;</p>
 <p>Use <strong>lm_minimize</strong> with standard call-back functions</p>
 <p><strong>void (*</strong><em>lmfit_evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
                         double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
@@ -116,10 +112,10 @@
 <p>With version 3.0, the application programming interface has slightly changed.</p>
 <p>The initialization routine <strong>lm_initialize_control(...)</strong> has been eliminated, replacement being provided by the constant record <em>lm_control_default</em>. Either pass <em>&amp;lm_control_default</em> directly to <strong>lm_minimize</strong>, or copy its values, declaring and initializing <strong>lm_control_type</strong> <em>control</em> <strong>=</strong> <em>lm_control_default</em><strong>;</strong></p>
 <p>The routines for one-dimensional curve fitting, <em>lm_evaluate_default</em>, <em>lm_printout_default</em>, <em>lm_data_type_default</em> have been renamed into <em>lmfit_evaluate</em>, <em>lmfit_printout</em>, <em>lmfit_data_type</em>.</p>
-<p>
-</p>
-<hr />
-<h1><a name="description">DESCRIPTION</a></h1>
+<p>Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file <em>lmfit.h</em>. The old implementation file <em>lm_eval.c</em> has been renamed <em>lmfit.c</em>.</p>
+<pre>
+
+=head1 DESCRIPTION</pre>
 <p>
 </p>
 <h2><a name="purpose_">Purpose:</a></h2>
@@ -167,6 +163,8 @@
 <p>lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.</p>
 <p>Main web site: <a href="http://www.messen-und-deuten.de/lmfit/">http://www.messen-und-deuten.de/lmfit/</a></p>
 <p>Download location: <a href="http://www.messen-und-deuten.de/lmfit/src/">http://www.messen-und-deuten.de/lmfit/src/</a></p>
+<p>Installation with the usual sequence (<strong>./configure; make; sudo make install</strong>).
+After installation, this documentation is available through <strong>man lmfit</strong>.</p>
 <p>The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)</p>
 <p>
 </p>
