@@ -1,11 +1,11 @@
 /*
  * Project:  LevenbergMarquardtLeastSquaresFitting
  *
- * File:     lmmin.c
+ * File:     lmmin.h
  *
  * Contents: Public interface to the Levenberg-Marquardt core implementation.
  *
- * Author:   Joachim Wuttke 2004-8 
+ * Author:   Joachim Wuttke 2004-2010
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
@@ -20,43 +20,24 @@ extern "C" {
 #endif
 
 
-/** Default data type for passing y(t) data to lm_evaluate **/
-
-typedef struct {
-    double *tvec;
-    double *yvec;
-    double (*f) (double t, double *par);
-} lm_data_type_default;
-
-
-/** User-supplied subroutines. **/
-
-/* Default implementation of evaluate, provided by lm_eval.c. */
-void lm_evaluate_default(double *par, int m_dat, double *fvec, void *data,
-			 int *info);
-
-/* Default implementation of printout, provided by lm_eval.c. */
-void lm_print_default(int n_par, double *par, int m_dat, double *fvec,
-		      void *data, int iflag, int iter, int nfev);
-
-
 /** Compact high-level interface. **/
 
-/* Collection of control parameters. */
+/* Collection of control and monitoring parameters. */
 typedef struct {
+    /* control (input) parameters */
     double ftol;      /* relative error desired in the sum of squares. */
     double xtol;      /* relative error between last two approximations. */
     double gtol;      /* orthogonality desired between fvec and its derivs. */
     double epsilon;   /* step used to calculate the jacobian. */
     double stepbound; /* initial bound to steps in the outer loop. */
-    double fnorm;     /* norm of the residue vector fvec. */
     int maxcall;      /* maximum number of iterations. */
+    /* monitoring (output) parameters */
+    double fnorm;     /* norm of the residue vector fvec. */
     int nfev;	      /* actual number of iterations. */
     int info;	      /* status of minimization. */
 } lm_control_type;
 
-/* Initialize control parameters with default values. */
-void lm_initialize_control(lm_control_type * control);
+extern lm_control_type lm_control_default;
 
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
 double lm_enorm(int, double *);
@@ -89,6 +70,31 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];
+
+
+/*** obsolete code from versions <= 2.6 ***/
+
+/* the following has become obsolete in Feb 2010; it will be deleted in 2011 */
+
+/* Initialize control parameters with default values. */
+void lm_initialize_control(lm_control_type * control);
+
+/* Call-back routines for one-dimensional curve fitting. */
+
+void lm_evaluate_default(double *par, int m_dat, double *fvec, void *data,
+			 int *info);
+
+void lm_print_default(int n_par, double *par, int m_dat, double *fvec,
+		      void *data, int iflag, int iter, int nfev);
+
+/* Record type for passing data and model function to lm_evaluate. */
+
+typedef struct {
+    double *tvec;
+    double *yvec;
+    double (*f) (double t, double *par);
+} lm_data_type_default;
+
 
 #ifdef __cplusplus
 }

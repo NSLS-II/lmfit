@@ -52,14 +52,18 @@
 
 
 void lm_initialize_control( lm_control_type * control )
+/* obsolete after version 2.6 */
 {
-    control->maxcall = 100;
-    control->epsilon = LM_USERTOL;
-    control->stepbound = 100.;
     control->ftol = LM_USERTOL;
     control->xtol = LM_USERTOL;
     control->gtol = LM_USERTOL;
+    control->epsilon = LM_USERTOL;
+    control->stepbound = 100.;
+    control->maxcall = 100;
 }
+
+lm_control_type lm_control_default = {
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100 };
 
 void lm_minimize( int m_dat, int n_par, double *par,
                   void (*evaluate) (double *par, int m_dat, double *fvec,

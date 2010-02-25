@@ -19,9 +19,27 @@
 
 	<li><a href="#name">NAME</a></li>
 	<li><a href="#synopsis">SYNOPSIS</a></li>
-	<li><a href="#one_dimensional_curve_fitting">ONE-DIMENSIONAL CURVE FITTING</a></li>
+	<ul>
+
+		<li><a href="#generic_minimization_">Generic minimization:</a></li>
+		<li><a href="#one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></li>
+	</ul>
+
 	<li><a href="#news">NEWS</a></li>
+	<ul>
+
+		<li><a href="#version_3_0">Version 3.0</a></li>
+	</ul>
+
 	<li><a href="#description">DESCRIPTION</a></li>
+	<ul>
+
+		<li><a href="#purpose_">Purpose:</a></li>
+		<li><a href="#algorithm_">Algorithm:</a></li>
+		<li><a href="#generic_minimization_routine_">Generic minimization routine:</a></li>
+		<li><a href="#one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></li>
+	</ul>
+
 	<li><a href="#ressources">RESSOURCES</a></li>
 	<li><a href="#faq">FAQ</a></li>
 	<ul>
@@ -52,6 +70,9 @@
 </p>
 <hr />
 <h1><a name="synopsis">SYNOPSIS</a></h1>
+<p>
+</p>
+<h2><a name="generic_minimization_">Generic minimization:</a></h2>
 <p><strong>#include &lt;lmmin.h</strong>&gt;</p>
 <p><strong>void lm_minimize( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>,
                   void </strong><em>(*evaluate)(...)</em><strong>, void</strong> <em>(*printout)(...)</em><strong>,
@@ -73,58 +94,72 @@
 <p><strong>extern const char *lm_infmsg[];</strong></p>
 <p>
 </p>
-<hr />
-<h1><a name="one_dimensional_curve_fitting">ONE-DIMENSIONAL CURVE FITTING</a></h1>
+<h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>
 <p>Use <strong>lm_minimize</strong> with standard call-back functions</p>
-<p><strong>void (*</strong><em>lm_evaluate_default</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
-                             double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
-                             int</strong> <em>*info</em><strong> );</strong></p>
-<p><strong>void (*</strong><em>lm_printout_default</em><strong>)( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, 
-                             double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
-                             int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
+<p><strong>void (*</strong><em>lmfit_evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
+                        double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
+                        int</strong> <em>*info</em><strong> );</strong></p>
+<p><strong>void (*</strong><em>lmfit_printout</em><strong>)( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, 
+                        double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
+                        int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
 <p>and with <em>data</em> declared to be of standard data record type</p>
-<p><strong>typedef struct { double</strong> <em>*tvec</em><strong>; double</strong> <em>*yvec</em><strong>; double</strong> <em>(*f)(...)</em><strong>; } lm_data_type_default;</strong></p>
+<p><strong>typedef struct { double</strong> <em>*tvec</em><strong>; double</strong> <em>*yvec</em><strong>; double</strong> <em>(*f)(...)</em><strong>; } lmfit_data_type;</strong></p>
 <p>with call-back function</p>
 <p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, double</strong> <em>*par</em><strong> );</strong></p>
 <p>
 </p>
 <hr />
 <h1><a name="news">NEWS</a></h1>
-<p>The initialization routine</p>
-<p><strong>void lm_initialize_control (lm_control_type</strong> <em>*control</em><strong>);</strong></p>
-<p>has become obsolete in version 2.7, replacement being provided by the constant record <em>lm_control_default</em>. Either pass <em>&amp;lm_control_default</em> directly to <strong>lm_minimize</strong>,
-or copy initial values: <strong>lm_control_type</strong> <em>control</em><strong>;</strong>
-<em>control</em> = <em>lm_control_default</em><strong>;</strong></p>
+<p>
+</p>
+<h2><a name="version_3_0">Version 3.0</a></h2>
+<p>With version 3.0, the application programming interface has slightly changed.</p>
+<p>The initialization routine <strong>lm_initialize_control(...)</strong> has been eliminated, replacement being provided by the constant record <em>lm_control_default</em>. Either pass <em>&amp;lm_control_default</em> directly to <strong>lm_minimize</strong>, or copy its values, declaring and initializing <strong>lm_control_type</strong> <em>control</em> <strong>=</strong> <em>lm_control_default</em><strong>;</strong></p>
+<p>The routines for one-dimensional curve fitting, <em>lm_evaluate_default</em>, <em>lm_printout_default</em>, <em>lm_data_type_default</em> have been renamed into <em>lmfit_evaluate</em>, <em>lmfit_printout</em>, <em>lmfit_data_type</em>.</p>
 <p>
 </p>
 <hr />
 <h1><a name="description">DESCRIPTION</a></h1>
-<p>Determine a parameter vector par (of dimension n_par) that minimizes a norm (usually the sum of squares) of a vector fvec (of dimension m_dat ≥ n_par).</p>
-<p>The most important application is curve fitting: to approximate data y(t) by a function f(t;p), one minimizes the norm of the residual vector v = y(t) – f(t;p).</p>
-<p>The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method.</p>
-<p>The minimization routine lm_minimize requires the following parameters:</p>
-<p>m_dat :: dimension of residue vector fvec (in curve fitting equal to dimension of data vector yvec); n_par :: dimension of parameter vector par; par :: parameter vector, will be changed: on input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||fvec||; evaluate :: a routine that calculates the residue vector fvec for given parameter vector par; setting *info to a negative value causes lm_minimize to terminate; printout :: a routine that can be used to inform about the progress of the minimization (iflag: location of call within lm_minimize, iter: outer loop counter, nfev: number of calls to evaluate); data :: lm_minimize does not care about this pointer; it just forwards it to evaluate and printout; in curve fitting it is used to hold the data to be fitted; control :: a record holding parameters that control the fit algorithm, as described in file lmmin.h.</p>
-<p>For least-squares fitting of a data set y(t) by a function f(t;p), default implementations of evaluate and printout and a default setting of control are provided. Proceed as follows:</p>
-<p>Declare and implement model function</p>
-<p>double f (double t, double *par) { /* … */ }</p>
-<p>Declare</p>
-<p>lm_control_type control;</p>
-<p>lm_data_type_default data;</p>
-<p>int m_dat, n_par;</p>
-<p>double par[/*maximum number of parameters*/];</p>
-<p>double t[/*maximum number of data points*/], y[/*dito*/];</p>
-<p>Let</p>
-<p>m_dat = /* number of empirical data pairs */;</p>
-<p>n_par = /* number of parameter values used in model */</p>
-<p>data.tvec = /* points where data have been taken */;</p>
-<p>data.yvec = /* empirical data */;</p>
-<p>data.f = f;</p>
-<p>par = /* starting values */;</p>
-<p>Initialize control parameters:</p>
-<p>lm_initialize_control( &amp;control );</p>
+<p>
+</p>
+<h2><a name="purpose_">Purpose:</a></h2>
+<p>Determine a parameter vector <em>par</em> (of dimension <em>n_par</em>) that minimizes the Euclidean norm of a vectorial function <em>fvec</em>(<em>par</em>) (of dimension <em>m_dat</em> &gt;= <em>n_par</em>).</p>
+<p>The most important application is curve fitting: to approximate data <em>y</em>(<em>t</em>) by a function <em>f</em>(<em>t</em>;<em>par</em>), one minimizes the norm of the residual vector <em>fvec</em> = <em>y</em>(<em>t</em>) - <em>f</em>(<em>t</em>;<em>par</em>).</p>
+<p>
+</p>
+<h2><a name="algorithm_">Algorithm:</a></h2>
+<p>The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method. For more background, see Mor&eacute; 1978, Madsen et al. 2004, and comments in the source code.</p>
+<p>
+</p>
+<h2><a name="generic_minimization_routine_">Generic minimization routine:</a></h2>
+<p>The minimization routine <strong>lm_minimize</strong> requires the following arguments:</p>
+<p><em>m_dat</em>: dimension of residue vector <em>fvec</em>;</p>
+<p><em>n_par</em>: dimension of parameter vector <em>par</em>;</p>
+<p><em>par</em>: parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<em>fvec</em>||;</p>
+<p><em>evaluate</em>: a routine that calculates the residue vector <em>fvec</em> for given parameter vector <em>par</em>; setting <em>*info</em> to a negative value causes <strong>lm_minimize</strong> to terminate;</p>
+<p><em>printout</em>: a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to evaluate);</p>
+<p><em>data</em>: <strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>; in curve fitting it is used to hold the data to be fitted;</p>
+<p><em>control</em>: a record holding parameters that control the fit algorithm, as described in file <em>lmmin.h</em>. Default setting is provided by <em>lm_control_default</em>.</p>
+<p>
+</p>
+<h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>
+<p>For least-squares fitting of a data set <em>y</em>(<em>t</em>) by a function <em>f</em>(<em>t</em>;<em>par</em>), default implementations of <em>evaluate</em> and <em>printout</em> are provided. Proceed as follows:</p>
+<p>Declare and implement the model function:</p>
+<p><strong>double</strong> <em>f (double</em> <em>t</em><strong>, double</strong> <em>*par</em><strong>) { ... }</strong></p>
+<p>Declare and initialize:</p>
+<p><strong>lm_control_type</strong> <em>control</em> <strong>=</strong> <em>lm_control_default</em><strong>;</strong></p>
+<p><strong>int</strong> <em>m_dat</em> <strong>=</strong> /* number of empirical data pairs */<strong>;</strong></p>
+<p><strong>int</strong> <em>n_par</em> <strong>=</strong> /* number of parameter values used in model */<strong>;</strong></p>
+<p><strong>lmfit_data_type</strong> <em>data</em>;</p>
+<p><em>data.tvec</em> <strong>=</strong> /* points where data have been taken */<strong>;</strong></p>
+<p><em>data.yvec</em> <strong>=</strong> /* empirical data */<strong>;</strong></p>
+<p><em>data.f</em> <strong>=</strong> <em>f</em><strong>;</strong></p>
+<p><strong>double</strong> <em>par</em>[/*maximum number of parameters*/] <strong>=</strong> /* starting values */<strong>;</strong></p>
+<p><strong>double</strong> <em>t</em>[/*maximum number of data pairs*/] <strong>=</strong> { t0, t1, ... }</p>
+<p><strong>double</strong> <em>y</em>[/*maximum number of data pairs*/] <strong>=</strong> { y0, y1, ... }</p>
 <p>Call minimization:</p>
-<p>lm_minimize (m_dat, n_par, par, lm_evaluate_default, lm_print_default, &amp;data, &amp;control );</p>
-<p>Print lm_infmsg[control.info] to inform about convergence</p>
+<p><strong>lm_minimize (</strong><em>m_dat</em><strong>,</strong> <em>n_par</em><strong>,</strong> <em>par</em><strong>,</strong> <em>lmfit_evaluate</em><strong>,</strong> <em>lmfit_print</em><strong>, </strong><em>&amp;data</em><strong>, </strong><em>&amp;control</em> <strong>);</strong></p>
+<p>Print <strong>lm_infmsg</strong>[<em>control.info</em>] to inform about convergence.</p>
 <p>
 </p>
 <hr />
@@ -149,14 +184,14 @@ In the above examples: use p0^2 and 10*tanh(p1) instead of p0 and p1.</p>
 </p>
 <h2><a name="is_there_a_way_to_obtain_error_estimates_for_fit_parameters_">Is there a way to obtain error estimates for fit parameters ?</a></h2>
 <p>The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (http://en.wikipedia.org/wiki/Linear_least_squares). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.</p>
-<p>In linear approximation, the output covariance matrix depends mainly on the Jacobian of the fit function (evaluated for all data points) versus the fit parameters (at their optimum values). It seems not advisable to use the Jacobian fjac that is calculated in the beginning of the main iteration in <code>lm_lmdif()</code>, as it is only returned after some transformations.</p>
+<p>In linear approximation, the output covariance matrix depends mainly on the Jacobian of the fit function (evaluated for all data points) versus the fit parameters (at their optimum values). It seems not advisable to use the Jacobian <em>fjac</em> that is calculated in the beginning of the main iteration in <strong>lm_lmdif(...)</strong>, as it is only returned after some transformations.</p>
 <p>I would be glad to include code for the calculation of parameter covariances in this distribution; contributions would be highly welcome.</p>
 <p>
 </p>
 <h2><a name="how_should_i_cite_lmfit_in_scientific_publications_">How should I cite lmfit in scientific publications ?</a></h2>
 <p>If fit results are robust, it does not matter by which implementation they have been obtained. If the results are not robust, they should not be published anyway. Therefore, in publishing fit results obtained with lmfit it is generally not necessary to cite the software.</p>
 <p>However, in methodological publications that describe software and data analysis procedures based on lmfit, it might be appropriate to provide a reference. The preferred form of citation is:</p>
-<p>Joachim Wuttke: lmfit --- a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. Mor&eacute;, and S. Moshier. Version &lt;..&gt;, retrieved on &lt;..&gt; from <a href="http://www.messen-und-deuten.de/lmfit/.">http://www.messen-und-deuten.de/lmfit/.</a></p>
+<p>Joachim Wuttke: lmfit - a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. Mor&eacute;, and S. Moshier. Version &lt;..&gt;, retrieved on &lt;..&gt; from <a href="http://www.messen-und-deuten.de/lmfit/.">http://www.messen-und-deuten.de/lmfit/.</a></p>
 <p>
 </p>
 <hr />
@@ -164,7 +199,7 @@ In the above examples: use p0^2 and 10*tanh(p1) instead of p0 and p1.</p>
 <p>The code contained in version 2.6 has been stable for several years,
 and it has been used by hundreds of researchers.
 There is a fair chance that it is free of bugs.</p>
-<p>With version 2.7, a new round of improvements is starting.
+<p>With series 3.x, a new round of improvements is starting.
 The code is better than ever,
 but not yet as thoroughly tested as the old one.</p>
 <p>

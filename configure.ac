@@ -8,5 +8,5 @@ AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
 AC_PROG_CC
 AC_PROG_LIBTOOL
-AC_CONFIG_FILES([Makefile lib/Makefile demo/Makefile])
+AC_CONFIG_FILES([Makefile lib/Makefile demo/Makefile doc/Makefile])
 AC_OUTPUT
