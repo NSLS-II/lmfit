@@ -193,16 +193,14 @@ With version 3.0, the application programming interface has slightly changed.
 .PP
 The initialization routine \fBlm_initialize_control(...)\fR has been eliminated, replacement being provided by the constant record \fIlm_control_default\fR. Either pass \fI&lm_control_default\fR directly to \fBlm_minimize\fR, or copy its values, declaring and initializing \fBlm_control_type\fR \fIcontrol\fR \fB=\fR \fIlm_control_default\fR\fB;\fR
 .PP
-The routines for one-dimensional curve fitting, \fIlm_evaluate_default\fR, \fIlm_printout_default\fR, \fIlm_data_type_default\fR have been renamed into \fIlmfit_evaluate\fR, \fIlmfit_printout\fR, \fIlmfit_data_type\fR.
-.PP
-Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file \fIlmfit.h\fR. The old implementation file \fIlm_eval.c\fR has been renamed \fIlmfit.c\fR.
-.SH "DESCRIPTION"
+Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file \fIlmfit.h\fR. The old implementation file \fIlm_eval.c\fR has been renamed \fIlmfit.c\fR. The routines for one-dimensional curve fitting, \fIlm_evaluate_default\fR, \fIlm_printout_default\fR, \fIlm_data_type_default\fR have been renamed into \fIlmfit_evaluate\fR, \fIlmfit_printout\fR, \fIlmfit_data_type\fR.
+.SH "\fBDESCRIPTION\fP"
 .IX Header "DESCRIPTION"
 .SS "Purpose:"
 .IX Subsection "Purpose:"
 Determine a parameter vector \fIpar\fR (of dimension \fIn_par\fR) that minimizes the Euclidean norm of a vectorial function \fIfvec\fR(\fIpar\fR) (of dimension \fIm_dat\fR >= \fIn_par\fR).
 .PP
-The most important application is curve fitting: to approximate data \fIy\fR(\fIt\fR) by a function \fIf\fR(\fIt\fR;\fIpar\fR), one minimizes the norm of the residual vector \fIfvec\fR = \fIy\fR(\fIt\fR) \- \fIf\fR(\fIt\fR;\fIpar\fR).
+The most important application is curve fitting: to approximate data \fIy\fR(\fIt\fR) by a function \fIf\fR(\fIt\fR;\fIpar\fR), minimize the norm of the residual vector \fIfvec\fR = \fIy\fR(\fIt\fR) \- \fIf\fR(\fIt\fR;\fIpar\fR).
 .SS "Algorithm:"
 .IX Subsection "Algorithm:"
 The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method. For more background, see More\*' 1978, Madsen et al. 2004, and comments in the source code.
@@ -283,7 +281,7 @@ In the above examples: use p0^2 and 10*tanh(p1) instead of p0 and p1.
 If you think your problem cannot be handled in such a way, I would be interested to learn why. Please send me one data set (plain \s-1ASCII\s0, two columns, blank separated) along with the fit function and a brief explanation of the application context.
 .SS "Is there a way to obtain error estimates for fit parameters ?"
 .IX Subsection "Is there a way to obtain error estimates for fit parameters ?"
-The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (http://en.wikipedia.org/wiki/Linear_least_squares). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.
+The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (<http://en.wikipedia.org/wiki/Linear_least_squares>). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.
 .PP
 In linear approximation, the output covariance matrix depends mainly on the Jacobian of the fit function (evaluated for all data points) versus the fit parameters (at their optimum values). It seems not advisable to use the Jacobian \fIfjac\fR that is calculated in the beginning of the main iteration in \fBlm_lmdif(...)\fR, as it is only returned after some transformations.
 .PP

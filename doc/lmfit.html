@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>LMFIT --- Levenberg-Marquardt minimization and curve fitting</title>
+<title>LMFIT - Levenberg-Marquardt minimization and curve fitting</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:root@localhost" />
 </head>
@@ -29,6 +29,11 @@
 	<ul>
 
 		<li><a href="#version_3_0">Version 3.0</a></li>
+	</ul>
+
+	<li><a href="#description"><strong>DESCRIPTION</strong></a></li>
+	<ul>
+
 		<li><a href="#purpose_">Purpose:</a></li>
 		<li><a href="#algorithm_">Algorithm:</a></li>
 		<li><a href="#generic_minimization_routine_">Generic minimization routine:</a></li>
@@ -111,16 +116,16 @@
 <h2><a name="version_3_0">Version 3.0</a></h2>
 <p>With version 3.0, the application programming interface has slightly changed.</p>
 <p>The initialization routine <strong>lm_initialize_control(...)</strong> has been eliminated, replacement being provided by the constant record <em>lm_control_default</em>. Either pass <em>&amp;lm_control_default</em> directly to <strong>lm_minimize</strong>, or copy its values, declaring and initializing <strong>lm_control_type</strong> <em>control</em> <strong>=</strong> <em>lm_control_default</em><strong>;</strong></p>
-<p>The routines for one-dimensional curve fitting, <em>lm_evaluate_default</em>, <em>lm_printout_default</em>, <em>lm_data_type_default</em> have been renamed into <em>lmfit_evaluate</em>, <em>lmfit_printout</em>, <em>lmfit_data_type</em>.</p>
-<p>Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file <em>lmfit.h</em>. The old implementation file <em>lm_eval.c</em> has been renamed <em>lmfit.c</em>.</p>
-<pre>
-
-=head1 DESCRIPTION</pre>
+<p>Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file <em>lmfit.h</em>. The old implementation file <em>lm_eval.c</em> has been renamed <em>lmfit.c</em>. The routines for one-dimensional curve fitting, <em>lm_evaluate_default</em>, <em>lm_printout_default</em>, <em>lm_data_type_default</em> have been renamed into <em>lmfit_evaluate</em>, <em>lmfit_printout</em>, <em>lmfit_data_type</em>.</p>
+<p>
+</p>
+<hr />
+<h1><a name="description"><strong>DESCRIPTION</strong></a></h1>
 <p>
 </p>
 <h2><a name="purpose_">Purpose:</a></h2>
 <p>Determine a parameter vector <em>par</em> (of dimension <em>n_par</em>) that minimizes the Euclidean norm of a vectorial function <em>fvec</em>(<em>par</em>) (of dimension <em>m_dat</em> &gt;= <em>n_par</em>).</p>
-<p>The most important application is curve fitting: to approximate data <em>y</em>(<em>t</em>) by a function <em>f</em>(<em>t</em>;<em>par</em>), one minimizes the norm of the residual vector <em>fvec</em> = <em>y</em>(<em>t</em>) - <em>f</em>(<em>t</em>;<em>par</em>).</p>
+<p>The most important application is curve fitting: to approximate data <em>y</em>(<em>t</em>) by a function <em>f</em>(<em>t</em>;<em>par</em>), minimize the norm of the residual vector <em>fvec</em> = <em>y</em>(<em>t</em>) - <em>f</em>(<em>t</em>;<em>par</em>).</p>
 <p>
 </p>
 <h2><a name="algorithm_">Algorithm:</a></h2>
@@ -181,7 +186,7 @@ In the above examples: use p0^2 and 10*tanh(p1) instead of p0 and p1.</p>
 <p>
 </p>
 <h2><a name="is_there_a_way_to_obtain_error_estimates_for_fit_parameters_">Is there a way to obtain error estimates for fit parameters ?</a></h2>
-<p>The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (http://en.wikipedia.org/wiki/Linear_least_squares). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.</p>
+<p>The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (<a href="http://en.wikipedia.org/wiki/Linear_least_squares">http://en.wikipedia.org/wiki/Linear_least_squares</a>). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.</p>
 <p>In linear approximation, the output covariance matrix depends mainly on the Jacobian of the fit function (evaluated for all data points) versus the fit parameters (at their optimum values). It seems not advisable to use the Jacobian <em>fjac</em> that is calculated in the beginning of the main iteration in <strong>lm_lmdif(...)</strong>, as it is only returned after some transformations.</p>
 <p>I would be glad to include code for the calculation of parameter covariances in this distribution; contributions would be highly welcome.</p>
 <p>

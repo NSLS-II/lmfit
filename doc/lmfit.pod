@@ -74,17 +74,15 @@ With version 3.0, the application programming interface has slightly changed.
 
 The initialization routine B<lm_initialize_control(...)> has been eliminated, replacement being provided by the constant record I<lm_control_default>. Either pass I<&lm_control_default> directly to B<lm_minimize>, or copy its values, declaring and initializing B<lm_control_type> I<control> B<=> I<lm_control_default>B<;>
 
-The routines for one-dimensional curve fitting, I<lm_evaluate_default>, I<lm_printout_default>, I<lm_data_type_default> have been renamed into I<lmfit_evaluate>, I<lmfit_printout>, I<lmfit_data_type>.
+Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file I<lmfit.h>. The old implementation file I<lm_eval.c> has been renamed I<lmfit.c>. The routines for one-dimensional curve fitting, I<lm_evaluate_default>, I<lm_printout_default>, I<lm_data_type_default> have been renamed into I<lmfit_evaluate>, I<lmfit_printout>, I<lmfit_data_type>.
 
-Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file I<lmfit.h>. The old implementation file I<lm_eval.c> has been renamed I<lmfit.c>.
- 
-=head1 DESCRIPTION
+=head1 B<DESCRIPTION>
 
 =head2 Purpose:
 
 Determine a parameter vector I<par> (of dimension I<n_par>) that minimizes the Euclidean norm of a vectorial function I<fvec>(I<par>) (of dimension I<m_dat> >= I<n_par>).
 
-The most important application is curve fitting: to approximate data I<y>(I<t>) by a function I<f>(I<t>;I<par>), one minimizes the norm of the residual vector I<fvec> = I<y>(I<t>) - I<f>(I<t>;I<par>).
+The most important application is curve fitting: to approximate data I<y>(I<t>) by a function I<f>(I<t>;I<par>), minimize the norm of the residual vector I<fvec> = I<y>(I<t>) - I<f>(I<t>;I<par>).
 
 =head2 Algorithm:
 
@@ -171,7 +169,7 @@ If you think your problem cannot be handled in such a way, I would be interested
 
 =head2 Is there a way to obtain error estimates for fit parameters ?
 
-The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (http://en.wikipedia.org/wiki/Linear_least_squares). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.
+The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (L<http://en.wikipedia.org/wiki/Linear_least_squares>). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.
 
 In linear approximation, the output covariance matrix depends mainly on the Jacobian of the fit function (evaluated for all data points) versus the fit parameters (at their optimum values). It seems not advisable to use the Jacobian I<fjac> that is calculated in the beginning of the main iteration in B<lm_lmdif(...)>, as it is only returned after some transformations.
 
