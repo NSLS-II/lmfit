@@ -1,0 +1,198 @@
+=pod
+
+=begin html
+
+<link rel="stylesheet" href="podstyle.css" type="text/css" />
+
+=end html
+
+=head1 NAME
+
+lmfit - Self-contained, easy-to-use, yet flexible C/C++ routines for Levenberg-Marquardt minimization and curve fitting
+
+=head1 SYNOPSIS
+
+B<#include <lmmin.h>>
+
+B<void lm_minimize( int> I<m_dat>B<, int> I<n_par>B<, double> I<*par>B<,
+                  void >I<(*evaluate)(...)>B<, void> I<(*printout)(...)>B<,
+                  void> I<*data>B<, lm_control_type> I<*control>B< );>
+
+with user-supplied callback routines
+
+B<void (*>I<evaluate>B<)( double> I<*par>B<, int> I<m_dat>B<,
+                  double> I<*fvec>B<, void> I<*data>B<,
+                  int> I<*info>B< );>
+
+B<void (*>I<printout>B<)( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<,
+                  double> I<*fvec>B<, void> I<*data>B<,
+                  int> I<iflag>B<, int> I<iter>B<, int> I<nfev>B< );>
+
+and control parameters supplied in record
+
+B<typedef struct { double> I<ftol>B<; double> I<xtol>B<; double> I<gtol>B<;
+                 double> I<epsilon>B<; double> I<stepbound>B<; double> I<fnorm>B<;
+                 int> I<maxcall>B<; int> I<nfev>B<; int> I<info>B<; } lm_control_type;>
+
+Default control parameters are provided by
+
+B<extern const lm_control_type> I<lm_control_default>B<;>
+
+Status messages (indexed by I<control.info>) are provided by
+
+B<extern const char *lm_infmsg[];>
+
+=head1 ONE-DIMENSIONAL CURVE FITTING
+
+Use B<lm_minimize> with standard call-back functions
+
+B<void (*>I<lm_evaluate_default>B<)( double> I<*par>B<, int> I<m_dat>B<,
+                             double> I<*fvec>B<, void> I<*data>B<,
+                             int> I<*info>B< );>
+
+B<void (*>I<lm_printout_default>B<)( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<, 
+                             double> I<*fvec>B<, void> I<*data>B<,
+                             int> I<iflag>B<, int> I<iter>B<, int> I<nfev>B< );>
+
+and with I<data> declared to be of standard data record type
+
+B<typedef struct { double> I<*tvec>B<; double> I<*yvec>B<; double> I<(*f)(...)>B<; } lm_data_type_default;>
+
+with call-back function
+
+B<double> I<f>B<( double> I<t>B<, double> I<*par>B< );>
+
+=head1 NEWS
+
+The initialization routine
+
+B<void lm_initialize_control (lm_control_type> I<*control>B<);>
+
+has become obsolete in version 2.7, replacement being provided by the constant record I<lm_control_default>. Either pass I<&lm_control_default> directly to B<lm_minimize>,
+or copy initial values: B<lm_control_type> I<control>B<;>
+I<control> = I<lm_control_default>B<;>
+
+=head1 DESCRIPTION
+
+Determine a parameter vector par (of dimension n_par) that minimizes a norm (usually the sum of squares) of a vector fvec (of dimension m_dat ≥ n_par).
+
+The most important application is curve fitting: to approximate data y(t) by a function f(t;p), one minimizes the norm of the residual vector v = y(t) – f(t;p).
+
+The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method.
+
+The minimization routine lm_minimize requires the following parameters:
+
+m_dat :: dimension of residue vector fvec (in curve fitting equal to dimension of data vector yvec); n_par :: dimension of parameter vector par; par :: parameter vector, will be changed: on input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||fvec||; evaluate :: a routine that calculates the residue vector fvec for given parameter vector par; setting *info to a negative value causes lm_minimize to terminate; printout :: a routine that can be used to inform about the progress of the minimization (iflag: location of call within lm_minimize, iter: outer loop counter, nfev: number of calls to evaluate); data :: lm_minimize does not care about this pointer; it just forwards it to evaluate and printout; in curve fitting it is used to hold the data to be fitted; control :: a record holding parameters that control the fit algorithm, as described in file lmmin.h.
+
+For least-squares fitting of a data set y(t) by a function f(t;p), default implementations of evaluate and printout and a default setting of control are provided. Proceed as follows:
+
+Declare and implement model function
+
+double f (double t, double *par) { /* … */ }
+
+Declare
+
+lm_control_type control;
+
+lm_data_type_default data;
+
+int m_dat, n_par;
+
+double par[/*maximum number of parameters*/];
+
+double t[/*maximum number of data points*/], y[/*dito*/];
+
+Let
+
+m_dat = /* number of empirical data pairs */;
+
+n_par = /* number of parameter values used in model */
+
+data.tvec = /* points where data have been taken */;
+
+data.yvec = /* empirical data */;
+
+data.f = f;
+
+par = /* starting values */;
+
+Initialize control parameters:
+
+lm_initialize_control( &control );
+
+Call minimization:
+
+lm_minimize (m_dat, n_par, par, lm_evaluate_default, lm_print_default, &data, &control );
+
+Print lm_infmsg[control.info] to inform about convergence
+
+=head1 RESSOURCES
+
+lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.
+
+Main web site: http://www.messen-und-deuten.de/lmfit/
+
+Download location: http://www.messen-und-deuten.de/lmfit/src/
+
+The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)
+
+=head1 FAQ
+
+=head2 Is it possible to impose constraints on the fit parameters (like p0>=0 or -10<p1<10) ?
+
+There is no mechanism to impose constraints within the Levenberg-Marquardt algorithm.
+
+According to my experience, no such mechanism is needed. Constraints can be imposed by variable transform or by adding a penalty to the sum of squares.
+Variable transform seems to be the better solution.
+In the above examples: use p0^2 and 10*tanh(p1) instead of p0 and p1.
+
+If you think your problem cannot be handled in such a way, I would be interested to learn why. Please send me one data set (plain ASCII, two columns, blank separated) along with the fit function and a brief explanation of the application context.
+
+=head2 Is there a way to obtain error estimates for fit parameters ?
+
+The problem is only well posed if the covariance matrix of the input data is known. In this case, the error propagation towards the output parameters can be calculated in linear approximation (http://en.wikipedia.org/wiki/Linear_least_squares). Note that fit parameters are correlated with each other even if the input covariance matrix is diagonal.
+
+In linear approximation, the output covariance matrix depends mainly on the Jacobian of the fit function (evaluated for all data points) versus the fit parameters (at their optimum values). It seems not advisable to use the Jacobian fjac that is calculated in the beginning of the main iteration in lm_lmdif(), as it is only returned after some transformations.
+
+I would be glad to include code for the calculation of parameter covariances in this distribution; contributions would be highly welcome.
+
+=head2 How should I cite lmfit in scientific publications ?
+
+If fit results are robust, it does not matter by which implementation they have been obtained. If the results are not robust, they should not be published anyway. Therefore, in publishing fit results obtained with lmfit it is generally not necessary to cite the software.
+
+However, in methodological publications that describe software and data analysis procedures based on lmfit, it might be appropriate to provide a reference. The preferred form of citation is:
+
+Joachim Wuttke: lmfit --- a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. MorE<eacute>, and S. Moshier. Version <..>, retrieved on <..> from http://www.messen-und-deuten.de/lmfit/.
+
+=head1 BUGS
+
+The code contained in version 2.6 has been stable for several years,
+and it has been used by hundreds of researchers.
+There is a fair chance that it is free of bugs.
+
+With version 2.7, a new round of improvements is starting.
+The code is better than ever,
+but not yet as thoroughly tested as the old one.
+
+=head1 REFERENCES
+
+
+K Levenberg: A method for the solution of certain nonlinear problems in least squares. Quart. Appl. Math. 2, 164-168 (1944).
+
+D W Marquardt: An algorithm for least squares estimation of nonlinear parameters. SIAM J. Appl. Math. 11, 431-441 (1963).
+
+J M MorE<eacute>: The Levenberg-Marquardt algorithm: Implementation and theory. Lect. Notes Math. 630, 105-116 (1978).
+
+K Madsen, H B Nielsen, O Tingleff: Methods for non-linear least squares problems. http://www.imm.dtu.dk/pubdb/views/edoc_download.php/3215/pdf/imm3215.pdf (2004)
+
+=head1 AUTHOR
+
+Joachim Wuttke <j.wuttke@fz-juelich.de>
+
+=head1 COPYING
+
+Copyright (C) 2009 Joachim Wuttke.
+
+Software: Public Domain.
+
+This documentation: Creative Commons Attribution Share Alike.

@@ -7,6 +7,8 @@ Changes in lmfit-2.7
 - remove redundant calculation by exchanging workspaces and lm_lmpar output
 - eliminate unncessary wa1 = -wa1 computation
 - avoid passing wa3 to wa1, choose better names for work arrays in lm_par
+- migrate documentation from brain-damaged asciidoc to pod
+- mark lm_initialize_control as obsolete; provide lm_control_default;
 
 Changes in lmfit-2.6, released 29sep09:
 
