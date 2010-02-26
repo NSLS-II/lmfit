@@ -83,13 +83,13 @@ int main()
 
     printf("obtained parameters:\n");
     int i;
-    for ( i = 0; i < n_par; ++i)
+    for ( i=0; i<n_par; ++i )
 	printf("  par[%i] = %12g\n", i, par[i]);
     printf("obtained norm:\n  %12g\n", status.fnorm );
 
     printf("fitting data as follows:\n");
     double ff;
-    for ( i = 0; i < m_dat; ++i){
+    for ( i=0; i<m_dat; ++i ){
         ff = f(tx[i], tz[i], par);
         printf( "  t[%2d]=%12g,%12g y=%12g fit=%12g residue=%12g\n",
                 i, tx[i], tz[i], y[i], ff, y[i] - ff );

@@ -117,7 +117,11 @@ I<printflags>: passed to I<printout>; used by standard implementation I<lm_print
 
 =head2 One-dimensional curve fitting:
 
-See application sample demo/curve1.c.
+See application sample F<demo/curve1.c>.
+
+=head2 Fitting a function of a vectorial argument:
+
+See application sample F<demo/surface1.c>.
 
 =head1 RESSOURCES
 
