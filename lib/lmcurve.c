@@ -23,7 +23,7 @@ typedef struct {
     const double *t;
     const double *y;
     double (*f) (double t, const double *par);
-} lmcurve_data_type;
+} lmcurve_data_struct;
 
 
 void lmcurve_evaluate( const double *par, int m_dat, const void *data,
@@ -32,10 +32,10 @@ void lmcurve_evaluate( const double *par, int m_dat, const void *data,
     int i;
     for ( i = 0; i < m_dat; i++ )
 	fvec[i] =
-            ((lmcurve_data_type*)data)->y[i] -
-            ((lmcurve_data_type*)data)->f(
-                ((lmcurve_data_type*)data)->t[i], par );
-    *info = *info;		/* to prevent a 'unused variable' warning */
+            ((lmcurve_data_struct*)data)->y[i] -
+            ((lmcurve_data_struct*)data)->f(
+                ((lmcurve_data_struct*)data)->t[i], par );
+    // *info = *info; /* to prevent a 'unused variable' warning */
 }
 
 
@@ -45,7 +45,7 @@ void lmcurve_fit( int n_par, double *par, int m_dat,
                   const lm_limits_struct *limits, lm_status_struct *status,
                   int printflags )
 {
-    lmcurve_data_type data = { t, y, f };
+    lmcurve_data_struct data = { t, y, f };
 
     lmmin( n_par, par, m_dat, (const void*) &data,
            lmcurve_evaluate, limits, status, lm_printout_std, printflags );

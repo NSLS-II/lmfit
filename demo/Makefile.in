@@ -34,7 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = curve1$(EXEEXT)
+bin_PROGRAMS = curve1$(EXEEXT) surface1$(EXEEXT)
 subdir = demo
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,6 +53,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_curve1_OBJECTS = curve1.$(OBJEXT)
 curve1_OBJECTS = $(am_curve1_OBJECTS)
 curve1_LDADD = $(LDADD)
+am_surface1_OBJECTS = surface1.$(OBJEXT)
+surface1_OBJECTS = $(am_surface1_OBJECTS)
+surface1_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__depfiles_maybe = depfiles
@@ -66,8 +69,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(curve1_SOURCES)
-DIST_SOURCES = $(curve1_SOURCES)
+SOURCES = $(curve1_SOURCES) $(surface1_SOURCES)
+DIST_SOURCES = $(curve1_SOURCES) $(surface1_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -184,6 +187,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -I$(srcdir)/../lib
 curve1_SOURCES = curve1.c
+surface1_SOURCES = surface1.c
 AM_LDFLAGS = -lm -L../lib -llmmin
 all: all-am
 
@@ -265,6 +269,9 @@ clean-binPROGRAMS:
 curve1$(EXEEXT): $(curve1_OBJECTS) $(curve1_DEPENDENCIES) 
 	@rm -f curve1$(EXEEXT)
 	$(LINK) $(curve1_OBJECTS) $(curve1_LDADD) $(LIBS)
+surface1$(EXEEXT): $(surface1_OBJECTS) $(surface1_DEPENDENCIES) 
+	@rm -f surface1$(EXEEXT)
+	$(LINK) $(surface1_OBJECTS) $(surface1_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -273,6 +280,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surface1.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

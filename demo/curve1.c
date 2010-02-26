@@ -19,7 +19,7 @@
 
 /* model function: a quadratic function p0 + p1 * (t-p2)^2 */
 
-double f(double t, double *p)
+double f( double t, const double *p )
 {
     return p[0] + p[1]*(t-p[2])*(t-p[2]);
 }
