@@ -34,7 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = curve1$(EXEEXT) curve_old$(EXEEXT)
+bin_PROGRAMS = curve1$(EXEEXT)
 subdir = demo
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,9 +53,6 @@ PROGRAMS = $(bin_PROGRAMS)
 am_curve1_OBJECTS = curve1.$(OBJEXT)
 curve1_OBJECTS = $(am_curve1_OBJECTS)
 curve1_LDADD = $(LDADD)
-am_curve_old_OBJECTS = curve_old.$(OBJEXT)
-curve_old_OBJECTS = $(am_curve_old_OBJECTS)
-curve_old_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__depfiles_maybe = depfiles
@@ -69,8 +66,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(curve1_SOURCES) $(curve_old_SOURCES)
-DIST_SOURCES = $(curve1_SOURCES) $(curve_old_SOURCES)
+SOURCES = $(curve1_SOURCES)
+DIST_SOURCES = $(curve1_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -187,8 +184,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -I$(srcdir)/../lib
 curve1_SOURCES = curve1.c
-curve_old_SOURCES = curve_old.c
-# lm_test_LDADD = ../lib/liblmmin.la
 AM_LDFLAGS = -lm -L../lib -llmmin
 all: all-am
 
@@ -270,9 +265,6 @@ clean-binPROGRAMS:
 curve1$(EXEEXT): $(curve1_OBJECTS) $(curve1_DEPENDENCIES) 
 	@rm -f curve1$(EXEEXT)
 	$(LINK) $(curve1_OBJECTS) $(curve1_LDADD) $(LIBS)
-curve_old$(EXEEXT): $(curve_old_OBJECTS) $(curve_old_DEPENDENCIES) 
-	@rm -f curve_old$(EXEEXT)
-	$(LINK) $(curve_old_OBJECTS) $(curve_old_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -281,7 +273,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve1.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve_old.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

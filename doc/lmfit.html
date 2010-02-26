@@ -74,9 +74,10 @@
 </p>
 <h2><a name="generic_minimization_">Generic minimization:</a></h2>
 <p><strong>#include &lt;lmmin.h</strong>&gt;</p>
-<p><strong>void lm_minimize( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>,
-                  void (</strong><em>*evaluate</em><strong>)(...), void (</strong><em>*printout</em><strong>)(...),
-                  void</strong> <em>*data</em><strong>, lm_control_type</strong> <em>*control</em><strong> );</strong></p>
+<p><strong>void lmmin( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, void</strong> <em>*data</em><strong>,
+            void (</strong><em>*evaluate</em><strong>)(...), void (</strong><em>*printout</em><strong>)(...),
+            const lm_control_struct</strong> <em>*control</em><strong>,
+            lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
 <p>The user must supply the following callback routines:</p>
 <p><strong>void (*</strong><em>evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
                   double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
@@ -84,12 +85,15 @@
 <p><strong>void (*</strong><em>printout</em><strong>)( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
                   double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
                   int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
-<p>Furthermore, the user must supply a record with control parameters 
-and monitor variables:</p>
+<p>For the latter, a default implementation is available:</p>
+<p><strong>void </strong><em>lm_printout_std</em><strong>(...);</strong></p>
+<p>Furthermore, the user must supply a record with control parameters</p>
 <p><strong>typedef struct { double</strong> <em>ftol</em><strong>; double</strong> <em>xtol</em><strong>; double</strong> <em>gtol</em><strong>;
                  double</strong> <em>epsilon</em><strong>; double</strong> <em>stepbound</em><strong>; int</strong> <em>maxcall</em><strong>;
-                 double</strong> <em>fnorm</em><strong>; int</strong> <em>nfev</em><strong>; int</strong> <em>info</em><strong>; } lm_control_type;</strong></p>
-<p>Default settings are provided by</p>
+                 int</strong> <em>printflags</em><strong>; } lm_control_struct;</strong></p>
+<p>and a record to receive status information</p>
+<p><strong>typedef struct { double</strong> <em>fnorm</em><strong>; int</strong> <em>nfev</em><strong>; int</strong> <em>info</em><strong>; } lm_status_struct;</strong></p>
+<p>Default control settings are provided by</p>
 <p><strong>extern const lm_control_type</strong> <em>lm_control_float</em><strong>,</strong> <em>lm_control_double</em><strong>;</strong></p>
 <p>Status messages (indexed by <em>control.info</em>) are available through</p>
 <p><strong>extern const char *lm_infmsg[];</strong></p>
@@ -99,7 +103,8 @@ and monitor variables:</p>
 <p><strong>#include &lt;lmcurve.h</strong>&gt;</p>
 <p><strong>void lmcurve_fit( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>,
                   double</strong> <em>*t</em><strong>, double</strong> <em>*y</em><strong>, double (</strong><em>*f</em><strong>)(...),
-                  lm_control_type</strong> <em>*control</em><strong> );</strong></p>
+                  const lm_control_struct</strong> <em>*control</em><strong>,
+                  lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
 <p>The user must supply the function</p>
 <p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, double</strong> <em>*par</em><strong> );</strong></p>
 <p>
@@ -109,11 +114,8 @@ and monitor variables:</p>
 <p>
 </p>
 <h2><a name="version_3_0">Version 3.0</a></h2>
-<p>With version 3.0, the application programming interface has changed.</p>
-<p>Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). The data type <strong>lm_data_type_default</strong> and the routines <strong>lm_evaluate_default</strong> and
-<strong>lm_print_default</strong> have become obsolete; they will be eliminated in
-one of the next releases.
-The initialization routine <strong>lm_initialize_control(...)</strong> also has become obsolete, replacement being provided by the constant record <em>lm_control_double</em>.</p>
+<p>With version 3.0, the application programming interface has changed substantially.</p>
+<p>Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records.</p>
 <p>
 </p>
 <hr />

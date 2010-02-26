@@ -22,36 +22,43 @@ extern "C" {
 
 /** Compact high-level interface. **/
 
-/* Collection of control and monitoring parameters. */
+/* Collection of control (input) parameters. */
 typedef struct {
-    /* control (input) parameters */
     double ftol;      /* relative error desired in the sum of squares. */
     double xtol;      /* relative error between last two approximations. */
     double gtol;      /* orthogonality desired between fvec and its derivs. */
     double epsilon;   /* step used to calculate the jacobian. */
     double stepbound; /* initial bound to steps in the outer loop. */
     int maxcall;      /* maximum number of iterations. */
-    /* monitoring (output) parameters */
+    int printflags;   /* for use in lm_printout_std. */
+} lm_control_struct;
+
+/* Collection of status (output) parameters. */
+typedef struct {
     double fnorm;     /* norm of the residue vector fvec. */
     int nfev;	      /* actual number of iterations. */
     int info;	      /* status of minimization. */
-} lm_control_type;
+} lm_status_struct;
 
-/* Recommended parameter settings. */
-extern lm_control_type lm_control_double;
-extern lm_control_type lm_control_float;
+/* Recommended control parameter settings. */
+extern const lm_control_struct lm_control_double;
+extern const lm_control_struct lm_control_float;
+
+/* Standard monitoring routine. */
+void lm_printout_std( int n_par, double *par, int m_dat, double *fvec,
+		      void *data, int iflag, int iter, int nfev);
 
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
 double lm_enorm(int, double *);
 
 /* The actual minimization. */
-void lm_minimize(int m_dat, int n_par, double *par,
-		 void (*evaluate) (double *par, int m_dat, double *fvec,
-                                   void *data, int *info),
-                 void (*printout) (int n_par, double *par, int m_dat,
-                                   double *fvec, void *data, int iflag,
-                                   int iter, int nfev),
-		 void *data, lm_control_type * control);
+void lmmin( int m_dat, int n_par, double *par, void *data, 
+            void (*evaluate) (double *par, int m_dat, double *fvec,
+                              void *data, int *info),
+            void (*printout) (int n_par, double *par, int m_dat,
+                              double *fvec, void *data, int iflag,
+                              int iter, int nfev),
+            const lm_control_struct *control, lm_status_struct *status );
 
 
 /** Legacy low-level interface. **/
@@ -72,28 +79,6 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 
 extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];
-
-
-/*** the following is OBSOLETE since version 3.0 ***/
-
-/* Initialize control parameters with default values. */
-void lm_initialize_control(lm_control_type * control);
-
-/* Call-back routines for one-dimensional curve fitting. */
-
-void lm_evaluate_default(double *par, int m_dat, double *fvec, void *data,
-			 int *info);
-
-void lm_print_default(int n_par, double *par, int m_dat, double *fvec,
-		      void *data, int iflag, int iter, int nfev);
-
-/* Record type for passing data and model function to lm_evaluate. */
-
-typedef struct {
-    double *tvec;
-    double *yvec;
-    double (*f) (double t, double *par);
-} lm_data_type_default;
 
 
 #ifdef __cplusplus

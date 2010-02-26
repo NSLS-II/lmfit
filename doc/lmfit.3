@@ -137,9 +137,10 @@ lmfit \- C/C++ library for Levenberg\-Marquardt least\-squares minimization and 
 .IX Subsection "Generic minimization:"
 \&\fB#include <lmmin.h\fR>
 .PP
-\&\fBvoid lm_minimize( int\fR \fIm_dat\fR\fB, int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB,
-                  void (\fR\fI*evaluate\fR\fB)(...), void (\fR\fI*printout\fR\fB)(...),
-                  void\fR \fI*data\fR\fB, lm_control_type\fR \fI*control\fR\fB );\fR
+\&\fBvoid lmmin( int\fR \fIm_dat\fR\fB, int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, void\fR \fI*data\fR\fB,
+            void (\fR\fI*evaluate\fR\fB)(...), void (\fR\fI*printout\fR\fB)(...),
+            const lm_control_struct\fR \fI*control\fR\fB,
+            lm_status_struct\fR \fI*status\fR\fB );\fR
 .PP
 The user must supply the following callback routines:
 .PP
@@ -151,14 +152,21 @@ The user must supply the following callback routines:
                   double\fR \fI*fvec\fR\fB, void\fR \fI*data\fR\fB,
                   int\fR \fIiflag\fR\fB, int\fR \fIiter\fR\fB, int\fR \fInfev\fR\fB );\fR
 .PP
-Furthermore, the user must supply a record with control parameters 
-and monitor variables:
+For the latter, a default implementation is available:
+.PP
+\&\fBvoid \fR\fIlm_printout_std\fR\fB(...);\fR
+.PP
+Furthermore, the user must supply a record with control parameters
 .PP
 \&\fBtypedef struct { double\fR \fIftol\fR\fB; double\fR \fIxtol\fR\fB; double\fR \fIgtol\fR\fB;
                  double\fR \fIepsilon\fR\fB; double\fR \fIstepbound\fR\fB; int\fR \fImaxcall\fR\fB;
-                 double\fR \fIfnorm\fR\fB; int\fR \fInfev\fR\fB; int\fR \fIinfo\fR\fB; } lm_control_type;\fR
+                 int\fR \fIprintflags\fR\fB; } lm_control_struct;\fR
 .PP
-Default settings are provided by
+and a record to receive status information
+.PP
+\&\fBtypedef struct { double\fR \fIfnorm\fR\fB; int\fR \fInfev\fR\fB; int\fR \fIinfo\fR\fB; } lm_status_struct;\fR
+.PP
+Default control settings are provided by
 .PP
 \&\fBextern const lm_control_type\fR \fIlm_control_float\fR\fB,\fR \fIlm_control_double\fR\fB;\fR
 .PP
@@ -171,7 +179,8 @@ Status messages (indexed by \fIcontrol.info\fR) are available through
 .PP
 \&\fBvoid lmcurve_fit( int\fR \fIm_dat\fR\fB, int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB,
                   double\fR \fI*t\fR\fB, double\fR \fI*y\fR\fB, double (\fR\fI*f\fR\fB)(...),
-                  lm_control_type\fR \fI*control\fR\fB );\fR
+                  const lm_control_struct\fR \fI*control\fR\fB,
+                  lm_status_struct\fR \fI*status\fR\fB );\fR
 .PP
 The user must supply the function
 .PP
@@ -180,12 +189,9 @@ The user must supply the function
 .IX Header "NEWS"
 .SS "Version 3.0"
 .IX Subsection "Version 3.0"
-With version 3.0, the application programming interface has changed.
+With version 3.0, the application programming interface has changed substantially.
 .PP
-Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). The data type \fBlm_data_type_default\fR and the routines \fBlm_evaluate_default\fR and
-\&\fBlm_print_default\fR have become obsolete; they will be eliminated in
-one of the next releases.
-The initialization routine \fBlm_initialize_control(...)\fR also has become obsolete, replacement being provided by the constant record \fIlm_control_double\fR.
+Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records.
 .SH "\fBDESCRIPTION\fP"
 .IX Header "DESCRIPTION"
 .SS "Purpose:"

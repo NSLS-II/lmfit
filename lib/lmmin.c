@@ -17,6 +17,7 @@
  
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include <float.h>
 #include "lmmin.h"
@@ -47,20 +48,9 @@
  LM_USER_TOL   1.e-14
 */
 
-void lm_initialize_control( lm_control_type * control )
-/* OBSOLETE since version 3.0 */
-{
-    control->ftol = LM_USERTOL;
-    control->xtol = LM_USERTOL;
-    control->gtol = LM_USERTOL;
-    control->epsilon = LM_USERTOL;
-    control->stepbound = 100.;
-    control->maxcall = 100;
-}
-
-lm_control_type lm_control_double = {
+const lm_control_struct lm_control_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100 };
-lm_control_type lm_control_float = {
+const lm_control_struct lm_control_float = {
     1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100 };
 
 
@@ -98,16 +88,56 @@ const char *lm_shortmsg[] = {
 
 
 /*****************************************************************************/
+/*  lm_printout_std (default monitoring routine)                             */
+/*****************************************************************************/
+
+void lm_printout_std( int n_par, double *par, int m_dat, double *fvec,
+		      void *data, int iflag, int iter, int nfev)
+/*
+ *       data  : for soft control of printout behaviour, add control
+ *                 variables to the data struct
+ *       iflag : 0 (init) 1 (outer loop) 2(inner loop) -1(terminated)
+ *       iter  : outer loop counter
+ *       nfev  : number of calls to *evaluate
+ */
+{
+    double f, y, t;
+    int i;
+
+    if (iflag == 2) {
+	printf("trying step in gradient direction\n");
+    } else if (iflag == 1) {
+	printf("determining gradient (iteration %d)\n", iter);
+    } else if (iflag == 0) {
+	printf("starting minimization\n");
+    } else if (iflag == -1) {
+	printf("terminated after %d evaluations\n", nfev);
+    }
+
+    printf("  par: ");
+    for (i = 0; i < n_par; ++i)
+	printf(" %12g", par[i]);
+    printf(" => norm: %12g\n", lm_enorm(m_dat, fvec));
+
+    if (iflag == -1) {
+	printf("  residuals:\n");
+	for (i = 0; i < m_dat; ++i)
+	    printf("    fvec[%2d]=%12g\n", i, fvec[i] );
+    }
+}
+
+
+/*****************************************************************************/
 /*  lm_minimize (intermediate-level interface)                               */
 /*****************************************************************************/
 
-void lm_minimize( int m_dat, int n_par, double *par,
-                  void (*evaluate) (double *par, int m_dat, double *fvec,
-                                    void *data, int *info),
-                  void (*printout) (int n_par, double *par, int m_dat,
-                                    double *fvec, void *data, int iflag,
-                                    int iter, int nfev),
-                  void *data, lm_control_type * control )
+void lmmin( int m_dat, int n_par, double *par, void *data, 
+            void (*evaluate) (double *par, int m_dat, double *fvec,
+                              void *data, int *info),
+            void (*printout) (int n_par, double *par, int m_dat,
+                              double *fvec, void *data, int iflag,
+                              int iter, int nfev),
+            const lm_control_struct *control, lm_status_struct *status )
 {
 
 /*** allocate work space. ***/
@@ -127,26 +157,26 @@ void lm_minimize( int m_dat, int n_par, double *par,
 	 (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
 	 (wa4  = (double *) malloc(m * sizeof(double))) == NULL ||
 	 (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
-	control->info = 9;
+	status->info = 9;
 	return;
     }
 
 /*** perform fit. ***/
 
-    control->info = 0;
+    status->info = 0;
 
     /* this goes through the modified legacy interface: */
     lm_lmdif( m, n, par, fvec, control->ftol, control->xtol, control->gtol,
               control->maxcall * (n + 1), control->epsilon, diag, 1,
-              control->stepbound, &(control->info),
-              &(control->nfev), fjac, ipvt, qtf, wa1, wa2, wa3, wa4,
+              control->stepbound, &(status->info),
+              &(status->nfev), fjac, ipvt, qtf, wa1, wa2, wa3, wa4,
               evaluate, printout, data );
 
     if ( printout )
-        (*printout) (n, par, m, fvec, data, -1, 0, control->nfev);
-    control->fnorm = lm_enorm(m, fvec);
-    if ( control->info < 0 )
-	control->info = 10;
+        (*printout) (n, par, m, fvec, data, -1, 0, status->nfev);
+    status->fnorm = lm_enorm(m, fvec);
+    if ( status->info < 0 )
+	status->info = 10;
 
 /*** clean up. ***/
 
@@ -165,10 +195,6 @@ void lm_minimize( int m_dat, int n_par, double *par,
 /*****************************************************************************/
 /*  lm_lmdif (low-level, modified legacy interface for full control)         */
 /*****************************************************************************/
-
-#ifdef LMFIT_DEBUG_MESSAGES
-#include <stdio.h>
-#endif
 
 void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	      double *qtb, double delta, double *par, double *x,

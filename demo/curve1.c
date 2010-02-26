@@ -38,23 +38,28 @@ int main()
     };
     double par[3] = { 1., 1., 1. }; // use any starting value, but not { 0,0,0 }
 
-    // auxiliary settings:
+    // auxiliary parameter records:
 
-    lm_control_type control = lm_control_double;
+    lm_control_struct control = lm_control_double;
+    lm_status_struct status;
+
+    // maximum noise:
+
+    control.printflags = 7;
 
     // perform the fit:
 
-    lmcurve_fit( m_dat, n_par, par, t, y, f, &control );
+    lmcurve_fit( m_dat, n_par, par, t, y, f, &control, &status );
 
     // print results:
 
     printf( "status after %d evaluations:\n  %s\n",
-            control.nfev, lm_infmsg[control.info] );
+            status.nfev, lm_infmsg[status.info] );
 
     printf("obtained parameters:\n");
     for (i = 0; i < n_par; ++i)
 	printf("  par[%i] = %12g\n", i, par[i]);
-    printf("obtained norm:\n  %12g\n", control.fnorm );
+    printf("obtained norm:\n  %12g\n", status.fnorm );
 
     printf("fitting data as follows:\n");
     for (i = 0; i < m_dat; ++i)

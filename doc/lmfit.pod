@@ -16,9 +16,10 @@ lmfit - C/C++ library for Levenberg-Marquardt least-squares minimization and cur
 
 B<#include <lmmin.h>>
 
-B<void lm_minimize( int> I<m_dat>B<, int> I<n_par>B<, double> I<*par>B<,
-                  void (>I<*evaluate>B<)(...), void (>I<*printout>B<)(...),
-                  void> I<*data>B<, lm_control_type> I<*control>B< );>
+B<void lmmin( int> I<m_dat>B<, int> I<n_par>B<, double> I<*par>B<, void> I<*data>B<,
+            void (>I<*evaluate>B<)(...), void (>I<*printout>B<)(...),
+            const lm_control_struct> I<*control>B<,
+            lm_status_struct> I<*status>B< );>
 
 The user must supply the following callback routines:
 
@@ -30,14 +31,21 @@ B<void (*>I<printout>B<)( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<,
                   double> I<*fvec>B<, void> I<*data>B<,
                   int> I<iflag>B<, int> I<iter>B<, int> I<nfev>B< );>
 
+For the latter, a default implementation is available:
+
+B<void >I<lm_printout_std>B<(...);>
+
 Furthermore, the user must supply a record with control parameters 
-and monitor variables:
 
 B<typedef struct { double> I<ftol>B<; double> I<xtol>B<; double> I<gtol>B<;
                  double> I<epsilon>B<; double> I<stepbound>B<; int> I<maxcall>B<;
-                 double> I<fnorm>B<; int> I<nfev>B<; int> I<info>B<; } lm_control_type;>
+                 int> I<printflags>B<; } lm_control_struct;>
 
-Default settings are provided by
+and a record to receive status information
+
+B<typedef struct { double> I<fnorm>B<; int> I<nfev>B<; int> I<info>B<; } lm_status_struct;>
+
+Default control settings are provided by
 
 B<extern const lm_control_type> I<lm_control_float>B<,> I<lm_control_double>B<;>
 
@@ -52,7 +60,8 @@ B<#include <lmcurve.h>>
 
 B<void lmcurve_fit( int> I<m_dat>B<, int> I<n_par>B<, double> I<*par>B<,
                   double> I<*t>B<, double> I<*y>B<, double (>I<*f>B<)(...),
-                  lm_control_type> I<*control>B< );>
+                  const lm_control_struct> I<*control>B<,
+                  lm_status_struct> I<*status>B< );>
 
 The user must supply the function
 
@@ -62,12 +71,9 @@ B<double> I<f>B<( double> I<t>B<, double> I<*par>B< );>
 
 =head2 Version 3.0
 
-With version 3.0, the application programming interface has changed.
+With version 3.0, the application programming interface has changed substantially.
 
-Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). The data type B<lm_data_type_default> and the routines B<lm_evaluate_default> and
-B<lm_print_default> have become obsolete; they will be eliminated in
-one of the next releases.
-The initialization routine B<lm_initialize_control(...)> also has become obsolete, replacement being provided by the constant record I<lm_control_double>.
+Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records.
 
 =head1 B<DESCRIPTION>
 

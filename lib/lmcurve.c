@@ -41,13 +41,13 @@ void lmcurve_evaluate( double *par, int m_dat, double *fvec,
 
 void lmcurve_fit( int m_dat, int n_par, double *par,
                   double *t, double *y, double (*f)( double t, double *par ),
-                  lm_control_type *control )
+                  const lm_control_struct *control, lm_status_struct *status )
 {
     lmcurve_data_type data;
     data.t = t;
     data.y = y;
     data.f = f;
-    lm_minimize( m_dat, n_par, par, lmcurve_evaluate, 0,
-                 (void*) &data, control );
+    lmmin( m_dat, n_par, par, (void*) &data,
+           lmcurve_evaluate, lm_printout_std, control, status );
 }
 
