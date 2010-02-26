@@ -6,18 +6,13 @@
  * Contents: Levenberg-Marquardt core implementation,
  *           and simplified user interface.
  *
- * Authors:  Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. More
- *           (lmdif and other routines from the public-domain library
- *           netlib::minpack, Argonne National Laboratories, March 1980);
- *           Steve Moshier (initial C translation);
- *           Joachim Wuttke (conversion into C++ compatible ANSI style,
- *           corrections, comments, wrappers, packaging, hosting).
- * 
+ * Author:   Joachim Wuttke, building on work by Burton S. Garbow,
+ *           Kenneth E. Hillstrom, Jorge J. More, Steve Moshier, and
+ *           many others.
+ *
  * Homepage: www.messen-und-deuten.de/lmfit
  *
- * Licence:  Public domain.
- *
- * Make:     For instance: gcc -c lmmin.c; ar rc liblmmin.a lmmin.o
+ * Licence:  Creative Commons Attribution Share Alike.
  */
  
 
@@ -25,9 +20,11 @@
 #include <math.h>
 #include <float.h>
 #include "lmmin.h"
-#define _LMDIF
 
-/* *********************** high-level interface **************************** */
+
+/*****************************************************************************/
+/*  set numeric constants                                                    */
+/*****************************************************************************/
 
 /* machine-dependent constants from float.h */
 #define LM_MACHEP     DBL_EPSILON   /* resolution of arithmetic */
@@ -50,9 +47,8 @@
  LM_USER_TOL   1.e-14
 */
 
-
 void lm_initialize_control( lm_control_type * control )
-/* obsolete after version 2.6 */
+/* OBSOLETE since version 3.0 */
 {
     control->ftol = LM_USERTOL;
     control->xtol = LM_USERTOL;
@@ -66,6 +62,44 @@ lm_control_type lm_control_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100 };
 lm_control_type lm_control_float = {
     1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100 };
+
+
+/*****************************************************************************/
+/*  set message texts (indexed by control.info)                              */
+/*****************************************************************************/
+
+const char *lm_infmsg[] = {
+    "fatal coding error (improper input parameters)",
+    "success (the relative error in the sum of squares is at most tol)",
+    "success (the relative error between x and the solution is at most tol)",
+    "success (both errors are at most tol)",
+    "trapped by degeneracy (fvec is orthogonal to the columns of the jacobian)"
+    "timeout (number of calls to fcn has reached maxcall*(n+1))",
+    "failure (ftol<tol: cannot reduce sum of squares any further)",
+    "failure (xtol<tol: cannot improve approximate solution any further)",
+    "failure (gtol<tol: cannot improve approximate solution any further)",
+    "exception (not enough memory)",
+    "exception (break requested within function evaluation)"
+};
+
+const char *lm_shortmsg[] = {
+    "invalid input",
+    "success (f)",
+    "success (p)",
+    "success (f,p)",
+    "degenerate",
+    "call limit",
+    "failed (f)",
+    "failed (p)",
+    "failed (o)",
+    "no memory",
+    "user break"
+};
+
+
+/*****************************************************************************/
+/*  lm_minimize (intermediate-level interface)                               */
+/*****************************************************************************/
 
 void lm_minimize( int m_dat, int n_par, double *par,
                   void (*evaluate) (double *par, int m_dat, double *fvec,
@@ -100,7 +134,6 @@ void lm_minimize( int m_dat, int n_par, double *par,
 /*** perform fit. ***/
 
     control->info = 0;
-    control->nfev = 0;
 
     /* this goes through the modified legacy interface: */
     lm_lmdif( m, n, par, fvec, control->ftol, control->xtol, control->gtol,
@@ -129,38 +162,9 @@ void lm_minimize( int m_dat, int n_par, double *par,
 } /*** lm_minimize. ***/
 
 
-/*** the following messages are indexed by the variable info. ***/
-
-const char *lm_infmsg[] = {
-    "fatal coding error (improper input parameters)",
-    "success (the relative error in the sum of squares is at most tol)",
-    "success (the relative error between x and the solution is at most tol)",
-    "success (both errors are at most tol)",
-    "trapped by degeneracy (fvec is orthogonal to the columns of the jacobian)"
-    "timeout (number of calls to fcn has reached maxcall*(n+1))",
-    "failure (ftol<tol: cannot reduce sum of squares any further)",
-    "failure (xtol<tol: cannot improve approximate solution any further)",
-    "failure (gtol<tol: cannot improve approximate solution any further)",
-    "exception (not enough memory)",
-    "exception (break requested within function evaluation)"
-};
-
-const char *lm_shortmsg[] = {
-    "invalid input",
-    "success (f)",
-    "success (p)",
-    "success (f,p)",
-    "degenerate",
-    "call limit",
-    "failed (f)",
-    "failed (p)",
-    "failed (o)",
-    "no memory",
-    "user break"
-};
-
-
-/* ************************** implementation ******************************* */
+/*****************************************************************************/
+/*  lm_lmdif (low-level, modified legacy interface for full control)         */
+/*****************************************************************************/
 
 #ifdef LMFIT_DEBUG_MESSAGES
 #include <stdio.h>
@@ -178,8 +182,6 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-
-/***** the low-level legacy interface for full control. *****/
 
 void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	      double xtol, double gtol, int maxfev, double epsfcn,
@@ -426,7 +428,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    (*evaluate) (x, m, wa4, data, info);
             ++(*nfev);
             if( printout )
-                (*printout) (n, x, m, wa4, data, 1, iter, ++(*nfev));
+                (*printout) (n, x, m, wa4, data, 1, iter, *nfev);
 	    if (*info < 0)
 		return;	/* user requested break */
 	    for (i = 0; i < m; i++)
@@ -652,6 +654,9 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 } /*** lm_lmdif. ***/
 
 
+/*****************************************************************************/
+/*  lm_lmpar (determine Levenberg-Marquardt parameter)                       */
+/*****************************************************************************/
 
 void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	      double *qtb, double delta, double *par, double *x,
@@ -881,6 +886,9 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 } /*** lm_lmpar. ***/
 
 
+/*****************************************************************************/
+/*  lm_qrfac (QR factorisation, from lapack)                                 */
+/*****************************************************************************/
 
 void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 	      double *rdiag, double *acnorm, double *wa)
@@ -1027,6 +1035,9 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 }
 
 
+/*****************************************************************************/
+/*  lm_qrsolv (linear least-squares)                                         */
+/*****************************************************************************/
 
 void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 	       double *qtb, double *x, double *sdiag, double *wa)
@@ -1196,6 +1207,9 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 } /*** lm_qrsolv. ***/
 
 
+/*****************************************************************************/
+/*  lm_enorm (Euclidean norm)                                                */
+/*****************************************************************************/
 
 double lm_enorm(int n, double *x)
 {

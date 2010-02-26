@@ -1,7 +1,11 @@
 /*
  * Project:  LevenbergMarquardtLeastSquaresFitting
  *
- * File:     lm_test.c
+ * File:     curve_old.c
+ *
+ * WARNING:  This example uses an obsolete interface.
+ *
+ *           DO NOT FOLLOW THIS EXAMPLE IN NEW PROJECTS
  *
  * Contents: This test program demonstrates the least-squares standard task:
  *           optimize p to fit some data y(t) by my_fit_function(t;p).
@@ -10,7 +14,7 @@
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
- * Licence:  Public domain.
+ * Licence:  Creative Commons Attribution Share Alike.
  *
  * Make:     gcc -o lmtest -lm lmmin.c lm_eval.c lm_test.c
  */

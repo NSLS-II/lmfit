@@ -34,7 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = lm_test$(EXEEXT)
+bin_PROGRAMS = curve1$(EXEEXT) curve_old$(EXEEXT)
 subdir = demo
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -50,9 +50,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_lm_test_OBJECTS = lm_test.$(OBJEXT)
-lm_test_OBJECTS = $(am_lm_test_OBJECTS)
-lm_test_DEPENDENCIES = ../lib/liblmmin.la
+am_curve1_OBJECTS = curve1.$(OBJEXT)
+curve1_OBJECTS = $(am_curve1_OBJECTS)
+curve1_LDADD = $(LDADD)
+am_curve_old_OBJECTS = curve_old.$(OBJEXT)
+curve_old_OBJECTS = $(am_curve_old_OBJECTS)
+curve_old_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__depfiles_maybe = depfiles
@@ -66,8 +69,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(lm_test_SOURCES)
-DIST_SOURCES = $(lm_test_SOURCES)
+SOURCES = $(curve1_SOURCES) $(curve_old_SOURCES)
+DIST_SOURCES = $(curve1_SOURCES) $(curve_old_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -183,9 +186,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -I$(srcdir)/../lib
-lm_test_SOURCES = lm_test.c
-lm_test_LDADD = ../lib/liblmmin.la
-AM_LDFLAGS = -lm
+curve1_SOURCES = curve1.c
+curve_old_SOURCES = curve_old.c
+# lm_test_LDADD = ../lib/liblmmin.la
+AM_LDFLAGS = -lm -L../lib -llmmin
 all: all-am
 
 .SUFFIXES:
@@ -263,9 +267,12 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-lm_test$(EXEEXT): $(lm_test_OBJECTS) $(lm_test_DEPENDENCIES) 
-	@rm -f lm_test$(EXEEXT)
-	$(LINK) $(lm_test_OBJECTS) $(lm_test_LDADD) $(LIBS)
+curve1$(EXEEXT): $(curve1_OBJECTS) $(curve1_DEPENDENCIES) 
+	@rm -f curve1$(EXEEXT)
+	$(LINK) $(curve1_OBJECTS) $(curve1_LDADD) $(LIBS)
+curve_old$(EXEEXT): $(curve_old_OBJECTS) $(curve_old_DEPENDENCIES) 
+	@rm -f curve_old$(EXEEXT)
+	$(LINK) $(curve_old_OBJECTS) $(curve_old_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -273,7 +280,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lm_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve_old.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

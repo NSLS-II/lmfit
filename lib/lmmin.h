@@ -9,7 +9,7 @@
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
- * Licence:  Public domain.
+ * Licence:  Creative Commons Attribution Share Alike.
  */
  
 #ifndef LMMIN_H
@@ -74,9 +74,7 @@ extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];
 
 
-/*** obsolete code from versions <= 2.6 ***/
-
-/* the following has become obsolete in Feb 2010; it will be deleted in 2011 */
+/*** the following is OBSOLETE since version 3.0 ***/
 
 /* Initialize control parameters with default values. */
 void lm_initialize_control(lm_control_type * control);

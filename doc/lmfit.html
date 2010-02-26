@@ -22,7 +22,7 @@
 	<ul>
 
 		<li><a href="#generic_minimization_">Generic minimization:</a></li>
-		<li><a href="#one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></li>
+		<li><a href="#simplified_interface_for_one_dimensional_curve_fitting_">Simplified interface for one-dimensional curve fitting:</a></li>
 	</ul>
 
 	<li><a href="#news">NEWS</a></li>
@@ -65,7 +65,7 @@
 </p>
 <hr />
 <h1><a name="name">NAME</a></h1>
-<p>lmfit - Levenberg-Marquardt minimization and curve fitting</p>
+<p>lmfit - C/C++ library for Levenberg-Marquardt least-squares minimization and curve fitting</p>
 <p>
 </p>
 <hr />
@@ -77,37 +77,30 @@
 <p><strong>void lm_minimize( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>,
                   void (</strong><em>*evaluate</em><strong>)(...), void (</strong><em>*printout</em><strong>)(...),
                   void</strong> <em>*data</em><strong>, lm_control_type</strong> <em>*control</em><strong> );</strong></p>
-<p>with user-supplied callback routines</p>
+<p>The user must supply the following callback routines:</p>
 <p><strong>void (*</strong><em>evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
                   double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
                   int</strong> <em>*info</em><strong> );</strong></p>
 <p><strong>void (*</strong><em>printout</em><strong>)( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
                   double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
                   int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
-<p>and control parameters supplied and monitoring variables returned in record</p>
+<p>Furthermore, the user must supply a record with control parameters 
+and monitor variables:</p>
 <p><strong>typedef struct { double</strong> <em>ftol</em><strong>; double</strong> <em>xtol</em><strong>; double</strong> <em>gtol</em><strong>;
                  double</strong> <em>epsilon</em><strong>; double</strong> <em>stepbound</em><strong>; int</strong> <em>maxcall</em><strong>;
                  double</strong> <em>fnorm</em><strong>; int</strong> <em>nfev</em><strong>; int</strong> <em>info</em><strong>; } lm_control_type;</strong></p>
-<p>Default control parameters
-(for <em>fvec</em> calculated to single or double precision) are provided by</p>
-<p><strong>extern const lm_control_type</strong> <em>lm_control_float</em><strong>;</strong></p>
-<p><strong>extern const lm_control_type</strong> <em>lm_control_double</em><strong>;</strong></p>
-<p>Status messages (indexed by <em>control.info</em>) are provided by</p>
+<p>Default settings are provided by</p>
+<p><strong>extern const lm_control_type</strong> <em>lm_control_float</em><strong>,</strong> <em>lm_control_double</em><strong>;</strong></p>
+<p>Status messages (indexed by <em>control.info</em>) are available through</p>
 <p><strong>extern const char *lm_infmsg[];</strong></p>
 <p>
 </p>
-<h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>
+<h2><a name="simplified_interface_for_one_dimensional_curve_fitting_">Simplified interface for one-dimensional curve fitting:</a></h2>
 <p><strong>#include &lt;lmcurve.h</strong>&gt;</p>
-<p>Use <strong>lm_minimize</strong> with standard call-back functions</p>
-<p><strong>void (*</strong><em>lmfit_evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
-                        double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
-                        int</strong> <em>*info</em><strong> );</strong></p>
-<p><strong>void (*</strong><em>lmfit_printout</em><strong>)( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, 
-                        double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
-                        int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
-<p>and with <em>data</em> declared to be of standard data record type</p>
-<p><strong>typedef struct { double</strong> <em>*tvec</em><strong>; double</strong> <em>*yvec</em><strong>; double</strong> <em>(*f)(...)</em><strong>; } lmfit_data_type;</strong></p>
-<p>with call-back function</p>
+<p><strong>void lmcurve_fit( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>,
+                  double</strong> <em>*t</em><strong>, double</strong> <em>*y</em><strong>, double (</strong><em>*f</em><strong>)(...),
+                  lm_control_type</strong> <em>*control</em><strong> );</strong></p>
+<p>The user must supply the function</p>
 <p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, double</strong> <em>*par</em><strong> );</strong></p>
 <p>
 </p>
@@ -116,9 +109,11 @@
 <p>
 </p>
 <h2><a name="version_3_0">Version 3.0</a></h2>
-<p>With version 3.0, the application programming interface has slightly changed.</p>
-<p>The initialization routine <strong>lm_initialize_control(...)</strong> has been eliminated, replacement being provided by the constant record <em>lm_control_double</em>. Either pass <em>&amp;lm_control_double</em> directly to <strong>lm_minimize</strong>, or copy its values, declaring and initializing <strong>lm_control_type</strong> <em>control</em> <strong>=</strong> <em>lm_control_double</em><strong>;</strong></p>
-<p>Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file <em>lmcurve.h</em>. The old implementation file <em>lm_eval.c</em> has been renamed <em>lmfit.c</em>. The routines for one-dimensional curve fitting, <em>lm_evaluate_default</em>, <em>lm_printout_default</em>, <em>lm_data_type_default</em> have been renamed into <em>lmfit_evaluate</em>, <em>lmfit_printout</em>, <em>lmfit_data_type</em>.</p>
+<p>With version 3.0, the application programming interface has changed.</p>
+<p>Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). The data type <strong>lm_data_type_default</strong> and the routines <strong>lm_evaluate_default</strong> and
+<strong>lm_print_default</strong> have become obsolete; they will be eliminated in
+one of the next releases.
+The initialization routine <strong>lm_initialize_control(...)</strong> also has become obsolete, replacement being provided by the constant record <em>lm_control_double</em>.</p>
 <p>
 </p>
 <hr />
@@ -140,29 +135,18 @@
 <p><em>n_par</em>: dimension of parameter vector <em>par</em>;</p>
 <p><em>par</em>: parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<em>fvec</em>||;</p>
 <p><em>evaluate</em>: a routine that calculates the residue vector <em>fvec</em> for given parameter vector <em>par</em>; setting <em>*info</em> to a negative value causes <strong>lm_minimize</strong> to terminate;</p>
-<p><em>printout</em>: a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to evaluate);</p>
-<p><em>data</em>: <strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>; in curve fitting it is used to hold the data to be fitted;</p>
-<p><em>control</em>: a record holding parameters that control the fit algorithm, as described in file <em>lmmin.h</em>. Default setting is provided by <em>lm_control_default</em>.</p>
+<p><em>printout</em>: a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to evaluate);
+if no monitoring is desired, <strong>lm_minimize</strong>
+may be called with argument <em>*printout</em> set to 0.</p>
+<p><em>data</em>: <strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>;</p>
+<p><em>control</em>: a record holding control parameters and monitoring variables, as described in file <em>lmmin.h</em>.
+Depending on whether <em>*evaluate</em> computes <em>fvec</em>
+to single or double precision,
+recommended default settings are in <em>lm_control_float</em> and <em>lm_control_double</em>.</p>
 <p>
 </p>
 <h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>
-<p>For least-squares fitting of a data set <em>y</em>(<em>t</em>) by a function <em>f</em>(<em>t</em>;<em>par</em>), default implementations of <em>evaluate</em> and <em>printout</em> are provided. Proceed as follows:</p>
-<p>Declare and implement the model function:</p>
-<p><strong>double</strong> <em>f (double</em> <em>t</em><strong>, double</strong> <em>*par</em><strong>) { ... }</strong></p>
-<p>Declare and initialize:</p>
-<p><strong>lm_control_type</strong> <em>control</em> <strong>=</strong> <em>lm_control_default</em><strong>;</strong></p>
-<p><strong>int</strong> <em>m_dat</em> <strong>=</strong> /* number of empirical data pairs */<strong>;</strong></p>
-<p><strong>int</strong> <em>n_par</em> <strong>=</strong> /* number of parameter values used in model */<strong>;</strong></p>
-<p><strong>lmfit_data_type</strong> <em>data</em>;</p>
-<p><em>data.tvec</em> <strong>=</strong> /* points where data have been taken */<strong>;</strong></p>
-<p><em>data.yvec</em> <strong>=</strong> /* empirical data */<strong>;</strong></p>
-<p><em>data.f</em> <strong>=</strong> <em>f</em><strong>;</strong></p>
-<p><strong>double</strong> <em>par</em>[/*maximum number of parameters*/] <strong>=</strong> /* starting values */<strong>;</strong></p>
-<p><strong>double</strong> <em>t</em>[/*maximum number of data pairs*/] <strong>=</strong> { t0, t1, ... }</p>
-<p><strong>double</strong> <em>y</em>[/*maximum number of data pairs*/] <strong>=</strong> { y0, y1, ... }</p>
-<p>Call minimization:</p>
-<p><strong>lm_minimize (</strong><em>m_dat</em><strong>,</strong> <em>n_par</em><strong>,</strong> <em>par</em><strong>,</strong> <em>lmfit_evaluate</em><strong>,</strong> <em>lmfit_print</em><strong>, </strong><em>&amp;data</em><strong>, </strong><em>&amp;control</em> <strong>);</strong></p>
-<p>Print <strong>lm_infmsg</strong>[<em>control.info</em>] to inform about convergence.</p>
+<p>See application sample demo/curve1.c.</p>
 <p>
 </p>
 <hr />
@@ -224,9 +208,9 @@ but not yet as thoroughly tested as the old one.</p>
 </p>
 <hr />
 <h1><a name="copying">COPYING</a></h1>
-<p>Copyright (C) 2009 Joachim Wuttke.</p>
-<p>Software: Public Domain.</p>
-<p>This documentation: Creative Commons Attribution Share Alike.</p>
+<p>Copyright (C) 2009-10 Joachim Wuttke.</p>
+<p>Software: Creative Commons Attribution Share Alike.</p>
+<p>Documentation: Creative Commons Attribution Share Alike.</p>
 
 </body>
 

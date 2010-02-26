@@ -3,13 +3,13 @@
  *
  * File:     lmcurve.h
  *
- * Contents: Declarations for one-dimensional curve fitting
+ * Contents: Simplified interface for one-dimensional curve fitting
  *
- * Author:   Joachim Wuttke 2004-2010
+ * Author:   Joachim Wuttke 2010
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
- * Licence:  Public domain.
+ * Licence:  CC-BY-SA (Creative Commons Attribution Share-Alike)
  */
  
 #include<lmmin.h>
@@ -21,21 +21,9 @@
 extern "C" {
 #endif
 
-/* Call-back routines for one-dimensional curve fitting: */
-
-void lmfit_evaluate( double *par, int m_dat, double *fvec,
-                     void *data, int *info );
-
-void lmfit_printout( int n_par, double *par, int m_dat, double *fvec,
-		     void *data, int iflag, int iter, int nfev );
-
-/* Record type for passing data and model function to lmfit_evaluate: */
-
-typedef struct {
-    double *tvec;
-    double *yvec;
-    double (*f)( double t, double *par );
-} lmfit_data_type;
+void lmcurve_fit( int m_dat, int n_par, double *par,
+                  double *t, double *y, double (*f)( double t, double *par ),
+                  lm_control_type *control );
 
 #ifdef __cplusplus
 }

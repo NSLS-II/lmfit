@@ -2,16 +2,17 @@ Changes in lmfit-3.0
 
 - for parameter close to zero, change step width for calculation of jabobian
 - outer iteration counter starting at zero (C style)
-- correct function evaluation count; standard demo needs 73, not 46
 - replace BUG by LMFIT_DEBUG_MESSAGES and .._MATRIX to allow control by -D
 - remove redundant calculation by exchanging workspaces and lm_lmpar output
 - eliminate unncessary wa1 = -wa1 computation
 - avoid passing wa3 to wa1, choose better names for work arrays in lm_par
 - migrate documentation from brain-damaged asciidoc to pod
+- rewrote interface documentation
 - API changes:
   -- eliminate lm_initialize_control; provide lm_control_default;
-  -- renamed lm_evaluate_default, lm_printout_default, lm_data_type_default
-     to lmfit_evaluate, lmfit_printout, lmfit_data_type
+  -- separated generic minimization and one-dimensional curve fitting;
+  -- simplified the latter
+  -- obsolete calls still implemented as undocumented features
 
 Changes in lmfit-2.6, released 29sep09:
 
