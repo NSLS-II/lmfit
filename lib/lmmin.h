@@ -45,19 +45,19 @@ extern const lm_control_struct lm_control_double;
 extern const lm_control_struct lm_control_float;
 
 /* Standard monitoring routine. */
-void lm_printout_std( int n_par, double *par, int m_dat, double *fvec,
-		      void *data, int iflag, int iter, int nfev);
+void lm_printout_std( int n_par, double *par, int m_dat, void *data, 
+                      double *fvec, int iflag, int iter, int nfev);
 
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
 double lm_enorm(int, double *);
 
 /* The actual minimization. */
-void lmmin( int m_dat, int n_par, double *par, void *data, 
-            void (*evaluate) (double *par, int m_dat, double *fvec,
-                              void *data, int *info),
+void lmmin( int n_par, double *par, int m_dat, void *data, 
+            void (*evaluate) (double *par, int m_dat, void *data,
+                              double *fvec, int *info),
             void (*printout) (int n_par, double *par, int m_dat,
-                              double *fvec, void *data, int iflag,
-                              int iter, int nfev),
+                              void *data, double *fvec,
+                              int iflag, int iter, int nfev),
             const lm_control_struct *control, lm_status_struct *status );
 
 
@@ -70,11 +70,11 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	      double *diag, int mode, double factor, int *info, int *nfev,
 	      double *fjac, int *ipvt, double *qtf, double *wa1,
 	      double *wa2, double *wa3, double *wa4,
-              void (*evaluate) (double *par, int m_dat, double *fvec,
-                                void *data, int *info),
+              void (*evaluate) (double *par, int m_dat, void *data,
+                                double *fvec, int *info),
               void (*printout) (int n_par, double *par, int m_dat,
-                                double *fvec, void *data, int iflag,
-                                int iter, int nfev),
+                                void *data, double *fvec,
+                                int iflag, int iter, int nfev),
 	      void *data);
 
 extern const char *lm_infmsg[];

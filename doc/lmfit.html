@@ -28,7 +28,7 @@
 	<li><a href="#news">NEWS</a></li>
 	<ul>
 
-		<li><a href="#version_3_0">Version 3.0</a></li>
+		<li><a href="#api_change_in_version_3_0">API change in version 3.0</a></li>
 	</ul>
 
 	<li><a href="#description"><strong>DESCRIPTION</strong></a></li>
@@ -74,16 +74,15 @@
 </p>
 <h2><a name="generic_minimization_">Generic minimization:</a></h2>
 <p><strong>#include &lt;lmmin.h</strong>&gt;</p>
-<p><strong>void lmmin( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, void</strong> <em>*data</em><strong>,
+<p><strong>void lmmin( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, void</strong> <em>*data</em><strong>,
             void (</strong><em>*evaluate</em><strong>)(...), void (</strong><em>*printout</em><strong>)(...),
             const lm_control_struct</strong> <em>*control</em><strong>,
             lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
 <p>The user must supply the following callback routines:</p>
-<p><strong>void (*</strong><em>evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
-                  double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
-                  int</strong> <em>*info</em><strong> );</strong></p>
+<p><strong>void (*</strong><em>evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, void</strong> <em>*data</em><strong>,
+                  double</strong> <em>*fvec</em><strong>, int</strong> <em>*info</em><strong> );</strong></p>
 <p><strong>void (*</strong><em>printout</em><strong>)( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
-                  double</strong> <em>*fvec</em><strong>, void</strong> <em>*data</em><strong>,
+                  void</strong> <em>*data</em><strong>, double</strong> <em>*fvec</em><strong>,
                   int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
 <p>For the latter, a default implementation is available:</p>
 <p><strong>void </strong><em>lm_printout_std</em><strong>(...);</strong></p>
@@ -94,14 +93,14 @@
 <p>and a record to receive status information</p>
 <p><strong>typedef struct { double</strong> <em>fnorm</em><strong>; int</strong> <em>nfev</em><strong>; int</strong> <em>info</em><strong>; } lm_status_struct;</strong></p>
 <p>Default control settings are provided by</p>
-<p><strong>extern const lm_control_type</strong> <em>lm_control_float</em><strong>,</strong> <em>lm_control_double</em><strong>;</strong></p>
-<p>Status messages (indexed by <em>control.info</em>) are available through</p>
+<p><strong>extern const lm_control_struct</strong> <em>lm_control_float</em><strong>,</strong> <em>lm_control_double</em><strong>;</strong></p>
+<p>Status messages (indexed by <em>status.info</em>) are available through</p>
 <p><strong>extern const char *lm_infmsg[];</strong></p>
 <p>
 </p>
 <h2><a name="simplified_interface_for_one_dimensional_curve_fitting_">Simplified interface for one-dimensional curve fitting:</a></h2>
 <p><strong>#include &lt;lmcurve.h</strong>&gt;</p>
-<p><strong>void lmcurve_fit( int</strong> <em>m_dat</em><strong>, int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>,
+<p><strong>void lmcurve_fit( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, 
                   double</strong> <em>*t</em><strong>, double</strong> <em>*y</em><strong>, double (</strong><em>*f</em><strong>)(...),
                   const lm_control_struct</strong> <em>*control</em><strong>,
                   lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
@@ -113,9 +112,9 @@
 <h1><a name="news">NEWS</a></h1>
 <p>
 </p>
-<h2><a name="version_3_0">Version 3.0</a></h2>
+<h2><a name="api_change_in_version_3_0">API change in version 3.0</a></h2>
 <p>With version 3.0, the application programming interface has changed substantially.</p>
-<p>Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records.</p>
+<p>Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see <em class="file">lmcurve.h</em> and <em class="file">demo/curve1.c</em>). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of <em>evaluate</em> and <em>printout</em> have been changed.</p>
 <p>
 </p>
 <hr />

@@ -26,8 +26,8 @@ typedef struct {
 } lmcurve_data_type;
 
 
-void lmcurve_evaluate( double *par, int m_dat, double *fvec,
-		       void *data, int *info )
+void lmcurve_evaluate( double *par, int m_dat, void *data,
+                       double *fvec, int *info )
 {
     int i;
     for ( i = 0; i < m_dat; i++ )
@@ -39,7 +39,7 @@ void lmcurve_evaluate( double *par, int m_dat, double *fvec,
 }
 
 
-void lmcurve_fit( int m_dat, int n_par, double *par,
+void lmcurve_fit( int n_par, double *par, int m_dat, 
                   double *t, double *y, double (*f)( double t, double *par ),
                   const lm_control_struct *control, lm_status_struct *status )
 {
@@ -47,7 +47,7 @@ void lmcurve_fit( int m_dat, int n_par, double *par,
     data.t = t;
     data.y = y;
     data.f = f;
-    lmmin( m_dat, n_par, par, (void*) &data,
+    lmmin( n_par, par, m_dat, (void*) &data,
            lmcurve_evaluate, lm_printout_std, control, status );
 }
 

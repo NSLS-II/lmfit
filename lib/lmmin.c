@@ -91,8 +91,8 @@ const char *lm_shortmsg[] = {
 /*  lm_printout_std (default monitoring routine)                             */
 /*****************************************************************************/
 
-void lm_printout_std( int n_par, double *par, int m_dat, double *fvec,
-		      void *data, int iflag, int iter, int nfev)
+void lm_printout_std( int n_par, double *par, int m_dat, void *data,
+                      double *fvec, int iflag, int iter, int nfev)
 /*
  *       data  : for soft control of printout behaviour, add control
  *                 variables to the data struct
@@ -131,12 +131,12 @@ void lm_printout_std( int n_par, double *par, int m_dat, double *fvec,
 /*  lm_minimize (intermediate-level interface)                               */
 /*****************************************************************************/
 
-void lmmin( int m_dat, int n_par, double *par, void *data, 
-            void (*evaluate) (double *par, int m_dat, double *fvec,
-                              void *data, int *info),
+void lmmin( int n_par, double *par, int m_dat, void *data, 
+            void (*evaluate) (double *par, int m_dat, void *data,
+                              double *fvec, int *info),
             void (*printout) (int n_par, double *par, int m_dat,
-                              double *fvec, void *data, int iflag,
-                              int iter, int nfev),
+                              void *data, double *fvec,
+                              int iflag, int iter, int nfev),
             const lm_control_struct *control, lm_status_struct *status )
 {
 
@@ -173,7 +173,7 @@ void lmmin( int m_dat, int n_par, double *par, void *data,
               evaluate, printout, data );
 
     if ( printout )
-        (*printout) (n, par, m, fvec, data, -1, 0, status->nfev);
+        (*printout) (n, par, m, data, fvec, -1, 0, status->nfev);
     status->fnorm = lm_enorm(m, fvec);
     if ( status->info < 0 )
 	status->info = 10;
@@ -214,11 +214,11 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	      double *diag, int mode, double factor, int *info, int *nfev,
 	      double *fjac, int *ipvt, double *qtf, double *wa1,
 	      double *wa2, double *wa3, double *wa4,
-              void (*evaluate) (double *par, int m_dat, double *fvec,
-                                void *data, int *info),
+              void (*evaluate) (double *par, int m_dat, void *data,
+                                double *fvec, int *info),
               void (*printout) (int n_par, double *par, int m_dat,
-                                double *fvec, void *data, int iflag,
-                                int iter, int nfev),
+                                void *data, double *fvec,
+                                int iflag, int iter, int nfev),
 	      void *data)
 {
 /*
@@ -230,17 +230,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *
  *   The multi-parameter interface lm_lmdif is for users who want
  *   full control and flexibility. Most users will be better off using
- *   the simpler interface lm_minimize provided above.
- *
- *   The parameters are the same as in the legacy FORTRAN implementation,
- *   with the following exceptions:
- *      the old parameter ldfjac which gave leading dimension of fjac has
- *        been deleted because this C translation makes no use of two-
- *        dimensional arrays;
- *      the old parameter nprint has been deleted; printout is now controlled
- *        by the user-supplied routine *printout;
- *      the parameter field *data and the function parameters *evaluate and
- *        *printout have been added; they help avoiding global variables.
+ *   the simpler interface lmmin provided above.
  *
  *   Parameters:
  *
@@ -358,15 +348,11 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *	wa4 is a work array of length m, used among others to hold
  *        residuals from evaluate.
  *
- *   The following parameters are newly introduced in this C translation:
+ *      evaluate points to the subroutine which calculates the
+ *        m nonlinear functions. Implementations should be written as follows:
  *
- *      evaluate is the name of the subroutine which calculates the
- *        m nonlinear functions. A default implementation lm_evaluate_default
- *        is provided in lm_eval.c. Alternative implementations should
- *        be written as follows:
- *
- *        void evaluate ( double* par, int m_dat, double* fvec, 
- *                       void *data, int *info )
+ *        void evaluate( double* par, int m_dat, void *data,
+ *                       double* fvec, int *info )
  *        {
  *           // for ( i=0; i<m_dat; ++i )
  *           //     calculate fvec[i] for given parameters par;
@@ -374,19 +360,9 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *           //     set *info to a negative integer.
  *        }
  *
- *      printout is the name of the subroutine which nforms about fit progress.
- *        Call with printout=NULL if no printout is desired.
- *        Call with printout=lm_print_default to use the default
- *          implementation provided in lm_eval.c.
- *        Alternative implementations should be written as follows:
- *
- *        void printout ( int n_par, double* par, int m_dat, double* fvec, 
- *                       void *data, int iflag, int iter, int nfev )
- *        {
- *           // iflag : 0 (init) 1 (outer loop) 2(inner loop) -1(terminated)
- *           // iter  : outer loop counter
- *           // nfev  : number of calls to *evaluate
- *        }
+ *      printout points to the subroutine which informs about fit progress.
+ *        Call with printout=0 if no printout is desired.
+ *        Call with printout=lm_printout_std to use the default implementation.
  *
  *      data is an input pointer to an arbitrary structure that is passed to
  *        evaluate. Typically, it contains experimental data to be fitted.
@@ -428,10 +404,10 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 /*** lmdif: evaluate function at starting point and calculate norm. ***/
 
     *info = 0;
-    (*evaluate) (x, m, fvec, data, info);
+    (*evaluate) (x, m, data, fvec, info);
     ++(*nfev);
     if( printout )
-        (*printout) (n, x, m, fvec, data, 0, 0, *nfev);
+        (*printout) (n, x, m, data, fvec, 0, 0, *nfev);
     if (*info < 0)
 	return;
     fnorm = lm_enorm(m, fvec);
@@ -451,10 +427,10 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    step = MAX(eps*eps, eps * fabs(temp));
 	    x[j] = temp + step; /* replace temporarily */
 	    *info = 0;
-	    (*evaluate) (x, m, wa4, data, info);
+	    (*evaluate) (x, m, data, wa4, info);
             ++(*nfev);
             if( printout )
-                (*printout) (n, x, m, wa4, data, 1, iter, *nfev);
+                (*printout) (n, x, m, data, wa4, 1, iter, *nfev);
 	    if (*info < 0)
 		return;	/* user requested break */
 	    for (i = 0; i < m; i++)
@@ -565,10 +541,10 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 /*** inner: evaluate the function at x + p and calculate its norm. ***/
 
 	    *info = 0;
-	    (*evaluate) (wa2, m, wa4, data, info);
+	    (*evaluate) (wa2, m, data, wa4, info);
             ++(*nfev);
             if( printout )
-                (*printout) (n, x, m, wa4, data, 2, iter, *nfev);
+                (*printout) (n, x, m, data, wa4, 2, iter, *nfev);
 	    if (*info < 0)
 		return; /* user requested break. */
 

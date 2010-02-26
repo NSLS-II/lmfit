@@ -137,19 +137,18 @@ lmfit \- C/C++ library for Levenberg\-Marquardt least\-squares minimization and 
 .IX Subsection "Generic minimization:"
 \&\fB#include <lmmin.h\fR>
 .PP
-\&\fBvoid lmmin( int\fR \fIm_dat\fR\fB, int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, void\fR \fI*data\fR\fB,
+\&\fBvoid lmmin( int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, void\fR \fI*data\fR\fB,
             void (\fR\fI*evaluate\fR\fB)(...), void (\fR\fI*printout\fR\fB)(...),
             const lm_control_struct\fR \fI*control\fR\fB,
             lm_status_struct\fR \fI*status\fR\fB );\fR
 .PP
 The user must supply the following callback routines:
 .PP
-\&\fBvoid (*\fR\fIevaluate\fR\fB)( double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB,
-                  double\fR \fI*fvec\fR\fB, void\fR \fI*data\fR\fB,
-                  int\fR \fI*info\fR\fB );\fR
+\&\fBvoid (*\fR\fIevaluate\fR\fB)( double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, void\fR \fI*data\fR\fB,
+                  double\fR \fI*fvec\fR\fB, int\fR \fI*info\fR\fB );\fR
 .PP
 \&\fBvoid (*\fR\fIprintout\fR\fB)( int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB,
-                  double\fR \fI*fvec\fR\fB, void\fR \fI*data\fR\fB,
+                  void\fR \fI*data\fR\fB, double\fR \fI*fvec\fR\fB,
                   int\fR \fIiflag\fR\fB, int\fR \fIiter\fR\fB, int\fR \fInfev\fR\fB );\fR
 .PP
 For the latter, a default implementation is available:
@@ -168,16 +167,16 @@ and a record to receive status information
 .PP
 Default control settings are provided by
 .PP
-\&\fBextern const lm_control_type\fR \fIlm_control_float\fR\fB,\fR \fIlm_control_double\fR\fB;\fR
+\&\fBextern const lm_control_struct\fR \fIlm_control_float\fR\fB,\fR \fIlm_control_double\fR\fB;\fR
 .PP
-Status messages (indexed by \fIcontrol.info\fR) are available through
+Status messages (indexed by \fIstatus.info\fR) are available through
 .PP
 \&\fBextern const char *lm_infmsg[];\fR
 .SS "Simplified interface for one-dimensional curve fitting:"
 .IX Subsection "Simplified interface for one-dimensional curve fitting:"
 \&\fB#include <lmcurve.h\fR>
 .PP
-\&\fBvoid lmcurve_fit( int\fR \fIm_dat\fR\fB, int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB,
+\&\fBvoid lmcurve_fit( int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, 
                   double\fR \fI*t\fR\fB, double\fR \fI*y\fR\fB, double (\fR\fI*f\fR\fB)(...),
                   const lm_control_struct\fR \fI*control\fR\fB,
                   lm_status_struct\fR \fI*status\fR\fB );\fR
@@ -187,11 +186,11 @@ The user must supply the function
 \&\fBdouble\fR \fIf\fR\fB( double\fR \fIt\fR\fB, double\fR \fI*par\fR\fB );\fR
 .SH "NEWS"
 .IX Header "NEWS"
-.SS "Version 3.0"
-.IX Subsection "Version 3.0"
+.SS "\s-1API\s0 change in version 3.0"
+.IX Subsection "API change in version 3.0"
 With version 3.0, the application programming interface has changed substantially.
 .PP
-Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter case has been greatly simplified (see lmcurve.h and demo/curve1.c). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records.
+Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see \fIlmcurve.h\fR and \fIdemo/curve1.c\fR). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of \fIevaluate\fR and \fIprintout\fR have been changed.
 .SH "\fBDESCRIPTION\fP"
 .IX Header "DESCRIPTION"
 .SS "Purpose:"
