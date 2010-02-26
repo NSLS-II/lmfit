@@ -1,21 +1,19 @@
 /*
  * Project:  LevenbergMarquardtLeastSquaresFitting
  *
- * File:     morobropro.c
+ * File:     hat.c
  *
- * Contents: Modified Rosenbrock Problem,
- *           according to Madsen et al. 2004, Example 3.13
+ * Contents: An example with m=2, n=1 from Madsen et al. 2004, Example 3.3
  *
- *           Minimize the norm of a 3-dimensional vectorial function
- *           of a 2-dimensional parameter vector:
- *           F(p) = ( 10(p1-p0^2), 1-p0, lambda ).
+ *           Minimize the norm of a 2-dimensional vectorial function
+ *           of a 1-dimensional parameter: F(p) = ( p+1, lambda*p^2+p-1 ).
+ *           So, ||F|| is kind of an asymetric mexican hat function.
  *
- *           The analytical solution is par = ( 1, 1 ),
- *           independent of the external parameter lambda.
- *
- *           Madsen et al. report that conventional LM fails for
- *           lambda=1e4. Fortunately, this is not the case here.
- *           On a x86, perfect results are found up to lambda>2e6.
+ *           There is a stationary point at par = 0. Madsen et al. indicate
+ *           incorrectly that it is a global minimum for lambda<1.
+ *           It is so only for lambda below about 0.5. For higher values
+ *           of lambda, this example allows to study the dependence of
+ *           fit results on starting values.
  *
  * Author:   Joachim Wuttke 2010
  * 
@@ -29,12 +27,11 @@
 #include <stdlib.h>
 
 
-void evaluate_morobropro( const double *par, int m_dat, const void *data,
-                          double *fvec, int *info )
+void evaluate_m2n1( const double *par, int m_dat, const void *data,
+                    double *fvec, int *info )
 {
-    fvec[0] = 10*(par[1]-par[0]*par[0]);
-    fvec[1] = 1 - par[0];
-    fvec[2] = *((double*)data);
+    fvec[0] = par[0]+1;
+    fvec[1] = (*((double*)data))*par[0]*par[0] + par[0] - 1;
 }
 
 
@@ -42,20 +39,20 @@ int main( int argc, char **argv )
 {
     /* parameter lambda */
 
-    if( argc!=2 ){
-        fprintf( stderr, "usage: morobropro lambda\n" );
+    if( argc!=3 ){
+        fprintf( stderr, "usage: m2n1 lambda p_start\n" );
         exit(-1);
     }
     double lambda = atof( argv[1] );
 
     /* parameter vector */
 
-    int n_par = 2; // number of parameters in model function f
-    double par[2] = { -1.2, 1 }; // arbitrary starting value
+    int n_par = 1; // number of parameters in model function f
+    double par[1] = { atof( argv[2] ) }; // arbitrary starting value
 
     /* data points */
 
-    int m_dat = 3;
+    int m_dat = 2;
 
     /* auxiliary parameters */
 
@@ -66,7 +63,7 @@ int main( int argc, char **argv )
 
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, (const void*) &lambda,
-           evaluate_morobropro, &lm_limits_double, &status,
+           evaluate_m2n1, &lm_limits_double, &status,
            lm_printout_std, printflags );
 
     /* print results */

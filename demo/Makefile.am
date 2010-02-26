@@ -1,6 +1,9 @@
 AM_CFLAGS = -I$(srcdir)/../lib
-bin_PROGRAMS = curve1 surface1 morobropro
+bin_PROGRAMS = curve1 surface1 morobropro powell hat fourexp
 curve1_SOURCES = curve1.c
 surface1_SOURCES = surface1.c
 morobropro_SOURCES = morobropro.c
+powell_SOURCES = powell.c
+hat_SOURCES = hat.c
+fourexp_SOURCES = fourexp.c
 AM_LDFLAGS = -lm -L../lib -llmmin

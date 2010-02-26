@@ -34,7 +34,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = curve1$(EXEEXT) surface1$(EXEEXT) morobropro$(EXEEXT)
+bin_PROGRAMS = curve1$(EXEEXT) surface1$(EXEEXT) morobropro$(EXEEXT) \
+	powell$(EXEEXT) hat$(EXEEXT) fourexp$(EXEEXT)
 subdir = demo
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,9 +54,18 @@ PROGRAMS = $(bin_PROGRAMS)
 am_curve1_OBJECTS = curve1.$(OBJEXT)
 curve1_OBJECTS = $(am_curve1_OBJECTS)
 curve1_LDADD = $(LDADD)
+am_fourexp_OBJECTS = fourexp.$(OBJEXT)
+fourexp_OBJECTS = $(am_fourexp_OBJECTS)
+fourexp_LDADD = $(LDADD)
+am_hat_OBJECTS = hat.$(OBJEXT)
+hat_OBJECTS = $(am_hat_OBJECTS)
+hat_LDADD = $(LDADD)
 am_morobropro_OBJECTS = morobropro.$(OBJEXT)
 morobropro_OBJECTS = $(am_morobropro_OBJECTS)
 morobropro_LDADD = $(LDADD)
+am_powell_OBJECTS = powell.$(OBJEXT)
+powell_OBJECTS = $(am_powell_OBJECTS)
+powell_LDADD = $(LDADD)
 am_surface1_OBJECTS = surface1.$(OBJEXT)
 surface1_OBJECTS = $(am_surface1_OBJECTS)
 surface1_LDADD = $(LDADD)
@@ -72,9 +82,10 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(curve1_SOURCES) $(morobropro_SOURCES) $(surface1_SOURCES)
-DIST_SOURCES = $(curve1_SOURCES) $(morobropro_SOURCES) \
-	$(surface1_SOURCES)
+SOURCES = $(curve1_SOURCES) $(fourexp_SOURCES) $(hat_SOURCES) \
+	$(morobropro_SOURCES) $(powell_SOURCES) $(surface1_SOURCES)
+DIST_SOURCES = $(curve1_SOURCES) $(fourexp_SOURCES) $(hat_SOURCES) \
+	$(morobropro_SOURCES) $(powell_SOURCES) $(surface1_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -193,6 +204,9 @@ AM_CFLAGS = -I$(srcdir)/../lib
 curve1_SOURCES = curve1.c
 surface1_SOURCES = surface1.c
 morobropro_SOURCES = morobropro.c
+powell_SOURCES = powell.c
+hat_SOURCES = hat.c
+fourexp_SOURCES = fourexp.c
 AM_LDFLAGS = -lm -L../lib -llmmin
 all: all-am
 
@@ -274,9 +288,18 @@ clean-binPROGRAMS:
 curve1$(EXEEXT): $(curve1_OBJECTS) $(curve1_DEPENDENCIES) 
 	@rm -f curve1$(EXEEXT)
 	$(LINK) $(curve1_OBJECTS) $(curve1_LDADD) $(LIBS)
+fourexp$(EXEEXT): $(fourexp_OBJECTS) $(fourexp_DEPENDENCIES) 
+	@rm -f fourexp$(EXEEXT)
+	$(LINK) $(fourexp_OBJECTS) $(fourexp_LDADD) $(LIBS)
+hat$(EXEEXT): $(hat_OBJECTS) $(hat_DEPENDENCIES) 
+	@rm -f hat$(EXEEXT)
+	$(LINK) $(hat_OBJECTS) $(hat_LDADD) $(LIBS)
 morobropro$(EXEEXT): $(morobropro_OBJECTS) $(morobropro_DEPENDENCIES) 
 	@rm -f morobropro$(EXEEXT)
 	$(LINK) $(morobropro_OBJECTS) $(morobropro_LDADD) $(LIBS)
+powell$(EXEEXT): $(powell_OBJECTS) $(powell_DEPENDENCIES) 
+	@rm -f powell$(EXEEXT)
+	$(LINK) $(powell_OBJECTS) $(powell_LDADD) $(LIBS)
 surface1$(EXEEXT): $(surface1_OBJECTS) $(surface1_DEPENDENCIES) 
 	@rm -f surface1$(EXEEXT)
 	$(LINK) $(surface1_OBJECTS) $(surface1_LDADD) $(LIBS)
@@ -288,7 +311,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fourexp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/morobropro.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/powell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surface1.Po@am__quote@
 
 .c.o:

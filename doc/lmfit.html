@@ -39,6 +39,7 @@
 		<li><a href="#generic_minimization_routine_">Generic minimization routine:</a></li>
 		<li><a href="#one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></li>
 		<li><a href="#fitting_a_function_of_a_vectorial_argument_">Fitting a function of a vectorial argument:</a></li>
+		<li><a href="#minimize_the_norm_of_a_vectorial_function_">Minimize the norm of a vectorial function:</a></li>
 	</ul>
 
 	<li><a href="#ressources">RESSOURCES</a></li>
@@ -157,6 +158,15 @@ may be called with argument <em>*printout</em> set to 0.</p>
 </p>
 <h2><a name="fitting_a_function_of_a_vectorial_argument_">Fitting a function of a vectorial argument:</a></h2>
 <p>See application sample <em class="file">demo/surface1.c</em>.</p>
+<p>
+</p>
+<h2><a name="minimize_the_norm_of_a_vectorial_function_">Minimize the norm of a vectorial function:</a></h2>
+<p>Several application samples are provided;
+they also serve as test suite to ascertain that the fit algorithm
+overcomes well-known numerical problems:</p>
+<p><em class="file">demo/morobropro.c</em>: <em>m</em>=3, <em>n</em>=2, modified Rosenbrock problem, testing robustness for widely different vectorial components.</p>
+<p><em class="file">demo/powell.c</em>: <em>m</em>=2, <em>n</em>=2, Powell 1970, with singular Jacobian at the solution par=0.</p>
+<p><em class="file">demo/hat.c</em>: <em>m</em>=2, <em>n</em>=1, asymetric mexican hat function ||<em>F</em>(<em>p</em>)||. Fit result depends on starting value - lmfit does not strive to overcome the limitation to local optimisation.</p>
 <p>
 </p>
 <hr />

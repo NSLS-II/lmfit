@@ -123,6 +123,18 @@ See application sample F<demo/curve1.c>.
 
 See application sample F<demo/surface1.c>.
 
+=head2 Minimize the norm of a vectorial function:
+
+Several application samples are provided;
+they also serve as test suite to ascertain that the fit algorithm
+overcomes well-known numerical problems:
+
+F<demo/morobropro.c>: I<m>=3, I<n>=2, modified Rosenbrock problem, testing robustness for widely different vectorial components.
+
+F<demo/powell.c>: I<m>=2, I<n>=2, Powell 1970, with singular Jacobian at the solution par=0.
+
+F<demo/hat.c>: I<m>=2, I<n>=1, asymetric mexican hat function ||I<F>(I<p>)||. Fit result depends on starting value - lmfit does not strive to overcome the limitation to local optimisation.
+
 =head1 RESSOURCES
 
 lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.

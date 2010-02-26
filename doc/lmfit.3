@@ -235,6 +235,17 @@ See application sample \fIdemo/curve1.c\fR.
 .SS "Fitting a function of a vectorial argument:"
 .IX Subsection "Fitting a function of a vectorial argument:"
 See application sample \fIdemo/surface1.c\fR.
+.SS "Minimize the norm of a vectorial function:"
+.IX Subsection "Minimize the norm of a vectorial function:"
+Several application samples are provided;
+they also serve as test suite to ascertain that the fit algorithm
+overcomes well-known numerical problems:
+.PP
+\&\fIdemo/morobropro.c\fR: \fIm\fR=3, \fIn\fR=2, modified Rosenbrock problem, testing robustness for widely different vectorial components.
+.PP
+\&\fIdemo/powell.c\fR: \fIm\fR=2, \fIn\fR=2, Powell 1970, with singular Jacobian at the solution par=0.
+.PP
+\&\fIdemo/hat.c\fR: \fIm\fR=2, \fIn\fR=1, asymetric mexican hat function ||\fIF\fR(\fIp\fR)||. Fit result depends on starting value \- lmfit does not strive to overcome the limitation to local optimisation.
 .SH "RESSOURCES"
 .IX Header "RESSOURCES"
 lmfit is ready for use with C or \*(C+ code. The implementation is self-contained; it does not require external libraries.
