@@ -9,10 +9,12 @@ Changes in lmfit-3.0
 - migrate documentation from brain-damaged asciidoc to pod
 - rewrote interface documentation
 - API changes:
-  -- eliminate lm_initialize_control; provide lm_control_default;
-  -- separated generic minimization and one-dimensional curve fitting;
-  -- simplified the latter
-  -- obsolete calls still implemented as undocumented features
+  -- eliminate lm_initialize_control, provide defaults for float and double
+  -- separate limits and status records
+  -- separate generic minimization and one-dimensional curve fitting
+  -- simplify the latter
+- replace curve-fitting demo, provide surface-fitting demo
+- test for fnorm<=LM_DWARF, renumbered info values 0, 10, 11
 
 Changes in lmfit-2.6, released 29sep09:
 

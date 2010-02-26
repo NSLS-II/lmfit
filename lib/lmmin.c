@@ -32,7 +32,7 @@
 #define LM_DWARF      DBL_MIN       /* smallest nonzero number */
 #define LM_SQRT_DWARF sqrt(DBL_MIN) /* square should not underflow */
 #define LM_SQRT_GIANT sqrt(DBL_MAX) /* square should not overflow */
-#define LM_USERTOL    30*LM_MACHEP  /* users are recommened to require this */
+#define LM_USERTOL    30*LM_MACHEP  /* users are recommended to require this */
 
 /* If the above values do not work, the following seem good for an x86:
  LM_MACHEP     .555e-16
@@ -59,21 +59,22 @@ const lm_limits_struct lm_limits_float = {
 /*****************************************************************************/
 
 const char *lm_infmsg[] = {
-    "fatal coding error (improper input parameters)",
+    "success (||fvec|| almost vanishing)",
     "success (the relative error in the sum of squares is at most tol)",
     "success (the relative error between x and the solution is at most tol)",
     "success (both errors are at most tol)",
-    "trapped by degeneracy (fvec is orthogonal to the columns of the jacobian)"
+    "trapped by degeneracy (fvec is orthogonal to the columns of the jacobian)",
     "timeout (number of calls to fcn has reached maxcall*(n+1))",
     "failure (ftol<tol: cannot reduce sum of squares any further)",
     "failure (xtol<tol: cannot improve approximate solution any further)",
     "failure (gtol<tol: cannot improve approximate solution any further)",
     "exception (not enough memory)",
+    "fatal coding error (improper input parameters)",
     "exception (break requested within function evaluation)"
 };
 
 const char *lm_shortmsg[] = {
-    "invalid input",
+    "success (0)",
     "success (f)",
     "success (p)",
     "success (f,p)",
@@ -83,6 +84,7 @@ const char *lm_shortmsg[] = {
     "failed (p)",
     "failed (o)",
     "no memory",
+    "invalid input",
     "user break"
 };
 
@@ -189,7 +191,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
                      printflags, -1, 0, status->nfev );
     status->fnorm = lm_enorm(m, fvec);
     if ( status->info < 0 )
-	status->info = 10;
+	status->info = 11;
 
 /*** clean up. ***/
 
@@ -303,7 +305,7 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
  *
  *        info < 0  termination requested by user-supplied routine *evaluate;
  *
- *	  info = 0  improper input parameters;
+ *	  info = 0  fnorm almost vanishing;
  *
  *	  info = 1  both actual and predicted relative reductions
  *		    in the sum of squares are at most ftol;
@@ -328,6 +330,8 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
  *
  *	  info = 8  gtol is too small: fvec is orthogonal to the
  *		    columns of the jacobian to machine precision;
+ *
+ *	  info =10  improper input parameters;
  *
  *	nfev is an OUTPUT variable set to the number of calls to the
  *        user-supplied routine *evaluate.
@@ -401,13 +405,13 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
     if ((n <= 0) || (m < n) || (ftol < 0.)
 	|| (xtol < 0.) || (gtol < 0.) || (maxfev <= 0) || (factor <= 0.)) {
-	*info = 0;		// invalid parameter
+	*info = 10;		// invalid parameter
 	return;
     }
     if (mode == 2) {		/* scaling by diag[] */
 	for (j = 0; j < n; j++) {	/* check for nonpositive elements */
 	    if (diag[j] <= 0.0) {
-		*info = 0;	// invalid parameter
+		*info = 10;	// invalid parameter
 		return;
 	    }
 	}
@@ -426,6 +430,10 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
     if (*info < 0)
 	return;
     fnorm = lm_enorm(m, fvec);
+    if( fnorm <= LM_DWARF ){
+        *info = 0;
+        return;
+    }
 
 /*** lmdif: the outer loop. ***/
 
@@ -435,7 +443,7 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 	       iter, *nfev, fnorm);
 #endif
 
-/*** outer: calculate the jacobian matrix. ***/
+/*** outer: calculate the Jacobian. ***/
 
 	for (j = 0; j < n; j++) {
 	    temp = x[j];
@@ -461,14 +469,15 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 	}
 #endif
 
-/*** outer: compute the qr factorization of the jacobian. ***/
+/*** outer: compute the qr factorization of the Jacobian. ***/
 
 	lm_qrfac(m, n, fjac, 1, ipvt, wa1, wa2, wa3);
         /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
-	if (!iter) { /* first iteration */
+	if (!iter) { 
+            /* first iteration only */
 	    if (mode != 2) {
-                /* diag := norms of the columns of the initial jacobian */
+                /* diag := norms of the columns of the initial Jacobian */
 		for (j = 0; j < n; j++) {
 		    diag[j] = wa2[j];
 		    if (wa2[j] == 0.)
@@ -483,7 +492,12 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 	    delta = factor * xnorm;
 	    if (delta == 0.)
 		delta = factor;
-	}
+	} else {
+            if (mode != 2) {
+                for (j = 0; j < n; j++)
+                    diag[j] = MAX( diag[j], wa2[j] );
+            }
+        }
 
 /*** outer: form (q transpose)*fvec and store first n components in qtf. ***/
 
@@ -507,28 +521,18 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 /*** outer: compute norm of scaled gradient and test for convergence. ***/
 
 	gnorm = 0;
-	if (fnorm != 0) {
-	    for (j = 0; j < n; j++) {
-		if (wa2[ipvt[j]] == 0)
-		    continue;
-
-		sum = 0.;
-		for (i = 0; i <= j; i++)
-		    sum += fjac[j*m+i] * qtf[i] / fnorm;
-		gnorm = MAX(gnorm, fabs(sum / wa2[ipvt[j]]));
-	    }
-	}
+        for (j = 0; j < n; j++) {
+            if (wa2[ipvt[j]] == 0)
+                continue;
+            sum = 0.;
+            for (i = 0; i <= j; i++)
+                sum += fjac[j*m+i] * qtf[i];
+            gnorm = MAX( gnorm, fabs( sum / wa2[ipvt[j]] / fnorm ) );
+        }
 
 	if (gnorm <= gtol) {
 	    *info = 4;
 	    return;
-	}
-
-/*** outer: rescale if necessary. ***/
-
-	if (mode != 2) {
-	    for (j = 0; j < n; j++)
-		diag[j] = MAX(diag[j], wa2[j]);
 	}
 
 /*** the inner loop. ***/
@@ -539,8 +543,8 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
 /*** inner: determine the levenberg-marquardt parameter. ***/
 
-	    lm_lmpar(n, fjac, m, ipvt, diag, qtf, delta, &par,
-		     wa1, wa2, wa4, wa3);
+	    lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &par,
+                      wa1, wa2, wa4, wa3 );
             /* used return values are fjac (partly), par, wa1=x, wa3=diag*x */
 
 	    for (j = 0; j < n; j++)
@@ -636,9 +640,14 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 	    }
 #endif
 
-/*** inner: tests for convergence ( otherwise *info = 1, 2, or 3 ). ***/
+/*** inner: test for convergence. ***/
 
-	    *info = 0; /* do not terminate (unless overwritten by nonzero) */
+            if( fnorm<=LM_DWARF ){
+                *info = 0;
+                return;
+            }
+
+	    *info = 0;
 	    if (fabs(actred) <= ftol && prered <= ftol && 0.5 * ratio <= 1)
 		*info = 1;
 	    if (delta <= xtol * xnorm)
@@ -648,17 +657,23 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
 /*** inner: tests for termination and stringent tolerances. ***/
 
-	    if (*nfev >= maxfev)
+	    if (*nfev >= maxfev){
 		*info = 5;
+                return;
+            }
 	    if (fabs(actred) <= LM_MACHEP &&
-		prered <= LM_MACHEP && 0.5 * ratio <= 1)
+		prered <= LM_MACHEP && 0.5 * ratio <= 1){
 		*info = 6;
-	    if (delta <= LM_MACHEP * xnorm)
+                return;
+            }
+	    if (delta <= LM_MACHEP * xnorm){
 		*info = 7;
-	    if (gnorm <= LM_MACHEP)
+                return;
+            }
+	    if (gnorm <= LM_MACHEP){
 		*info = 8;
-	    if (*info != 0)
 		return;
+            }
 
 /*** inner: end of the loop. repeat if iteration unsuccessful. ***/
 
@@ -690,7 +705,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *     norm of d*x, then either par=0 and (dxnorm-delta) < 0.1*delta,
  *     or par>0 and abs(dxnorm-delta) < 0.1*delta.
  *
- *     This subroutine completes the solution of the problem
+ *     Using lm_qrsolv, this subroutine completes the solution of the problem
  *     if it is provided with the necessary information from the
  *     qr factorization, with column pivoting, of a. That is, if
  *     a*p = q*r, where p is a permutation matrix, q has orthogonal
@@ -855,7 +870,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 	for (j = 0; j < n; j++)
 	    aux[j] = temp * diag[j];
 
-	lm_qrsolv(n, r, ldr, ipvt, aux, qtb, x, sdiag, xdi);
+	lm_qrsolv( n, r, ldr, ipvt, aux, qtb, x, sdiag, xdi );
         /* return values are r, x, sdiag */
 
 	for (j = 0; j < n; j++)
@@ -963,7 +978,6 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
  */
     int i, j, k, kmax, minmn;
     double ajnorm, sum, temp;
-    static double p05 = 0.05;
 
 /*** qrfac: compute initial column norms and initialize several arrays. ***/
 
@@ -1040,7 +1054,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 		temp = MAX(0., 1 - temp * temp);
 		rdiag[k] *= sqrt(temp);
 		temp = rdiag[k] / wa[k];
-		if (p05 * SQR(temp) <= LM_MACHEP) {
+		if ( 0.05 * SQR(temp) <= LM_MACHEP ) {
 		    rdiag[k] = lm_enorm(m-j-1, &a[m*k+j+1]);
 		    wa[k] = rdiag[k];
 		}
@@ -1137,7 +1151,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
     printf("qrsolv\n");
 #endif
 
-/*** qrsolv: eliminate the diagonal matrix d using a givens rotation. ***/
+/*** qrsolv: eliminate the diagonal matrix d using a Givens rotation. ***/
 
     for (j = 0; j < n; j++) {
 
@@ -1151,13 +1165,12 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 	sdiag[j] = diag[ipvt[j]];
 
 /*** qrsolv: the transformations to eliminate the row of d modify only 
-     a single element of (q transpose)*b beyond the first n, which is
-     initially 0.. ***/
+     a single element of qT*b beyond the first n, which is initially 0. ***/
 
 	qtbpj = 0.;
 	for (k = j; k < n; k++) {
 
-            /** determine a givens rotation which eliminates the
+            /** determine a Givens rotation which eliminates the
                 appropriate element in the current row of d. **/
 
 	    if (sdiag[k] == 0.)
@@ -1258,20 +1271,16 @@ double lm_enorm(int n, const double *x)
     s3 = 0;
     x1max = 0;
     x3max = 0;
-    agiant = LM_SQRT_GIANT / ((double) n);
+    agiant = LM_SQRT_GIANT / n;
 
     /** sum squares. **/
+
     for (i = 0; i < n; i++) {
 	xabs = fabs(x[i]);
-	if (xabs > LM_SQRT_DWARF && xabs < agiant) {
-            /*  sum for intermediate components. */
-	    s2 += xabs * xabs;
-	    continue;
-	}
-
 	if (xabs > LM_SQRT_DWARF) {
-            /*  sum for large components. */
-	    if (xabs > x1max) {
+            if ( xabs < agiant ) {
+                s2 += xabs * xabs;
+            } else if ( xabs > x1max ) {
 		temp = x1max / xabs;
 		s1 = 1 + s1 * SQR(temp);
 		x1max = xabs;
@@ -1279,18 +1288,13 @@ double lm_enorm(int n, const double *x)
 		temp = xabs / x1max;
 		s1 += SQR(temp);
 	    }
-	    continue;
-	}
-        /*  sum for small components. */
-	if (xabs > x3max) {
+	} else if ( xabs > x3max ) {
 	    temp = x3max / xabs;
 	    s3 = 1 + s3 * SQR(temp);
 	    x3max = xabs;
-	} else {
-	    if (xabs != 0.) {
-		temp = xabs / x3max;
-		s3 += SQR(temp);
-	    }
+	} else if (xabs != 0.) {
+            temp = xabs / x3max;
+            s3 += SQR(temp);
 	}
     }
 
@@ -1298,13 +1302,12 @@ double lm_enorm(int n, const double *x)
 
     if (s1 != 0)
 	return x1max * sqrt(s1 + (s2 / x1max) / x1max);
-    if (s2 != 0) {
-	if (s2 >= x3max)
-	    return sqrt(s2 * (1 + (x3max / s2) * (x3max * s3)));
-	else
-	    return sqrt(x3max * ((s2 / x3max) + (x3max * s3)));
-    }
-
-    return x3max * sqrt(s3);
+    else if (s2 != 0)
+        if (s2 >= x3max)
+            return sqrt(s2 * (1 + (x3max / s2) * (x3max * s3)));
+        else
+            return sqrt(x3max * ((s2 / x3max) + (x3max * s3)));
+    else
+        return x3max * sqrt(s3);
 
 } /*** lm_enorm. ***/
