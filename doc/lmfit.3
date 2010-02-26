@@ -138,9 +138,9 @@ lmfit \- C/C++ library for Levenberg\-Marquardt least\-squares minimization and 
 \&\fB#include <lmmin.h\fR>
 .PP
 \&\fBvoid lmmin( int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, const\ void\fR \fI*data\fR\fB,
-            void (\fR\fI*evaluate\fR\fB)(...), void (\fR\fI*printout\fR\fB)(...),
-            const\ lm_control_struct\fR \fI*control\fR\fB,
-            lm_status_struct\fR \fI*status\fR\fB );\fR
+            void (\fR\fI*evaluate\fR\fB)(...), const\ lm_limits_struct\fR \fI*limits\fR\fB,
+            lm_status_struct\fR \fI*status\fR\fB, void (\fR\fI*printout\fR\fB)(...),
+            int \fR\fIprintflags\fR\fB );\fR
 .PP
 The user must supply the following callback routines:
 .PP
@@ -155,19 +155,19 @@ For the latter, a default implementation is available:
 .PP
 \&\fBvoid \fR\fIlm_printout_std\fR\fB(...);\fR
 .PP
-Furthermore, the user must supply a record with control parameters
+Furthermore, the user must supply a record with numerical limits
 .PP
 \&\fBtypedef struct { double\fR \fIftol\fR\fB; double\fR \fIxtol\fR\fB; double\fR \fIgtol\fR\fB;
                  double\fR \fIepsilon\fR\fB; double\fR \fIstepbound\fR\fB; int\fR \fImaxcall\fR\fB;
-                 int\fR \fIprintflags\fR\fB; } lm_control_struct;\fR
+               } lm_limits_struct;\fR
 .PP
 and a record to receive status information
 .PP
 \&\fBtypedef struct { double\fR \fIfnorm\fR\fB; int\fR \fInfev\fR\fB; int\fR \fIinfo\fR\fB; } lm_status_struct;\fR
 .PP
-Default control settings are provided by
+Default limits are provided by
 .PP
-\&\fBextern const lm_control_struct\fR \fIlm_control_float\fR\fB,\fR \fIlm_control_double\fR\fB;\fR
+\&\fBextern const lm_limits_struct\fR \fIlm_limits_float\fR\fB,\fR \fIlm_limits_double\fR\fB;\fR
 .PP
 Status messages (indexed by \fIstatus.info\fR) are available through
 .PP
@@ -178,8 +178,8 @@ Status messages (indexed by \fIstatus.info\fR) are available through
 .PP
 \&\fBvoid lmcurve_fit( int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, 
                   const\ double\fR \fI*t\fR\fB, const\ double\fR \fI*y\fR\fB, double (\fR\fI*f\fR\fB)(...),
-                  const\ lm_control_struct\fR \fI*control\fR\fB,
-                  lm_status_struct\fR \fI*status\fR\fB );\fR
+                  const\ lm_limits_struct\fR \fI*limits\fR\fB,
+                  lm_status_struct\fR \fI*status\fR\fB, int \fR\fIprintflags\fR\fB );\fR
 .PP
 The user must supply the function
 .PP
@@ -190,7 +190,7 @@ The user must supply the function
 .IX Subsection "API change in version 3.0"
 With version 3.0, the application programming interface has changed substantially.
 .PP
-Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see \fIlmcurve.h\fR and \fIdemo/curve1.c\fR). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of \fIevaluate\fR and \fIprintout\fR have been changed.
+Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see \fIlmcurve.h\fR and \fIdemo/curve1.c\fR). Furthermore, limits (input) and monitoring variables (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of \fIevaluate\fR and \fIprintout\fR have been changed.
 .SH "\fBDESCRIPTION\fP"
 .IX Header "DESCRIPTION"
 .SS "Purpose:"
@@ -215,19 +215,20 @@ The minimization routine \fBlm_minimize\fR requires the following arguments:
 .PP
 \&\fIevaluate\fR: a routine that calculates the residue vector \fIfvec\fR for given parameter vector \fIpar\fR; setting \fI*info\fR to a negative value causes \fBlm_minimize\fR to terminate;
 .PP
-\&\fIprintout\fR: a routine that can be used to inform about the progress of the minimization (\fIiflag\fR: location of call within \fBlm_minimize\fR, \fIiter\fR: outer loop counter, \fInfev\fR: number of calls to evaluate);
-if no monitoring is desired, \fBlm_minimize\fR
-may be called with argument \fI*printout\fR set to 0.
-.PP
-\&\fIcontrol\fR: a record holding control (input) parameters,
+\&\fIlimits\fR: a record holding numeric limits,
 as described in file \fIlmmin.h\fR.
 Depending on whether \fI*evaluate\fR computes \fIfvec\fR
 to single or double precision,
 recommended default settings are in
-\&\fIlm_control_float\fR and \fIlm_control_double\fR.
+\&\fIlm_limits_float\fR and \fIlm_limits_double\fR.
 .PP
-\&\fIstatus\fR: a record holding monitoring (output) variables,
-describing progress or result of the minimization.
+\&\fIstatus\fR: a record describing the status of the minimization process.
+.PP
+\&\fIprintout\fR: a routine that can be used to inform about the progress of the minimization (\fIiflag\fR: location of call within \fBlm_minimize\fR, \fIiter\fR: outer loop counter, \fInfev\fR: number of calls to evaluate);
+if no monitoring is desired, \fBlm_minimize\fR
+may be called with argument \fI*printout\fR set to 0.
+.PP
+\&\fIprintflags\fR: passed to \fIprintout\fR; used by standard implementation \fIlm_printout_std\fR as follows: 0 for no printout; other values can be \s-1OR\s0'ed: 1 status information, 2 parameter vector and norm, 4 full info at end of fit, 8 full info at every step.
 .SS "One-dimensional curve fitting:"
 .IX Subsection "One-dimensional curve fitting:"
 See application sample demo/curve1.c.

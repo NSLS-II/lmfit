@@ -42,11 +42,12 @@ void lmcurve_evaluate( const double *par, int m_dat, const void *data,
 void lmcurve_fit( int n_par, double *par, int m_dat, 
                   const double *t, const double *y,
                   double (*f)( double t, const double *par ),
-                  const lm_control_struct *control, lm_status_struct *status )
+                  const lm_limits_struct *limits, lm_status_struct *status,
+                  int printflags )
 {
     lmcurve_data_type data = { t, y, f };
 
     lmmin( n_par, par, m_dat, (const void*) &data,
-           lmcurve_evaluate, lm_printout_std, control, status );
+           lmcurve_evaluate, limits, status, lm_printout_std, printflags );
 }
 

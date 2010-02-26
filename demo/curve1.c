@@ -39,16 +39,16 @@ int main()
     double t[11] = { -5., -4., -3., -2., -1., 0., 1., 2., 3., 4., 5. };
     double y[11] = { 25.5, 16.6, 9.9, 4.4, 1.1, 0, 1.1, 4.2, 9.3, 16.4, 25.5 };
 
-    /* auxiliary parameter records */
+    /* auxiliary parameters */
 
-    lm_control_struct control = lm_control_double;
-    lm_status_struct status;
-    control.printflags = 3; // monitor status and parameters
+    lm_status_struct status; // to receive status information
+    int printflags = 3;      // monitor status (+1) and parameters (+2)
 
     /* perform the fit */
 
     printf( "Fitting:\n" );
-    lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &status );
+    lmcurve_fit( n_par, par, m_dat, t, y, f,
+                 &lm_limits_double, &status, printflags );
 
     /* print results */
 

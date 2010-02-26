@@ -17,9 +17,9 @@ lmfit - C/C++ library for Levenberg-Marquardt least-squares minimization and cur
 B<#include <lmmin.h>>
 
 B<void lmmin( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<, constS< >void> I<*data>B<,
-            void (>I<*evaluate>B<)(...), void (>I<*printout>B<)(...),
-            constS< >lm_control_struct> I<*control>B<,
-            lm_status_struct> I<*status>B< );>
+            void (>I<*evaluate>B<)(...), constS< >lm_limits_struct> I<*limits>B<,
+            lm_status_struct> I<*status>B<, void (>I<*printout>B<)(...),
+            int >I<printflags>B< );>
 
 The user must supply the following callback routines:
 
@@ -34,19 +34,19 @@ For the latter, a default implementation is available:
 
 B<void >I<lm_printout_std>B<(...);>
 
-Furthermore, the user must supply a record with control parameters 
+Furthermore, the user must supply a record with numerical limits
 
 B<typedef struct { double> I<ftol>B<; double> I<xtol>B<; double> I<gtol>B<;
                  double> I<epsilon>B<; double> I<stepbound>B<; int> I<maxcall>B<;
-                 int> I<printflags>B<; } lm_control_struct;>
+               } lm_limits_struct;>
 
 and a record to receive status information
 
 B<typedef struct { double> I<fnorm>B<; int> I<nfev>B<; int> I<info>B<; } lm_status_struct;>
 
-Default control settings are provided by
+Default limits are provided by
 
-B<extern const lm_control_struct> I<lm_control_float>B<,> I<lm_control_double>B<;>
+B<extern const lm_limits_struct> I<lm_limits_float>B<,> I<lm_limits_double>B<;>
 
 
 Status messages (indexed by I<status.info>) are available through
@@ -59,8 +59,8 @@ B<#include <lmcurve.h>>
 
 B<void lmcurve_fit( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<, 
                   constS< >double> I<*t>B<, constS< >double> I<*y>B<, double (>I<*f>B<)(...),
-                  constS< >lm_control_struct> I<*control>B<,
-                  lm_status_struct> I<*status>B< );>
+                  constS< >lm_limits_struct> I<*limits>B<,
+                  lm_status_struct> I<*status>B<, int >I<printflags>B< );>
 
 The user must supply the function
 
@@ -72,7 +72,7 @@ B<double> I<f>B<( double> I<t>B<, constS< >double> I<*par>B< );>
 
 With version 3.0, the application programming interface has changed substantially.
 
-Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see F<lmcurve.h> and F<demo/curve1.c>). Furthermore, control (input) and monitoring (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of I<evaluate> and I<printout> have been changed.
+Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see F<lmcurve.h> and F<demo/curve1.c>). Furthermore, limits (input) and monitoring variables (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of I<evaluate> and I<printout> have been changed.
 
 =head1 B<DESCRIPTION>
 
@@ -100,19 +100,20 @@ I<data>: B<lm_minimize> does not care about this pointer; it just forwards it to
 
 I<evaluate>: a routine that calculates the residue vector I<fvec> for given parameter vector I<par>; setting I<*info> to a negative value causes B<lm_minimize> to terminate;
 
-I<printout>: a routine that can be used to inform about the progress of the minimization (I<iflag>: location of call within B<lm_minimize>, I<iter>: outer loop counter, I<nfev>: number of calls to evaluate);
-if no monitoring is desired, B<lm_minimize>
-may be called with argument I<*printout> set to 0.
-
-I<control>: a record holding control (input) parameters,
+I<limits>: a record holding numeric limits,
 as described in file I<lmmin.h>.
 Depending on whether I<*evaluate> computes I<fvec>
 to single or double precision,
 recommended default settings are in
-I<lm_control_float> and I<lm_control_double>.
+I<lm_limits_float> and I<lm_limits_double>.
 
-I<status>: a record holding monitoring (output) variables,
-describing progress or result of the minimization.
+I<status>: a record describing the status of the minimization process.
+
+I<printout>: a routine that can be used to inform about the progress of the minimization (I<iflag>: location of call within B<lm_minimize>, I<iter>: outer loop counter, I<nfev>: number of calls to evaluate);
+if no monitoring is desired, B<lm_minimize>
+may be called with argument I<*printout> set to 0.
+
+I<printflags>: passed to I<printout>; used by standard implementation I<lm_printout_std> as follows: 0 for no printout; other values can be OR'ed: 1 status information, 2 parameter vector and norm, 4 full info at end of fit, 8 full info at every step.
 
 =head2 One-dimensional curve fitting:
 

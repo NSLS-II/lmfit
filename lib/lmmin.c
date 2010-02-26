@@ -48,14 +48,14 @@
  LM_USER_TOL   1.e-14
 */
 
-const lm_control_struct lm_control_double = {
+const lm_limits_struct lm_limits_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100 };
-const lm_control_struct lm_control_float = {
+const lm_limits_struct lm_limits_float = {
     1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100 };
 
 
 /*****************************************************************************/
-/*  set message texts (indexed by control.info)                              */
+/*  set message texts (indexed by status.info)                               */
 /*****************************************************************************/
 
 const char *lm_infmsg[] = {
@@ -91,8 +91,8 @@ const char *lm_shortmsg[] = {
 /*  lm_printout_std (default monitoring routine)                             */
 /*****************************************************************************/
 
-void lm_printout_std( int n_par, const double *par, int m_dat, const void *data,
-                      const double *fvec,
+void lm_printout_std( int n_par, const double *par, int m_dat,
+                      const void *data, const double *fvec,
                       int printflags, int iflag, int iter, int nfev)
 /*
  *       data  : for soft control of printout behaviour, add control
@@ -145,10 +145,11 @@ void lm_printout_std( int n_par, const double *par, int m_dat, const void *data,
 void lmmin( int n_par, double *par, int m_dat, const void *data, 
             void (*evaluate) (const double *par, int m_dat, const void *data,
                               double *fvec, int *info),
+            const lm_limits_struct *limits, lm_status_struct *status,
             void (*printout) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
                               int printflags, int iflag, int iter, int nfev),
-            const lm_control_struct *control, lm_status_struct *status )
+            int printflags )
 {
 
 /*** allocate work space. ***/
@@ -177,15 +178,15 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
     status->info = 0;
 
     /* this goes through the modified legacy interface: */
-    lm_lmdif( m, n, par, fvec, control->ftol, control->xtol, control->gtol,
-              control->maxcall * (n + 1), control->epsilon, diag, 1,
-              control->stepbound, &(status->info),
+    lm_lmdif( m, n, par, fvec, limits->ftol, limits->xtol, limits->gtol,
+              limits->maxcall * (n + 1), limits->epsilon, diag, 1,
+              limits->stepbound, &(status->info),
               &(status->nfev), fjac, ipvt, qtf, wa1, wa2, wa3, wa4,
-              evaluate, printout, control->printflags, data );
+              evaluate, printout, printflags, data );
 
     if ( printout )
-        (*printout) (n, par, m, data, fvec,
-                     control->printflags, -1, 0, status->nfev);
+        (*printout)( n, par, m, data, fvec,
+                     printflags, -1, 0, status->nfev );
     status->fnorm = lm_enorm(m, fvec);
     if ( status->info < 0 )
 	status->info = 10;
@@ -208,30 +209,30 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 /*  lm_lmdif (low-level, modified legacy interface for full control)         */
 /*****************************************************************************/
 
-void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
-	      double *qtb, double delta, double *par, double *x,
-	      double *sdiag, double *aux, double *xdi);
-void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
-	      double *rdiag, double *acnorm, double *wa);
-void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
-	       double *qtb, double *x, double *sdiag, double *wa);
+void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
+	       double *qtb, double delta, double *par, double *x,
+	       double *sdiag, double *aux, double *xdi );
+void lm_qrfac( int m, int n, double *a, int pivot, int *ipvt,
+	       double *rdiag, double *acnorm, double *wa );
+void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
+	        double *qtb, double *x, double *sdiag, double *wa );
 
 #define MIN(a,b) (((a)<=(b)) ? (a) : (b))
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
 
-void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
-	      double xtol, double gtol, int maxfev, double epsfcn,
-	      double *diag, int mode, double factor, int *info, int *nfev,
-	      double *fjac, int *ipvt, double *qtf, double *wa1,
-	      double *wa2, double *wa3, double *wa4,
-              void (*evaluate) (const double *par, int m_dat, const void *data,
-                                double *fvec, int *info),
-              void (*printout) (int n_par, const double *par, int m_dat,
-                                const void *data, const double *fvec,
-                                int printflags, int iflag, int iter, int nfev),
-	      int printflags, const void *data)
+void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
+	       double xtol, double gtol, int maxfev, double epsfcn,
+	       double *diag, int mode, double factor, int *info, int *nfev,
+	       double *fjac, int *ipvt, double *qtf, double *wa1,
+	       double *wa2, double *wa3, double *wa4,
+               void (*evaluate) (const double *par, int m_dat, const void *data,
+                                 double *fvec, int *info),
+               void (*printout) (int n_par, const double *par, int m_dat,
+                                 const void *data, const double *fvec,
+                                 int printflags, int iflag, int iter, int nfev),
+	       int printflags, const void *data )
 {
 /*
  *   The purpose of lmdif is to minimize the sum of the squares of
