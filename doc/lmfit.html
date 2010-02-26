@@ -74,15 +74,15 @@
 </p>
 <h2><a name="generic_minimization_">Generic minimization:</a></h2>
 <p><strong>#include &lt;lmmin.h</strong>&gt;</p>
-<p><strong>void lmmin( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, void</strong> <em>*data</em><strong>,
+<p><strong>void lmmin( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void</strong> <em>*data</em><strong>,
             void (</strong><em>*evaluate</em><strong>)(...), void (</strong><em>*printout</em><strong>)(...),
-            const lm_control_struct</strong> <em>*control</em><strong>,
+            const&nbsp;lm_control_struct</strong> <em>*control</em><strong>,
             lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
 <p>The user must supply the following callback routines:</p>
-<p><strong>void (*</strong><em>evaluate</em><strong>)( double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, void</strong> <em>*data</em><strong>,
+<p><strong>void (*</strong><em>evaluate</em><strong>)( const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void</strong> <em>*data</em><strong>,
                   double</strong> <em>*fvec</em><strong>, int</strong> <em>*info</em><strong> );</strong></p>
-<p><strong>void (*</strong><em>printout</em><strong>)( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
-                  void</strong> <em>*data</em><strong>, double</strong> <em>*fvec</em><strong>,
+<p><strong>void (*</strong><em>printout</em><strong>)( int</strong> <em>n_par</em><strong>, const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
+                  const&nbsp;void</strong> <em>*data</em><strong>, const&nbsp;double</strong> <em>*fvec</em><strong>,
                   int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
 <p>For the latter, a default implementation is available:</p>
 <p><strong>void </strong><em>lm_printout_std</em><strong>(...);</strong></p>
@@ -101,8 +101,8 @@
 <h2><a name="simplified_interface_for_one_dimensional_curve_fitting_">Simplified interface for one-dimensional curve fitting:</a></h2>
 <p><strong>#include &lt;lmcurve.h</strong>&gt;</p>
 <p><strong>void lmcurve_fit( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, 
-                  double</strong> <em>*t</em><strong>, double</strong> <em>*y</em><strong>, double (</strong><em>*f</em><strong>)(...),
-                  const lm_control_struct</strong> <em>*control</em><strong>,
+                  const&nbsp;double</strong> <em>*t</em><strong>, const&nbsp;double</strong> <em>*y</em><strong>, double (</strong><em>*f</em><strong>)(...),
+                  const&nbsp;lm_control_struct</strong> <em>*control</em><strong>,
                   lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
 <p>The user must supply the function</p>
 <p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, double</strong> <em>*par</em><strong> );</strong></p>
@@ -132,18 +132,22 @@
 </p>
 <h2><a name="generic_minimization_routine_">Generic minimization routine:</a></h2>
 <p>The minimization routine <strong>lm_minimize</strong> requires the following arguments:</p>
-<p><em>m_dat</em>: dimension of residue vector <em>fvec</em>;</p>
 <p><em>n_par</em>: dimension of parameter vector <em>par</em>;</p>
 <p><em>par</em>: parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<em>fvec</em>||;</p>
+<p><em>m_dat</em>: dimension of residue vector <em>fvec</em>;</p>
+<p><em>data</em>: <strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>;</p>
 <p><em>evaluate</em>: a routine that calculates the residue vector <em>fvec</em> for given parameter vector <em>par</em>; setting <em>*info</em> to a negative value causes <strong>lm_minimize</strong> to terminate;</p>
 <p><em>printout</em>: a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to evaluate);
 if no monitoring is desired, <strong>lm_minimize</strong>
 may be called with argument <em>*printout</em> set to 0.</p>
-<p><em>data</em>: <strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>;</p>
-<p><em>control</em>: a record holding control parameters and monitoring variables, as described in file <em>lmmin.h</em>.
+<p><em>control</em>: a record holding control (input) parameters,
+as described in file <em>lmmin.h</em>.
 Depending on whether <em>*evaluate</em> computes <em>fvec</em>
 to single or double precision,
-recommended default settings are in <em>lm_control_float</em> and <em>lm_control_double</em>.</p>
+recommended default settings are in
+<em>lm_control_float</em> and <em>lm_control_double</em>.</p>
+<p><em>status</em>: a record holding monitoring (output) variables,
+describing progress or result of the minimization.</p>
 <p>
 </p>
 <h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>

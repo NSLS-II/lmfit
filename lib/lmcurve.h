@@ -22,7 +22,8 @@ extern "C" {
 #endif
 
 void lmcurve_fit( int n_par, double *par, int m_dat,
-                  double *t, double *y, double (*f)( double t, double *par ),
+                  const double *t, const double *y,
+                  double (*f)( double t, double *par ),
                   const lm_control_struct *control, lm_status_struct *status );
 
 #ifdef __cplusplus

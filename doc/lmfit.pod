@@ -16,18 +16,18 @@ lmfit - C/C++ library for Levenberg-Marquardt least-squares minimization and cur
 
 B<#include <lmmin.h>>
 
-B<void lmmin( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<, void> I<*data>B<,
+B<void lmmin( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<, constS< >void> I<*data>B<,
             void (>I<*evaluate>B<)(...), void (>I<*printout>B<)(...),
-            const lm_control_struct> I<*control>B<,
+            constS< >lm_control_struct> I<*control>B<,
             lm_status_struct> I<*status>B< );>
 
 The user must supply the following callback routines:
 
-B<void (*>I<evaluate>B<)( double> I<*par>B<, int> I<m_dat>B<, void> I<*data>B<,
+B<void (*>I<evaluate>B<)( constS< >double> I<*par>B<, int> I<m_dat>B<, constS< >void> I<*data>B<,
                   double> I<*fvec>B<, int> I<*info>B< );>
 
-B<void (*>I<printout>B<)( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<,
-                  void> I<*data>B<, double> I<*fvec>B<,
+B<void (*>I<printout>B<)( int> I<n_par>B<, constS< >double> I<*par>B<, int> I<m_dat>B<,
+                  constS< >void> I<*data>B<, constS< >double> I<*fvec>B<,
                   int> I<iflag>B<, int> I<iter>B<, int> I<nfev>B< );>
 
 For the latter, a default implementation is available:
@@ -58,13 +58,13 @@ B<extern const char *lm_infmsg[];>
 B<#include <lmcurve.h>>
 
 B<void lmcurve_fit( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<, 
-                  double> I<*t>B<, double> I<*y>B<, double (>I<*f>B<)(...),
-                  const lm_control_struct> I<*control>B<,
+                  constS< >double> I<*t>B<, constS< >double> I<*y>B<, double (>I<*f>B<)(...),
+                  constS< >lm_control_struct> I<*control>B<,
                   lm_status_struct> I<*status>B< );>
 
 The user must supply the function
 
-B<double> I<f>B<( double> I<t>B<, double> I<*par>B< );>
+B<double> I<f>B<( double> I<t>B<, constS< >double> I<*par>B< );>
 
 =head1 NEWS
 
@@ -90,11 +90,13 @@ The Levenberg-Marquardt minimization starts with a steepest-descent exploration 
 
 The minimization routine B<lm_minimize> requires the following arguments:
 
-I<m_dat>: dimension of residue vector I<fvec>;
-
 I<n_par>: dimension of parameter vector I<par>;
 
 I<par>: parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||I<fvec>||;
+
+I<m_dat>: dimension of residue vector I<fvec>;
+
+I<data>: B<lm_minimize> does not care about this pointer; it just forwards it to I<evaluate> and I<printout>;
 
 I<evaluate>: a routine that calculates the residue vector I<fvec> for given parameter vector I<par>; setting I<*info> to a negative value causes B<lm_minimize> to terminate;
 
@@ -102,13 +104,15 @@ I<printout>: a routine that can be used to inform about the progress of the mini
 if no monitoring is desired, B<lm_minimize>
 may be called with argument I<*printout> set to 0.
 
-
-I<data>: B<lm_minimize> does not care about this pointer; it just forwards it to I<evaluate> and I<printout>;
-
-I<control>: a record holding control parameters and monitoring variables, as described in file I<lmmin.h>.
+I<control>: a record holding control (input) parameters,
+as described in file I<lmmin.h>.
 Depending on whether I<*evaluate> computes I<fvec>
 to single or double precision,
-recommended default settings are in I<lm_control_float> and I<lm_control_double>.
+recommended default settings are in
+I<lm_control_float> and I<lm_control_double>.
+
+I<status>: a record holding monitoring (output) variables,
+describing progress or result of the minimization.
 
 =head2 One-dimensional curve fitting:
 

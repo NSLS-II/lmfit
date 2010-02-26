@@ -45,18 +45,19 @@ extern const lm_control_struct lm_control_double;
 extern const lm_control_struct lm_control_float;
 
 /* Standard monitoring routine. */
-void lm_printout_std( int n_par, double *par, int m_dat, void *data, 
-                      double *fvec, int iflag, int iter, int nfev);
+void lm_printout_std( int n_par, const double *par, int m_dat,
+                      const void *data, const double *fvec,
+                      int iflag, int iter, int nfev);
 
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
-double lm_enorm(int, double *);
+double lm_enorm(int, const double *);
 
 /* The actual minimization. */
-void lmmin( int n_par, double *par, int m_dat, void *data, 
-            void (*evaluate) (double *par, int m_dat, void *data,
+void lmmin( int n_par, double *par, int m_dat, const void *data, 
+            void (*evaluate) (const double *par, int m_dat, const void *data,
                               double *fvec, int *info),
-            void (*printout) (int n_par, double *par, int m_dat,
-                              void *data, double *fvec,
+            void (*printout) (int n_par, const double *par, int m_dat,
+                              const void *data, const double *fvec,
                               int iflag, int iter, int nfev),
             const lm_control_struct *control, lm_status_struct *status );
 
@@ -70,12 +71,12 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	      double *diag, int mode, double factor, int *info, int *nfev,
 	      double *fjac, int *ipvt, double *qtf, double *wa1,
 	      double *wa2, double *wa3, double *wa4,
-              void (*evaluate) (double *par, int m_dat, void *data,
+              void (*evaluate) (const double *par, int m_dat, const void *data,
                                 double *fvec, int *info),
-              void (*printout) (int n_par, double *par, int m_dat,
-                                void *data, double *fvec,
+              void (*printout) (int n_par, const double *par, int m_dat,
+                                const void *data, const double *fvec,
                                 int iflag, int iter, int nfev),
-	      void *data);
+	      const void *data);
 
 extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];

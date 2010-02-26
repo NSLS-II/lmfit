@@ -91,8 +91,8 @@ const char *lm_shortmsg[] = {
 /*  lm_printout_std (default monitoring routine)                             */
 /*****************************************************************************/
 
-void lm_printout_std( int n_par, double *par, int m_dat, void *data,
-                      double *fvec, int iflag, int iter, int nfev)
+void lm_printout_std( int n_par, const double *par, int m_dat, const void *data,
+                      const double *fvec, int iflag, int iter, int nfev)
 /*
  *       data  : for soft control of printout behaviour, add control
  *                 variables to the data struct
@@ -131,11 +131,11 @@ void lm_printout_std( int n_par, double *par, int m_dat, void *data,
 /*  lm_minimize (intermediate-level interface)                               */
 /*****************************************************************************/
 
-void lmmin( int n_par, double *par, int m_dat, void *data, 
-            void (*evaluate) (double *par, int m_dat, void *data,
+void lmmin( int n_par, double *par, int m_dat, const void *data, 
+            void (*evaluate) (const double *par, int m_dat, const void *data,
                               double *fvec, int *info),
-            void (*printout) (int n_par, double *par, int m_dat,
-                              void *data, double *fvec,
+            void (*printout) (int n_par, const double *par, int m_dat,
+                              const void *data, const double *fvec,
                               int iflag, int iter, int nfev),
             const lm_control_struct *control, lm_status_struct *status )
 {
@@ -214,12 +214,12 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	      double *diag, int mode, double factor, int *info, int *nfev,
 	      double *fjac, int *ipvt, double *qtf, double *wa1,
 	      double *wa2, double *wa3, double *wa4,
-              void (*evaluate) (double *par, int m_dat, void *data,
+              void (*evaluate) (const double *par, int m_dat, const void *data,
                                 double *fvec, int *info),
-              void (*printout) (int n_par, double *par, int m_dat,
-                                void *data, double *fvec,
+              void (*printout) (int n_par, const double *par, int m_dat,
+                                const void *data, const double *fvec,
                                 int iflag, int iter, int nfev),
-	      void *data)
+	      const void *data)
 {
 /*
  *   The purpose of lmdif is to minimize the sum of the squares of
@@ -1213,7 +1213,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 /*  lm_enorm (Euclidean norm)                                                */
 /*****************************************************************************/
 
-double lm_enorm(int n, double *x)
+double lm_enorm(int n, const double *x)
 {
 /*     Given an n-vector x, this function calculates the
  *     euclidean norm of x.
