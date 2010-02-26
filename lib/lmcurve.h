@@ -1,9 +1,9 @@
 /*
  * Project:  LevenbergMarquardtLeastSquaresFitting
  *
- * File:     lmfit.h
+ * File:     lmcurve.h
  *
- * Contents: Public interface to the Levenberg-Marquardt core implementation.
+ * Contents: Declarations for one-dimensional curve fitting
  *
  * Author:   Joachim Wuttke 2004-2010
  * 
@@ -14,8 +14,8 @@
  
 #include<lmmin.h>
 
-#ifndef LMFIT_H
-#define LMFIT_H
+#ifndef LMCURVE_H
+#define LMCURVE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,7 +29,6 @@ void lmfit_evaluate( double *par, int m_dat, double *fvec,
 void lmfit_printout( int n_par, double *par, int m_dat, double *fvec,
 		     void *data, int iflag, int iter, int nfev );
 
-
 /* Record type for passing data and model function to lmfit_evaluate: */
 
 typedef struct {
@@ -42,4 +41,4 @@ typedef struct {
 }
 #endif
 
-#endif /* LMFIT_H */
+#endif /* LMCURVE_H */

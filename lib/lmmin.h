@@ -37,7 +37,9 @@ typedef struct {
     int info;	      /* status of minimization. */
 } lm_control_type;
 
-extern lm_control_type lm_control_default;
+/* Recommended parameter settings. */
+extern lm_control_type lm_control_double;
+extern lm_control_type lm_control_float;
 
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
 double lm_enorm(int, double *);

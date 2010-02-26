@@ -8,7 +8,7 @@
 
 =head1 NAME
 
-lmfit - Self-contained, easy-to-use, yet flexible C/C++ routines for Levenberg-Marquardt minimization and curve fitting
+lmfit - Levenberg-Marquardt minimization and curve fitting
 
 =head1 SYNOPSIS
 
@@ -17,7 +17,7 @@ lmfit - Self-contained, easy-to-use, yet flexible C/C++ routines for Levenberg-M
 B<#include <lmmin.h>>
 
 B<void lm_minimize( int> I<m_dat>B<, int> I<n_par>B<, double> I<*par>B<,
-                  void >I<(*evaluate)(...)>B<, void> I<(*printout)(...)>B<,
+                  void (>I<*evaluate>B<)(...), void (>I<*printout>B<)(...),
                   void> I<*data>B<, lm_control_type> I<*control>B< );>
 
 with user-supplied callback routines
@@ -30,15 +30,18 @@ B<void (*>I<printout>B<)( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<,
                   double> I<*fvec>B<, void> I<*data>B<,
                   int> I<iflag>B<, int> I<iter>B<, int> I<nfev>B< );>
 
-and control parameters supplied in record
+and control parameters supplied and monitoring variables returned in record
 
 B<typedef struct { double> I<ftol>B<; double> I<xtol>B<; double> I<gtol>B<;
-                 double> I<epsilon>B<; double> I<stepbound>B<; double> I<fnorm>B<;
-                 int> I<maxcall>B<; int> I<nfev>B<; int> I<info>B<; } lm_control_type;>
+                 double> I<epsilon>B<; double> I<stepbound>B<; int> I<maxcall>B<;
+                 double> I<fnorm>B<; int> I<nfev>B<; int> I<info>B<; } lm_control_type;>
 
-Default control parameters are provided by
+Default control parameters
+(for I<fvec> calculated to single or double precision) are provided by
 
-B<extern const lm_control_type> I<lm_control_default>B<;>
+B<extern const lm_control_type> I<lm_control_float>B<;>
+
+B<extern const lm_control_type> I<lm_control_double>B<;>
 
 Status messages (indexed by I<control.info>) are provided by
 
@@ -46,7 +49,7 @@ B<extern const char *lm_infmsg[];>
 
 =head2 One-dimensional curve fitting:
 
-B<#include <lmfit.h>>
+B<#include <lmcurve.h>>
 
 Use B<lm_minimize> with standard call-back functions
 
@@ -72,9 +75,9 @@ B<double> I<f>B<( double> I<t>B<, double> I<*par>B< );>
 
 With version 3.0, the application programming interface has slightly changed.
 
-The initialization routine B<lm_initialize_control(...)> has been eliminated, replacement being provided by the constant record I<lm_control_default>. Either pass I<&lm_control_default> directly to B<lm_minimize>, or copy its values, declaring and initializing B<lm_control_type> I<control> B<=> I<lm_control_default>B<;>
+The initialization routine B<lm_initialize_control(...)> has been eliminated, replacement being provided by the constant record I<lm_control_double>. Either pass I<&lm_control_double> directly to B<lm_minimize>, or copy its values, declaring and initializing B<lm_control_type> I<control> B<=> I<lm_control_double>B<;>
 
-Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file I<lmfit.h>. The old implementation file I<lm_eval.c> has been renamed I<lmfit.c>. The routines for one-dimensional curve fitting, I<lm_evaluate_default>, I<lm_printout_default>, I<lm_data_type_default> have been renamed into I<lmfit_evaluate>, I<lmfit_printout>, I<lmfit_data_type>.
+Generic minimization and one-dimensional curve fitting have been separeted more clearly, introducing a new declaration file I<lmcurve.h>. The old implementation file I<lm_eval.c> has been renamed I<lmfit.c>. The routines for one-dimensional curve fitting, I<lm_evaluate_default>, I<lm_printout_default>, I<lm_data_type_default> have been renamed into I<lmfit_evaluate>, I<lmfit_printout>, I<lmfit_data_type>.
 
 =head1 B<DESCRIPTION>
 

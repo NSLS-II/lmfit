@@ -62,8 +62,10 @@ void lm_initialize_control( lm_control_type * control )
     control->maxcall = 100;
 }
 
-lm_control_type lm_control_default = {
+lm_control_type lm_control_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100 };
+lm_control_type lm_control_float = {
+    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100 };
 
 void lm_minimize( int m_dat, int n_par, double *par,
                   void (*evaluate) (double *par, int m_dat, double *fvec,
