@@ -29,12 +29,12 @@ int main()
 {
     /* parameter vector */
 
-    int n_par = 3;                  // number of parameters in model function f
-    double par[3] = { 1., 1., 1. }; // use any starting value, but not { 0,0,0 }
+    int n_par = 3; // number of parameters in model function f
+    double par[3] = { 1, 0, -1 }; // relatively bad starting value
 
     /* data pairs: slightly distorted standard parabola */
 
-    int m_dat = 11;
+    int m_dat = 11; // number of data pairs
     int i;
     double t[11] = { -5., -4., -3., -2., -1., 0., 1., 2., 3., 4., 5. };
     double y[11] = { 25.5, 16.6, 9.9, 4.4, 1.1, 0, 1.1, 4.2, 9.3, 16.4, 25.5 };
@@ -43,15 +43,17 @@ int main()
 
     lm_control_struct control = lm_control_double;
     lm_status_struct status;
-    control.printflags = 7; // maximum noise:
+    control.printflags = 3; // monitor status and parameters
 
     /* perform the fit */
 
+    printf( "Fitting:\n" );
     lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &status );
 
     /* print results */
 
-    printf( "status after %d evaluations:\n  %s\n",
+    printf( "\nResults:\n" );
+    printf( "status after %d function evaluations:\n  %s\n",
             status.nfev, lm_infmsg[status.info] );
 
     printf("obtained parameters:\n");

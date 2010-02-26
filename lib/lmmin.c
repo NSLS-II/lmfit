@@ -92,7 +92,8 @@ const char *lm_shortmsg[] = {
 /*****************************************************************************/
 
 void lm_printout_std( int n_par, const double *par, int m_dat, const void *data,
-                      const double *fvec, int iflag, int iter, int nfev)
+                      const double *fvec,
+                      int printflags, int iflag, int iter, int nfev)
 /*
  *       data  : for soft control of printout behaviour, add control
  *                 variables to the data struct
@@ -101,25 +102,35 @@ void lm_printout_std( int n_par, const double *par, int m_dat, const void *data,
  *       nfev  : number of calls to *evaluate
  */
 {
-    double f, y, t;
+    if( !printflags )
+        return;
+
     int i;
 
-    if (iflag == 2) {
-	printf("trying step in gradient direction\n");
-    } else if (iflag == 1) {
-	printf("determining gradient (iteration %d)\n", iter);
-    } else if (iflag == 0) {
-	printf("starting minimization\n");
-    } else if (iflag == -1) {
-	printf("terminated after %d evaluations\n", nfev);
+    if( printflags & 1 ){
+        /* location of printout call within lmdif */
+        if (iflag == 2) {
+            printf("trying step in gradient direction  ");
+        } else if (iflag == 1) {
+            printf("determining gradient (iteration %2d)", iter);
+        } else if (iflag == 0) {
+            printf("starting minimization              ");
+        } else if (iflag == -1) {
+            printf("terminated after %3d evaluations   ", nfev);
+        }
     }
 
-    printf("  par: ");
-    for (i = 0; i < n_par; ++i)
-	printf(" %12g", par[i]);
-    printf(" => norm: %12g\n", lm_enorm(m_dat, fvec));
+    if( printflags & 2 ){
+        printf("  par: ");
+        for (i = 0; i < n_par; ++i)
+            printf(" %18.11g", par[i]);
+        printf(" => norm: %18.11g", lm_enorm(m_dat, fvec));
+    }
 
-    if (iflag == -1) {
+    if( printflags & 3 )
+        printf( "\n" );
+
+    if ( (printflags & 8) || ((printflags & 4) && iflag == -1) ) {
 	printf("  residuals:\n");
 	for (i = 0; i < m_dat; ++i)
 	    printf("    fvec[%2d]=%12g\n", i, fvec[i] );
@@ -136,7 +147,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
                               double *fvec, int *info),
             void (*printout) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
-                              int iflag, int iter, int nfev),
+                              int printflags, int iflag, int iter, int nfev),
             const lm_control_struct *control, lm_status_struct *status )
 {
 
@@ -170,10 +181,11 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
               control->maxcall * (n + 1), control->epsilon, diag, 1,
               control->stepbound, &(status->info),
               &(status->nfev), fjac, ipvt, qtf, wa1, wa2, wa3, wa4,
-              evaluate, printout, data );
+              evaluate, printout, control->printflags, data );
 
     if ( printout )
-        (*printout) (n, par, m, data, fvec, -1, 0, status->nfev);
+        (*printout) (n, par, m, data, fvec,
+                     control->printflags, -1, 0, status->nfev);
     status->fnorm = lm_enorm(m, fvec);
     if ( status->info < 0 )
 	status->info = 10;
@@ -218,8 +230,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
                                 double *fvec, int *info),
               void (*printout) (int n_par, const double *par, int m_dat,
                                 const void *data, const double *fvec,
-                                int iflag, int iter, int nfev),
-	      const void *data)
+                                int printflags, int iflag, int iter, int nfev),
+	      int printflags, const void *data)
 {
 /*
  *   The purpose of lmdif is to minimize the sum of the squares of
@@ -364,6 +376,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
  *        Call with printout=0 if no printout is desired.
  *        Call with printout=lm_printout_std to use the default implementation.
  *
+ *      printflags is passed to printout.
+ *
  *      data is an input pointer to an arbitrary structure that is passed to
  *        evaluate. Typically, it contains experimental data to be fitted.
  *
@@ -407,7 +421,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
     (*evaluate) (x, m, data, fvec, info);
     ++(*nfev);
     if( printout )
-        (*printout) (n, x, m, data, fvec, 0, 0, *nfev);
+        (*printout) (n, x, m, data, fvec, printflags, 0, 0, *nfev);
     if (*info < 0)
 	return;
     fnorm = lm_enorm(m, fvec);
@@ -430,7 +444,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    (*evaluate) (x, m, data, wa4, info);
             ++(*nfev);
             if( printout )
-                (*printout) (n, x, m, data, wa4, 1, iter, *nfev);
+                (*printout) (n, x, m, data, wa4, printflags, 1, iter, *nfev);
 	    if (*info < 0)
 		return;	/* user requested break */
 	    for (i = 0; i < m; i++)
@@ -544,7 +558,7 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
 	    (*evaluate) (wa2, m, data, wa4, info);
             ++(*nfev);
             if( printout )
-                (*printout) (n, x, m, data, wa4, 2, iter, *nfev);
+                (*printout) (n, wa2, m, data, wa4, printflags, 2, iter, *nfev);
 	    if (*info < 0)
 		return; /* user requested break. */
 

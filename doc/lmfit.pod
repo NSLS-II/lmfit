@@ -23,12 +23,12 @@ B<void lmmin( int> I<n_par>B<, double> I<*par>B<, int> I<m_dat>B<, constS< >void
 
 The user must supply the following callback routines:
 
-B<void (*>I<evaluate>B<)( constS< >double> I<*par>B<, int> I<m_dat>B<, constS< >void> I<*data>B<,
+B<void (>I<*evaluate>B<)( constS< >double> I<*par>B<, int> I<m_dat>B<, constS< >void> I<*data>B<,
                   double> I<*fvec>B<, int> I<*info>B< );>
 
-B<void (*>I<printout>B<)( int> I<n_par>B<, constS< >double> I<*par>B<, int> I<m_dat>B<,
+B<void (>I<*printout>B<)( int> I<n_par>B<, constS< >double> I<*par>B<, int> I<m_dat>B<,
                   constS< >void> I<*data>B<, constS< >double> I<*fvec>B<,
-                  int> I<iflag>B<, int> I<iter>B<, int> I<nfev>B< );>
+                  int> I<printflags>B<, int> I<iflag>B<, int> I<iter>B<, int> I<nfev>B< );>
 
 For the latter, a default implementation is available:
 

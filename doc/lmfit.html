@@ -79,11 +79,11 @@
             const&nbsp;lm_control_struct</strong> <em>*control</em><strong>,
             lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
 <p>The user must supply the following callback routines:</p>
-<p><strong>void (*</strong><em>evaluate</em><strong>)( const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void</strong> <em>*data</em><strong>,
+<p><strong>void (</strong><em>*evaluate</em><strong>)( const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void</strong> <em>*data</em><strong>,
                   double</strong> <em>*fvec</em><strong>, int</strong> <em>*info</em><strong> );</strong></p>
-<p><strong>void (*</strong><em>printout</em><strong>)( int</strong> <em>n_par</em><strong>, const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
+<p><strong>void (</strong><em>*printout</em><strong>)( int</strong> <em>n_par</em><strong>, const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
                   const&nbsp;void</strong> <em>*data</em><strong>, const&nbsp;double</strong> <em>*fvec</em><strong>,
-                  int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
+                  int</strong> <em>printflags</em><strong>, int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
 <p>For the latter, a default implementation is available:</p>
 <p><strong>void </strong><em>lm_printout_std</em><strong>(...);</strong></p>
 <p>Furthermore, the user must supply a record with control parameters</p>
@@ -105,7 +105,7 @@
                   const&nbsp;lm_control_struct</strong> <em>*control</em><strong>,
                   lm_status_struct</strong> <em>*status</em><strong> );</strong></p>
 <p>The user must supply the function</p>
-<p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, double</strong> <em>*par</em><strong> );</strong></p>
+<p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, const&nbsp;double</strong> <em>*par</em><strong> );</strong></p>
 <p>
 </p>
 <hr />

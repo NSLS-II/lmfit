@@ -1,6 +1,6 @@
 AC_INIT([lmfit], [<version>], [http://www.messen-und-deuten.de/lmfit])
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_SRCDIR([lib/lmmin.c]) # assure we have the right src dir
+AC_CONFIG_SRCDIR([lib/lmmin.c], [demo/curve1.c]) # assure we have source dir's
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_MACRO_DIR([m4])

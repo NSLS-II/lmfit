@@ -144,12 +144,12 @@ lmfit \- C/C++ library for Levenberg\-Marquardt least\-squares minimization and 
 .PP
 The user must supply the following callback routines:
 .PP
-\&\fBvoid (*\fR\fIevaluate\fR\fB)( const\ double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, const\ void\fR \fI*data\fR\fB,
+\&\fBvoid (\fR\fI*evaluate\fR\fB)( const\ double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, const\ void\fR \fI*data\fR\fB,
                   double\fR \fI*fvec\fR\fB, int\fR \fI*info\fR\fB );\fR
 .PP
-\&\fBvoid (*\fR\fIprintout\fR\fB)( int\fR \fIn_par\fR\fB, const\ double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB,
+\&\fBvoid (\fR\fI*printout\fR\fB)( int\fR \fIn_par\fR\fB, const\ double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB,
                   const\ void\fR \fI*data\fR\fB, const\ double\fR \fI*fvec\fR\fB,
-                  int\fR \fIiflag\fR\fB, int\fR \fIiter\fR\fB, int\fR \fInfev\fR\fB );\fR
+                  int\fR \fIprintflags\fR\fB, int\fR \fIiflag\fR\fB, int\fR \fIiter\fR\fB, int\fR \fInfev\fR\fB );\fR
 .PP
 For the latter, a default implementation is available:
 .PP
@@ -183,7 +183,7 @@ Status messages (indexed by \fIstatus.info\fR) are available through
 .PP
 The user must supply the function
 .PP
-\&\fBdouble\fR \fIf\fR\fB( double\fR \fIt\fR\fB, double\fR \fI*par\fR\fB );\fR
+\&\fBdouble\fR \fIf\fR\fB( double\fR \fIt\fR\fB, const\ double\fR \fI*par\fR\fB );\fR
 .SH "NEWS"
 .IX Header "NEWS"
 .SS "\s-1API\s0 change in version 3.0"

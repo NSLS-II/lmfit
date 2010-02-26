@@ -47,7 +47,7 @@ extern const lm_control_struct lm_control_float;
 /* Standard monitoring routine. */
 void lm_printout_std( int n_par, const double *par, int m_dat,
                       const void *data, const double *fvec,
-                      int iflag, int iter, int nfev);
+                      int printflags, int iflag, int iter, int nfev);
 
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
 double lm_enorm(int, const double *);
@@ -58,7 +58,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
                               double *fvec, int *info),
             void (*printout) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
-                              int iflag, int iter, int nfev),
+                              int printflags, int iflag, int iter, int nfev),
             const lm_control_struct *control, lm_status_struct *status );
 
 
@@ -75,8 +75,8 @@ void lm_lmdif(int m, int n, double *x, double *fvec, double ftol,
                                 double *fvec, int *info),
               void (*printout) (int n_par, const double *par, int m_dat,
                                 const void *data, const double *fvec,
-                                int iflag, int iter, int nfev),
-	      const void *data);
+                                int printflags, int iflag, int iter, int nfev),
+              int printflags, const void *data);
 
 extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];
