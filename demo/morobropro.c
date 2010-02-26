@@ -6,7 +6,13 @@
  * Contents: Modified Rosenbrock Problem,
  *           according to Madsen et al. 2004, Example 3.13
  *
- * Author:   Joachim Wuttke 2010, following a suggestion by Mario Rudolphi
+ *           Minimize the norm of a 3-dimensional vectorial function
+ *           of a 2-dimensional parameter vector.
+ *
+ *           The analytical solution is par = ( 1, 1 ),
+ *           independent of the external parameter lambda.
+ *
+ * Author:   Joachim Wuttke 2010
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
@@ -30,7 +36,8 @@ void evaluate_morobropro( const double *par, int m_dat, const void *data,
 int main( int argc, char **argv )
 {
     /* parameter lambda */
-    if( argc!=1 ){
+
+    if( argc!=2 ){
         fprintf( stderr, "usage: morobropro lambda\n" );
         exit(-1);
     }
@@ -54,7 +61,7 @@ int main( int argc, char **argv )
 
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, (const void*) &lambda,
-           evaluate_surface, &lm_limits_double, &status,
+           evaluate_morobropro, &lm_limits_double, &status,
            lm_printout_std, printflags );
 
     /* print results */
@@ -66,8 +73,8 @@ int main( int argc, char **argv )
     printf("obtained parameters:\n");
     int i;
     for ( i=0; i<n_par; ++i )
-	printf("  par[%i] = %12g\n", i, par[i]);
-    printf("obtained norm:\n  %12g\n", status.fnorm );
+	printf("  par[%i] = %19.11f\n", i, par[i]);
+    printf("obtained norm:\n  %19.11f\n", status.fnorm );
 
     return 0;
 }
