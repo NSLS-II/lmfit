@@ -112,7 +112,7 @@ B<double> I<control.xtol>: relative error between last two approximations;
 
 B<double> I<control.gtol>: orthogonality desired between fvec and its derivs;
 
-B<double> I<control.epsilon>: step used to calculate the jacobian;
+B<double> I<control.epsilon>: step used to calculate the Jacobian;
 
 B<double> I<control.stepbound>: initial bound to steps in the outer loop;
 
