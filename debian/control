@@ -1,0 +1,34 @@
+Source: lmfit
+Priority: extra
+Maintainer: Joachim Wuttke <j.wuttke@fz-juelich.de>
+Build-Depends: debhelper (>= 7), autotools-dev
+Standards-Version: 3.8.4
+Section: libs
+Homepage: http://messen-und-deuten.de/lmfit/lmfit.html
+
+Package: lmfit-dev
+Section: libdevel
+Architecture: any
+Depends: lmfit (= ${binary:Version})
+Description: Development files for Levenberg-Marquardt library lmfit
+ A self-contained implementation of the Levenberg-Marquardt algorithm.
+ Routine lmmin determines a parameter vector p that minimizes the Euclidean
+ norm of a vectorial function v(p). The most important application is curve
+ fitting: to approximate data y(t) by a function f(t;p), routine lmfit
+ minimizes the norm of the residual vector v = y(t) - f(t;p).
+ .
+ This package contains the development files.
+
+
+Package: lmfit
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Least-squares minimization and curve fitting
+ <A self-contained implementation of the Levenberg-Marquardt algorithm.
+ Routine lmmin determines a parameter vector p that minimizes the Euclidean
+ norm of a vectorial function v(p). The most important application is curve
+ fitting: to approximate data y(t) by a function f(t;p), routine lmfit
+ minimizes the norm of the residual vector v = y(t) - f(t;p).
+ .
+ This package contains the shared library and the man page lmfit(3).

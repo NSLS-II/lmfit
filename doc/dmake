@@ -7,4 +7,4 @@
 pod2man -s 3 -c "lmfit manual" lmfit.pod > lmfit.3
 
 #pod2html --title="LMMIN(3) - Levenberg-Marquardt minimization and curve fitting" --noindex lmmin.pod > lmmin.html
-pod2html --title="LMFIT(3) - Levenberg-Marquardt minimization and curve fitting" --noindex lmfit.pod > lmfit.html
+pod2html --title="Levenberg-Marquardt least-squares minimization and curve fitting in C/C++" --noindex lmfit.pod > lmfit.html
