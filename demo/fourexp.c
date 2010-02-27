@@ -67,15 +67,14 @@ int main()
 
         /* auxiliary parameters */
 
-        lm_status_struct status; // to receive status information
-        lm_limits_struct limits = lm_limits_double;
-        limits.maxcall = 8000;
-        int printflags = 0;      // monitor status (+1) and parameters (+2)
+        lm_status_struct status;
+        lm_control_struct control = lm_control_double;
+        control.maxcall = 8000;
+        control.printflags = 0;
 
         /* perform the fit */
 
-        lmcurve_fit( n_par, par, m_dat, t, y, f,
-                     &limits, &status, printflags );
+        lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &status );
 
         /* print results */
 

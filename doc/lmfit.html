@@ -76,38 +76,37 @@
 </p>
 <h2><a name="generic_minimization_">Generic minimization:</a></h2>
 <p><strong>#include &lt;lmmin.h</strong>&gt;</p>
-<p><strong>void lmmin( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void</strong> <em>*data</em><strong>,
-            void (</strong><em>*evaluate</em><strong>)(...), const&nbsp;lm_limits_struct</strong> <em>*limits</em><strong>,
-            lm_status_struct</strong> <em>*status</em><strong>, void (</strong><em>*printout</em><strong>)(...),
-            int </strong><em>printflags</em><strong> );</strong></p>
+<p><strong>void lmmin( int</strong> <em>n_par</em><strong>, double *</strong><em>par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void *</strong><em>data</em><strong>,
+            void (*</strong><em>evaluate</em><strong>)(...), const&nbsp;lm_control_struct *</strong><em>control</em><strong>,
+            lm_status_struct *</strong><em>status</em><strong>, void (*</strong><em>printout</em><strong>)(...) );</strong></p>
 <p>The user must supply the following callback routines:</p>
-<p><strong>void (</strong><em>*evaluate</em><strong>)( const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void</strong> <em>*data</em><strong>,
-                  double</strong> <em>*fvec</em><strong>, int</strong> <em>*info</em><strong> );</strong></p>
-<p><strong>void (</strong><em>*printout</em><strong>)( int</strong> <em>n_par</em><strong>, const&nbsp;double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>,
-                  const&nbsp;void</strong> <em>*data</em><strong>, const&nbsp;double</strong> <em>*fvec</em><strong>,
+<p><strong>void (*</strong><em>evaluate</em><strong>)( const&nbsp;double *</strong><em>par</em><strong>, int</strong> <em>m_dat</em><strong>, const&nbsp;void *</strong><em>data</em><strong>,
+                  double *</strong><em>fvec</em><strong>, int *</strong><em>info</em><strong> );</strong></p>
+<p><strong>void (*</strong><em>printout</em><strong>)( int</strong> <em>n_par</em><strong>, const&nbsp;double *</strong><em>par</em><strong>, int</strong> <em>m_dat</em><strong>,
+                  const&nbsp;void *</strong><em>data</em><strong>, const&nbsp;double *</strong><em>fvec</em><strong>,
                   int</strong> <em>printflags</em><strong>, int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
 <p>For the latter, a default implementation is available:</p>
 <p><strong>void </strong><em>lm_printout_std</em><strong>(...);</strong></p>
-<p>Furthermore, the user must supply a record with numerical limits</p>
+<p>Furthermore, the user must supply a record with control parameters</p>
 <p><strong>typedef struct { double</strong> <em>ftol</em><strong>; double</strong> <em>xtol</em><strong>; double</strong> <em>gtol</em><strong>;
                  double</strong> <em>epsilon</em><strong>; double</strong> <em>stepbound</em><strong>; int</strong> <em>maxcall</em><strong>;
-               } lm_limits_struct;</strong></p>
+               } lm_control_struct;</strong></p>
 <p>and a record to receive status information</p>
 <p><strong>typedef struct { double</strong> <em>fnorm</em><strong>; int</strong> <em>nfev</em><strong>; int</strong> <em>info</em><strong>; } lm_status_struct;</strong></p>
-<p>Default limits are provided by</p>
-<p><strong>extern const lm_limits_struct</strong> <em>lm_limits_float</em><strong>,</strong> <em>lm_limits_double</em><strong>;</strong></p>
-<p>Status messages (indexed by <em>status.info</em>) are available through</p>
+<p>The <em>control</em> record should be initialized from one of</p>
+<p><strong>extern const lm_control_struct</strong> <em>lm_control_float</em><strong>,</strong> <em>lm_control_double</em><strong>;</strong></p>
+<p>Status messages, indexed by <em>status.info</em>) are available through</p>
 <p><strong>extern const char *lm_infmsg[];</strong></p>
 <p>
 </p>
 <h2><a name="simplified_interface_for_one_dimensional_curve_fitting_">Simplified interface for one-dimensional curve fitting:</a></h2>
 <p><strong>#include &lt;lmcurve.h</strong>&gt;</p>
-<p><strong>void lmcurve_fit( int</strong> <em>n_par</em><strong>, double</strong> <em>*par</em><strong>, int</strong> <em>m_dat</em><strong>, 
-                  const&nbsp;double</strong> <em>*t</em><strong>, const&nbsp;double</strong> <em>*y</em><strong>, double (</strong><em>*f</em><strong>)(...),
-                  const&nbsp;lm_limits_struct</strong> <em>*limits</em><strong>,
-                  lm_status_struct</strong> <em>*status</em><strong>, int </strong><em>printflags</em><strong> );</strong></p>
+<p><strong>void lmcurve_fit( int</strong> <em>n_par</em><strong>, double *</strong><em>par</em><strong>, int</strong> <em>m_dat</em><strong>, 
+                  const&nbsp;double *</strong><em>t</em><strong>, const&nbsp;double *</strong><em>y</em><strong>, double (*</strong><em>f</em><strong>)(...),
+                  const&nbsp;lm_control_struct *</strong><em>control</em><strong>,
+                  lm_status_struct *</strong><em>status</em><strong>);</strong></p>
 <p>The user must supply the function</p>
-<p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, const&nbsp;double</strong> <em>*par</em><strong> );</strong></p>
+<p><strong>double</strong> <em>f</em><strong>( double</strong> <em>t</em><strong>, const&nbsp;double *</strong><em>par</em><strong> );</strong></p>
 <p>
 </p>
 <hr />
@@ -116,7 +115,7 @@
 </p>
 <h2><a name="api_change_in_version_3_0">API change in version 3.0</a></h2>
 <p>With version 3.0, the application programming interface has changed substantially.</p>
-<p>Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see <em class="file">lmcurve.h</em> and <em class="file">demo/curve1.c</em>). Furthermore, limits (input) and monitoring variables (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of <em>evaluate</em> and <em>printout</em> have been changed.</p>
+<p>Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see <em class="file">lmcurve.h</em> and <em class="file">demo/curve1.c</em>). Furthermore, control (input) and monitoring variables (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of <em>evaluate</em> and <em>printout</em> have been changed.</p>
 <p>
 </p>
 <hr />
@@ -138,18 +137,26 @@
 <p><em>par</em>: parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<em>fvec</em>||;</p>
 <p><em>m_dat</em>: dimension of residue vector <em>fvec</em>;</p>
 <p><em>data</em>: <strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>;</p>
-<p><em>evaluate</em>: a routine that calculates the residue vector <em>fvec</em> for given parameter vector <em>par</em>; setting <em>*info</em> to a negative value causes <strong>lm_minimize</strong> to terminate;</p>
-<p><em>limits</em>: a record holding numeric limits,
-as described in file <em>lmmin.h</em>.
-Depending on whether <em>*evaluate</em> computes <em>fvec</em>
-to single or double precision,
-recommended default settings are in
-<em>lm_limits_float</em> and <em>lm_limits_double</em>.</p>
+<p><em>evaluate</em>: a routine that calculates the residue vector <em>fvec</em> for given parameter vector <em>par</em>; setting *<em>info</em> to a negative value causes <strong>lm_minimize</strong> to terminate;</p>
+<p><em>control</em>: a record holding numeric limits and other auxiliary parameters;
+it should always be initialized from provided default records
+to ensure upward compatibility;
+available default records: <em>lm_control_float</em>, <em>lm_control_double</em>
+(for <em>fvec</em> computed to single or double precision, respectively);</p>
+<p><strong>double</strong> <em>control.ftol</em>: relative error desired in the sum of squares;</p>
+<p><strong>double</strong> <em>control.xtol</em>: relative error between last two approximations;</p>
+<p><strong>double</strong> <em>control.gtol</em>: orthogonality desired between fvec and its derivs;</p>
+<p><strong>double</strong> <em>control.epsilon</em>: step used to calculate the jacobian;</p>
+<p><strong>double</strong> <em>control.stepbound</em>: initial bound to steps in the outer loop;</p>
+<p><strong>int</strong> <em>control.maxcall</em>: maximum number of iterations;</p>
+<p><strong>int</strong> <em>control.printflags</em>: OR'ed bits to print (1) status, (2) parameters and norm, (4) residues at end of fit, (8) residues at every step;</p>
 <p><em>status</em>: a record describing the status of the minimization process.</p>
-<p><em>printout</em>: a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to evaluate);
+<p><strong>double</strong> <em>status.fnorm</em>: norm of the residue vector fvec;</p>
+<p><strong>int</strong> <em>status.nfev</em>: actual number of iterations;</p>
+<p><strong>int</strong> <em>status.info</em>: status of minimization; for explanation print <em>lm_infmsg</em><strong>[</strong><em>status.info</em><strong>]</strong>;</p>
+<p><em>printout</em>: a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to <em>evaluate</em>);
 if no monitoring is desired, <strong>lm_minimize</strong>
-may be called with argument <em>*printout</em> set to 0.</p>
-<p><em>printflags</em>: passed to <em>printout</em>; used by standard implementation <em>lm_printout_std</em> as follows: 0 for no printout; other values can be OR'ed: 1 status information, 2 parameter vector and norm, 4 full info at end of fit, 8 full info at every step.</p>
+may be called with <em>printout</em> or <em>control.printflags</em> set to 0.</p>
 <p>
 </p>
 <h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>

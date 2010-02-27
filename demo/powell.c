@@ -51,15 +51,15 @@ int main()
 
     /* auxiliary parameters */
 
-    lm_status_struct status; // to receive status information
-    int printflags = 3;      // monitor status (+1) and parameters (+2)
+    lm_status_struct status;
+    lm_control_struct control = lm_control_double;
+    control.printflags = 3; // monitor status (+1) and parameters (+2)
 
     /* perform the fit */
 
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, 0,
-           evaluate_powell, &lm_limits_double, &status,
-           lm_printout_std, printflags );
+           evaluate_powell, &control, &status, lm_printout_std );
 
     /* print results */
 

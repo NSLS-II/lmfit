@@ -48,10 +48,10 @@
  LM_USER_TOL   1.e-14
 */
 
-const lm_limits_struct lm_limits_double = {
-    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100 };
-const lm_limits_struct lm_limits_float = {
-    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100 };
+const lm_control_struct lm_control_double = {
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 0 };
+const lm_control_struct lm_control_float = {
+    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100, 0, 0 };
 
 
 /*****************************************************************************/
@@ -59,7 +59,7 @@ const lm_limits_struct lm_limits_float = {
 /*****************************************************************************/
 
 const char *lm_infmsg[] = {
-    "success (||fvec|| almost vanishing)",
+    "success (sum of squares below underflow limit)",
     "success (the relative error in the sum of squares is at most tol)",
     "success (the relative error between x and the solution is at most tol)",
     "success (both errors are at most tol)",
@@ -147,11 +147,10 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
 void lmmin( int n_par, double *par, int m_dat, const void *data, 
             void (*evaluate) (const double *par, int m_dat, const void *data,
                               double *fvec, int *info),
-            const lm_limits_struct *limits, lm_status_struct *status,
+            const lm_control_struct *control, lm_status_struct *status,
             void (*printout) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
-                              int printflags, int iflag, int iter, int nfev),
-            int printflags )
+                              int printflags, int iflag, int iter, int nfev) )
 {
 
 /*** allocate work space. ***/
@@ -175,20 +174,26 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 	return;
     }
 
+    int j;
+    if( ! control->scale_diag )
+        for( j=0; j<n_par; ++j )
+            diag[j] = 1;
+
 /*** perform fit. ***/
 
     status->info = 0;
 
     /* this goes through the modified legacy interface: */
-    lm_lmdif( m, n, par, fvec, limits->ftol, limits->xtol, limits->gtol,
-              limits->maxcall * (n + 1), limits->epsilon, diag, 1,
-              limits->stepbound, &(status->info),
+    lm_lmdif( m, n, par, fvec, control->ftol, control->xtol, control->gtol,
+              control->maxcall * (n + 1), control->epsilon, diag,
+              ( control->scale_diag ? 1 : 2 ),
+              control->stepbound, &(status->info),
               &(status->nfev), fjac, ipvt, qtf, wa1, wa2, wa3, wa4,
-              evaluate, printout, printflags, data );
+              evaluate, printout, control->printflags, data );
 
     if ( printout )
         (*printout)( n, par, m, data, fvec,
-                     printflags, -1, 0, status->nfev );
+                     control->printflags, -1, 0, status->nfev );
     status->fnorm = lm_enorm(m, fvec);
     if ( status->info < 0 )
 	status->info = 11;

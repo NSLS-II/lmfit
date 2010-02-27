@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "lmfit 3"
-.TH lmfit 3 "2010-02-26" "perl v5.10.1" "lmfit manual"
+.TH lmfit 3 "2010-02-27" "perl v5.10.1" "lmfit manual"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -137,60 +137,59 @@ lmfit \- C/C++ library for Levenberg\-Marquardt least\-squares minimization and 
 .IX Subsection "Generic minimization:"
 \&\fB#include <lmmin.h\fR>
 .PP
-\&\fBvoid lmmin( int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, const\ void\fR \fI*data\fR\fB,
-            void (\fR\fI*evaluate\fR\fB)(...), const\ lm_limits_struct\fR \fI*limits\fR\fB,
-            lm_status_struct\fR \fI*status\fR\fB, void (\fR\fI*printout\fR\fB)(...),
-            int \fR\fIprintflags\fR\fB );\fR
+\&\fBvoid lmmin( int\fR \fIn_par\fR\fB, double *\fR\fIpar\fR\fB, int\fR \fIm_dat\fR\fB, const\ void *\fR\fIdata\fR\fB,
+            void (*\fR\fIevaluate\fR\fB)(...), const\ lm_control_struct *\fR\fIcontrol\fR\fB,
+            lm_status_struct *\fR\fIstatus\fR\fB, void (*\fR\fIprintout\fR\fB)(...) );\fR
 .PP
 The user must supply the following callback routines:
 .PP
-\&\fBvoid (\fR\fI*evaluate\fR\fB)( const\ double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, const\ void\fR \fI*data\fR\fB,
-                  double\fR \fI*fvec\fR\fB, int\fR \fI*info\fR\fB );\fR
+\&\fBvoid (*\fR\fIevaluate\fR\fB)( const\ double *\fR\fIpar\fR\fB, int\fR \fIm_dat\fR\fB, const\ void *\fR\fIdata\fR\fB,
+                  double *\fR\fIfvec\fR\fB, int *\fR\fIinfo\fR\fB );\fR
 .PP
-\&\fBvoid (\fR\fI*printout\fR\fB)( int\fR \fIn_par\fR\fB, const\ double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB,
-                  const\ void\fR \fI*data\fR\fB, const\ double\fR \fI*fvec\fR\fB,
+\&\fBvoid (*\fR\fIprintout\fR\fB)( int\fR \fIn_par\fR\fB, const\ double *\fR\fIpar\fR\fB, int\fR \fIm_dat\fR\fB,
+                  const\ void *\fR\fIdata\fR\fB, const\ double *\fR\fIfvec\fR\fB,
                   int\fR \fIprintflags\fR\fB, int\fR \fIiflag\fR\fB, int\fR \fIiter\fR\fB, int\fR \fInfev\fR\fB );\fR
 .PP
 For the latter, a default implementation is available:
 .PP
 \&\fBvoid \fR\fIlm_printout_std\fR\fB(...);\fR
 .PP
-Furthermore, the user must supply a record with numerical limits
+Furthermore, the user must supply a record with control parameters
 .PP
 \&\fBtypedef struct { double\fR \fIftol\fR\fB; double\fR \fIxtol\fR\fB; double\fR \fIgtol\fR\fB;
                  double\fR \fIepsilon\fR\fB; double\fR \fIstepbound\fR\fB; int\fR \fImaxcall\fR\fB;
-               } lm_limits_struct;\fR
+               } lm_control_struct;\fR
 .PP
 and a record to receive status information
 .PP
 \&\fBtypedef struct { double\fR \fIfnorm\fR\fB; int\fR \fInfev\fR\fB; int\fR \fIinfo\fR\fB; } lm_status_struct;\fR
 .PP
-Default limits are provided by
+The \fIcontrol\fR record should be initialized from one of
 .PP
-\&\fBextern const lm_limits_struct\fR \fIlm_limits_float\fR\fB,\fR \fIlm_limits_double\fR\fB;\fR
+\&\fBextern const lm_control_struct\fR \fIlm_control_float\fR\fB,\fR \fIlm_control_double\fR\fB;\fR
 .PP
-Status messages (indexed by \fIstatus.info\fR) are available through
+Status messages, indexed by \fIstatus.info\fR) are available through
 .PP
 \&\fBextern const char *lm_infmsg[];\fR
 .SS "Simplified interface for one-dimensional curve fitting:"
 .IX Subsection "Simplified interface for one-dimensional curve fitting:"
 \&\fB#include <lmcurve.h\fR>
 .PP
-\&\fBvoid lmcurve_fit( int\fR \fIn_par\fR\fB, double\fR \fI*par\fR\fB, int\fR \fIm_dat\fR\fB, 
-                  const\ double\fR \fI*t\fR\fB, const\ double\fR \fI*y\fR\fB, double (\fR\fI*f\fR\fB)(...),
-                  const\ lm_limits_struct\fR \fI*limits\fR\fB,
-                  lm_status_struct\fR \fI*status\fR\fB, int \fR\fIprintflags\fR\fB );\fR
+\&\fBvoid lmcurve_fit( int\fR \fIn_par\fR\fB, double *\fR\fIpar\fR\fB, int\fR \fIm_dat\fR\fB, 
+                  const\ double *\fR\fIt\fR\fB, const\ double *\fR\fIy\fR\fB, double (*\fR\fIf\fR\fB)(...),
+                  const\ lm_control_struct *\fR\fIcontrol\fR\fB,
+                  lm_status_struct *\fR\fIstatus\fR\fB);\fR
 .PP
 The user must supply the function
 .PP
-\&\fBdouble\fR \fIf\fR\fB( double\fR \fIt\fR\fB, const\ double\fR \fI*par\fR\fB );\fR
+\&\fBdouble\fR \fIf\fR\fB( double\fR \fIt\fR\fB, const\ double *\fR\fIpar\fR\fB );\fR
 .SH "NEWS"
 .IX Header "NEWS"
 .SS "\s-1API\s0 change in version 3.0"
 .IX Subsection "API change in version 3.0"
 With version 3.0, the application programming interface has changed substantially.
 .PP
-Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see \fIlmcurve.h\fR and \fIdemo/curve1.c\fR). Furthermore, limits (input) and monitoring variables (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of \fIevaluate\fR and \fIprintout\fR have been changed.
+Generic minimization and one-dimensional curve fitting have been separated more clearly, and the interface for the latter has been greatly simplified (see \fIlmcurve.h\fR and \fIdemo/curve1.c\fR). Furthermore, control (input) and monitoring variables (output) parameters are now stored in two different records. For better readability of the code, even the innermost function declarations of \fIevaluate\fR and \fIprintout\fR have been changed.
 .SH "\fBDESCRIPTION\fP"
 .IX Header "DESCRIPTION"
 .SS "Purpose:"
@@ -213,22 +212,43 @@ The minimization routine \fBlm_minimize\fR requires the following arguments:
 .PP
 \&\fIdata\fR: \fBlm_minimize\fR does not care about this pointer; it just forwards it to \fIevaluate\fR and \fIprintout\fR;
 .PP
-\&\fIevaluate\fR: a routine that calculates the residue vector \fIfvec\fR for given parameter vector \fIpar\fR; setting \fI*info\fR to a negative value causes \fBlm_minimize\fR to terminate;
+\&\fIevaluate\fR: a routine that calculates the residue vector \fIfvec\fR for given parameter vector \fIpar\fR; setting *\fIinfo\fR to a negative value causes \fBlm_minimize\fR to terminate;
 .PP
-\&\fIlimits\fR: a record holding numeric limits,
-as described in file \fIlmmin.h\fR.
-Depending on whether \fI*evaluate\fR computes \fIfvec\fR
-to single or double precision,
-recommended default settings are in
-\&\fIlm_limits_float\fR and \fIlm_limits_double\fR.
+\&\fIcontrol\fR: a record holding numeric limits and other auxiliary parameters;
+it should always be initialized from provided default records
+to ensure upward compatibility;
+available default records: \fIlm_control_float\fR, \fIlm_control_double\fR
+(for \fIfvec\fR computed to single or double precision, respectively);
+.Sp
+.RS 4
+\&\fBdouble\fR \fIcontrol.ftol\fR: relative error desired in the sum of squares;
+.Sp
+\&\fBdouble\fR \fIcontrol.xtol\fR: relative error between last two approximations;
+.Sp
+\&\fBdouble\fR \fIcontrol.gtol\fR: orthogonality desired between fvec and its derivs;
+.Sp
+\&\fBdouble\fR \fIcontrol.epsilon\fR: step used to calculate the jacobian;
+.Sp
+\&\fBdouble\fR \fIcontrol.stepbound\fR: initial bound to steps in the outer loop;
+.Sp
+\&\fBint\fR \fIcontrol.maxcall\fR: maximum number of iterations;
+.Sp
+\&\fBint\fR \fIcontrol.printflags\fR: \s-1OR\s0'ed bits to print (1) status, (2) parameters and norm, (4) residues at end of fit, (8) residues at every step;
+.RE
 .PP
 \&\fIstatus\fR: a record describing the status of the minimization process.
+.Sp
+.RS 4
+\&\fBdouble\fR \fIstatus.fnorm\fR: norm of the residue vector fvec;
+.Sp
+\&\fBint\fR \fIstatus.nfev\fR: actual number of iterations;
+.Sp
+\&\fBint\fR \fIstatus.info\fR: status of minimization; for explanation print \fIlm_infmsg\fR\fB[\fR\fIstatus.info\fR\fB]\fR;
+.RE
 .PP
-\&\fIprintout\fR: a routine that can be used to inform about the progress of the minimization (\fIiflag\fR: location of call within \fBlm_minimize\fR, \fIiter\fR: outer loop counter, \fInfev\fR: number of calls to evaluate);
+\&\fIprintout\fR: a routine that can be used to inform about the progress of the minimization (\fIiflag\fR: location of call within \fBlm_minimize\fR, \fIiter\fR: outer loop counter, \fInfev\fR: number of calls to \fIevaluate\fR);
 if no monitoring is desired, \fBlm_minimize\fR
-may be called with argument \fI*printout\fR set to 0.
-.PP
-\&\fIprintflags\fR: passed to \fIprintout\fR; used by standard implementation \fIlm_printout_std\fR as follows: 0 for no printout; other values can be \s-1OR\s0'ed: 1 status information, 2 parameter vector and norm, 4 full info at end of fit, 8 full info at every step.
+may be called with \fIprintout\fR or \fIcontrol.printflags\fR set to 0.
 .SS "One-dimensional curve fitting:"
 .IX Subsection "One-dimensional curve fitting:"
 See application sample \fIdemo/curve1.c\fR.

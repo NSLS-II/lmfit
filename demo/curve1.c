@@ -41,14 +41,14 @@ int main()
 
     /* auxiliary parameters */
 
-    lm_status_struct status; // to receive status information
-    int printflags = 3;      // monitor status (+1) and parameters (+2)
+    lm_status_struct status;
+    lm_control_struct control = lm_control_double;
+    control.printflags = 3; // monitor status (+1) and parameters (+2)
 
     /* perform the fit */
 
     printf( "Fitting:\n" );
-    lmcurve_fit( n_par, par, m_dat, t, y, f,
-                 &lm_limits_double, &status, printflags );
+    lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &status );
 
     /* print results */
 

@@ -30,7 +30,9 @@ typedef struct {
     double epsilon;   /* step used to calculate the jacobian. */
     double stepbound; /* initial bound to steps in the outer loop. */
     int maxcall;      /* maximum number of iterations. */
-} lm_limits_struct;
+    int scale_diag;   /* UNDOCUMENTED, TESTWISE automatical diag rescaling? */
+    int printflags;   /* OR'ed to produce more noise */
+} lm_control_struct;
 
 /* Collection of status (output) parameters. */
 typedef struct {
@@ -40,8 +42,8 @@ typedef struct {
 } lm_status_struct;
 
 /* Recommended control parameter settings. */
-extern const lm_limits_struct lm_limits_double;
-extern const lm_limits_struct lm_limits_float;
+extern const lm_control_struct lm_control_double;
+extern const lm_control_struct lm_control_float;
 
 /* Standard monitoring routine. */
 void lm_printout_std( int n_par, const double *par, int m_dat,
@@ -55,11 +57,10 @@ double lm_enorm( int, const double * );
 void lmmin( int n_par, double *par, int m_dat, const void *data, 
             void (*evaluate) (const double *par, int m_dat, const void *data,
                               double *fvec, int *info),
-            const lm_limits_struct *limits, lm_status_struct *status,
+            const lm_control_struct *control, lm_status_struct *status,
             void (*printout) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
-                              int printflags, int iflag, int iter, int nfev),
-            int printflags );
+                              int printflags, int iflag, int iter, int nfev) );
 
 
 /** Legacy low-level interface. **/
