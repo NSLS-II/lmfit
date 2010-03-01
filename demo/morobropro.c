@@ -20,8 +20,6 @@
  * Author:   Joachim Wuttke 2010
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
- *
- * Licence:  Creative Commons Attribution Share Alike.
  */
  
 #include "lmcurve.h"

@@ -227,6 +227,7 @@ Joachim Wuttke <j.wuttke@fz-juelich.de>
 
 Copyright (C) 2009-10 Joachim Wuttke.
 
-Software: Creative Commons Attribution Share Alike.
+Software: Public Domain. If you think this work is worth it, you can
+drink a beer in my honor.
 
 Documentation: Creative Commons Attribution Share Alike.

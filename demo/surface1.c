@@ -10,7 +10,7 @@
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
- * Licence:  Creative Commons Attribution Share Alike.
+ * Licence:  I don't care
  */
  
 #include "lmcurve.h"

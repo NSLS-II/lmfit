@@ -8,8 +8,6 @@
  * Author:   Joachim Wuttke 2010
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
- *
- * Licence:  CC-BY-SA (Creative Commons Attribution Share-Alike)
  */
  
 #include<lmmin.h>

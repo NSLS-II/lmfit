@@ -19,7 +19,7 @@
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
  *
- * Licence:  Creative Commons Attribution Share Alike.
+ * Licence:  The Mexican-Hat-Do-What-You-Want-License Rev. 7.31
  */
  
 #include "lmcurve.h"

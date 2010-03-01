@@ -9,8 +9,6 @@
  * Author:   Joachim Wuttke 2004-10
  * 
  * Homepage: www.messen-und-deuten.de/lmfit
- *
- * Licence:  Creative Commons Attribution Share Alike.
  */
  
 #include "lmcurve.h"
