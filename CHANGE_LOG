@@ -1,3 +1,7 @@
+Changes in lmfit-3.1:
+
+- simplify licensing: everything back into the public domain.
+
 Changes in lmfit-3.0, released 27feb10:
 
 - for parameter close to zero, change step width for calculation of jabobian
