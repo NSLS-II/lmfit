@@ -9,7 +9,7 @@ Homepage: http://messen-und-deuten.de/lmfit/lmfit.html
 Package: lmfit-dev
 Section: libdevel
 Architecture: any
-Depends: lmfit (= ${binary:Version})
+Depends: lmfit (= ${binary:Version}), ${misc:Depends}
 Description: Development files for Levenberg-Marquardt library lmfit
  A self-contained implementation of the Levenberg-Marquardt algorithm.
  Routine lmmin determines a parameter vector p that minimizes the Euclidean
