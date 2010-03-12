@@ -1,7 +1,6 @@
 Changes in lmfit-3.1, released 12mar10:
 
 - debian directory not part of tgz distribution
-- temporarily removed lmmin.3 (was symlink -> lmfit.3)
 
 Changes in lmfit-3.0, released 2mar10 (preview 27feb10):
 

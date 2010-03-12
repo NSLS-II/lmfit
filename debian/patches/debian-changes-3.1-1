@@ -1,0 +1,51 @@
+Description: Upstream changes introduced in version 3.1-1
+ This patch has been created by dpkg-source during the package build.
+ Here's the last changelog entry, hopefully it gives details on why
+ those changes were made:
+ .
+ lmfit (3.1-1) unstable; urgency=low
+ .
+   * Initial release
+ .
+ The person named in the Author field signed this changelog entry.
+Author: Joachim Wuttke <j.wuttke@fz-juelich.de>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: http://bugs.debian.org/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: <YYYY-MM-DD>
+
+--- lmfit-3.1.orig/CHANGE_LOG
++++ lmfit-3.1/CHANGE_LOG
+@@ -1,6 +1,7 @@
+ Changes in lmfit-3.1, released 12mar10:
+ 
+ - debian directory not part of tgz distribution
++- temporarily removed lmmin.3 (was symlink -> lmfit.3)
+ 
+ Changes in lmfit-3.0, released 2mar10 (preview 27feb10):
+ 
+--- lmfit-3.1.orig/doc/Makefile.in
++++ lmfit-3.1/doc/Makefile.in
+@@ -185,7 +185,7 @@ target_alias = @target_alias@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-man_MANS = lmfit.3 lmmin.3
++man_MANS = lmfit.3
+ all: all-am
+ 
+ .SUFFIXES:
+--- lmfit-3.1.orig/doc/Makefile.am
++++ lmfit-3.1/doc/Makefile.am
+@@ -1 +1 @@
+-man_MANS = lmfit.3 lmmin.3
+\ No newline at end of file
++man_MANS = lmfit.3

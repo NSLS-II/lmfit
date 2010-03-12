@@ -1,10 +1,10 @@
 Package: lmfit-dev
 Source: lmfit
-Version: 3.0-1
+Version: 3.1-1
 Architecture: i386
 Maintainer: Joachim Wuttke <j.wuttke@fz-juelich.de>
 Installed-Size: 64
-Depends: lmfit (= 3.0-1)
+Depends: lmfit (= 3.1-1)
 Section: libdevel
 Priority: extra
 Homepage: http://messen-und-deuten.de/lmfit/lmfit.html
