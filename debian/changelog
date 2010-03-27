@@ -1,5 +1,7 @@
-lmfit (3.1-1) unstable; urgency=low
+lmfit (3.2-1) unstable; urgency=low
 
-  * Initial release
+  * Initial release (Closes: #573584).
 
- -- Joachim Wuttke <j.wuttke@fz-juelich.de>  Sat, 27 Feb 2010 13:22:45 +0100
+ -- Joachim Wuttke <j.wuttke@fz-juelich.de>  Sat Mar 27 17:41:05 CET 2010
+
+# see also ../CHANGE_LOG
