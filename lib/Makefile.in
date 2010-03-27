@@ -75,6 +75,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 liblmmin_la_LIBADD =
 am_liblmmin_la_OBJECTS = lmmin.lo lmcurve.lo
 liblmmin_la_OBJECTS = $(am_liblmmin_la_OBJECTS)
+liblmmin_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(liblmmin_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__depfiles_maybe = depfiles
@@ -208,6 +211,7 @@ top_srcdir = @top_srcdir@
 include_HEADERS = lmmin.h
 lib_LTLIBRARIES = liblmmin.la
 liblmmin_la_SOURCES = lmmin.c lmmin.h lmcurve.c lmcurve.h
+liblmmin_la_LDFLAGS = -version-info $(VERSION)
 all: all-am
 
 .SUFFIXES:
@@ -274,7 +278,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 liblmmin.la: $(liblmmin_la_OBJECTS) $(liblmmin_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(liblmmin_la_OBJECTS) $(liblmmin_la_LIBADD) $(LIBS)
+	$(liblmmin_la_LINK) -rpath $(libdir) $(liblmmin_la_OBJECTS) $(liblmmin_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

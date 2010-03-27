@@ -1,3 +1,7 @@
+Changes in lmfit-3.2, released 27mar10:
+
+- shared library is given correct version number (set in configure.ac)
+
 Changes in lmfit-3.1, released 12mar10:
 
 - debian directory not part of tgz distribution
