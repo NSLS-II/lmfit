@@ -6,21 +6,21 @@ Standards-Version: 3.8.4
 Section: libs
 Homepage: http://messen-und-deuten.de/lmfit/lmfit.html
 
-Package: lmfit-dev
+Package: liblmmin3-dev
 Section: libdevel
 Architecture: any
-Depends: lmfit (= ${binary:Version}), ${misc:Depends}
-Description: Development files for Levenberg-Marquardt library lmfit
+Depends: liblmmin3 (= ${binary:Version}), ${misc:Depends}
+Description: Development files for Levenberg-Marquardt minimization.
  A self-contained implementation of the Levenberg-Marquardt algorithm.
  Routine lmmin determines a parameter vector p that minimizes the Euclidean
  norm of a vectorial function v(p). The most important application is curve
- fitting: to approximate data y(t) by a function f(t;p), routine lmfit
+ fitting: to approximate data y(t) by a function f(t;p), routine lmcurve_fit
  minimizes the norm of the residual vector v = y(t) - f(t;p).
  .
- This package contains the include file lmmin.h, the man page lmfit(3),
- and some application examples.
+ This package contains the include file lmmin.h, the man page, the static
+ library, and some application examples.
 
-Package: lmfit3
+Package: liblmmin3
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
@@ -28,7 +28,7 @@ Description: Least-squares minimization and curve fitting
  A self-contained implementation of the Levenberg-Marquardt algorithm.
  Routine lmmin determines a parameter vector p that minimizes the Euclidean
  norm of a vectorial function v(p). The most important application is curve
- fitting: to approximate data y(t) by a function f(t;p), routine lmfit
+ fitting: to approximate data y(t) by a function f(t;p), routine lmcurve_fit
  minimizes the norm of the residual vector v = y(t) - f(t;p).
  .
  This package contains the shared library.

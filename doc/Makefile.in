@@ -14,6 +14,9 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# Before running make, the maintainer has to run dmake.
+# Just because I don't know how to include dmake into the Makefile.
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -185,7 +188,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-man_MANS = lmfit.3
+man_MANS = lmfit.3 lmmin.3 lmcurve_fit.3
 all: all-am
 
 .SUFFIXES:

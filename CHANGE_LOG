@@ -1,6 +1,7 @@
-Changes in lmfit-3.2, released 27mar10:
+Changes in lmfit-3.2, released 28mar10 (preview 27mar10):
 
 - shared library is given correct version number (set in configure.ac)
+- man page lmfit(3) is copied by dmake to lmmin(3) and lmcurve_fit(3)
 
 Changes in lmfit-3.1, released 12mar10:
 
