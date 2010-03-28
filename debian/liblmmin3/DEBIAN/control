@@ -1,0 +1,18 @@
+Package: liblmmin3
+Source: lmfit
+Version: 3.2-1
+Architecture: i386
+Maintainer: Joachim Wuttke <j.wuttke@fz-juelich.de>
+Installed-Size: 64
+Depends: libc6 (>= 2.1.3)
+Section: libs
+Priority: extra
+Homepage: http://messen-und-deuten.de/lmfit/lmfit.html
+Description: Least-squares minimization and curve fitting
+ A self-contained implementation of the Levenberg-Marquardt algorithm.
+ Routine lmmin determines a parameter vector p that minimizes the Euclidean
+ norm of a vectorial function v(p). The most important application is curve
+ fitting: to approximate data y(t) by a function f(t;p), routine lmcurve_fit
+ minimizes the norm of the residual vector v = y(t) - f(t;p).
+ .
+ This package contains the shared library.

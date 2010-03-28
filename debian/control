@@ -6,7 +6,7 @@ Standards-Version: 3.8.4
 Section: libs
 Homepage: http://messen-und-deuten.de/lmfit/lmfit.html
 
-Package: liblmmin3-dev
+Package: liblmmin-dev
 Section: libdevel
 Architecture: any
 Depends: liblmmin3 (= ${binary:Version}), ${misc:Depends}

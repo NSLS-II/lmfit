@@ -1,7 +1,6 @@
 lmfit (3.2-1) unstable; urgency=low
 
-  * Initial release (Closes: #573584).
+  * Initial release. (Closes: #573584: ITP: lmfit -- Levenberg-Marquardt
+    least-squares minimization and curve fitting)
 
- -- Joachim Wuttke <j.wuttke@fz-juelich.de>  Sat Mar 27 17:41:05 CET 2010
-
-# see also ../CHANGE_LOG
+ -- Joachim Wuttke <j.wuttke@fz-juelich.de>  Sun, 28 Mar 2010 10:44:44 +0200
