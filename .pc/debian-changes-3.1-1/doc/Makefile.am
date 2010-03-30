@@ -1,1 +1,0 @@
-man_MANS = lmfit.3 lmmin.3
