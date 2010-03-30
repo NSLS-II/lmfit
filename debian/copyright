@@ -1,20 +1,22 @@
-This work was packaged for Debian by:
+Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
+Name: lmfit
+Maintainer: Joachim Wuttke <j.wuttke@fz-juelich.de>
+Source: http://www.messen-und-deuten.de/lmfit
 
-    Joachim Wuttke <j.wuttke@fz-juelich.de> on Sat, 27 Feb 2010 13:22:45 +0100
+Copyright: 1960s, lapack authors
+           1970s, Burton S. Garbow
+           1970s, Kenneth E. Hillstrom
+           1970s, Jorge J. Moré
+           2010,  Joachim Wuttke <j.wuttke@fz-juelich.de>
+License: PD
+  Built upon U.S. government work, hence public domain.
+  Copying and distribution of this package, with or without
+  modification, are permitted in any medium without royalty
+  provided the copyright notice and this notice are
+  preserved.
 
-Upstream Author:
+Files: debian/* doc/* demo/* configure.ac Makefile.am
+Copyright: 2010, Joachim Wuttke <j.wuttke@fz-juelich.de>
+License: CC-BY-SA
+  see http://creativecommons.org/licenses/by-sa/3.0/
 
-    Joachim Wuttke <j.wuttke@fz-juelich.de>
-
-Copyright:
-
-    Copyright (C) 2010 Joachim Wuttke
-
-License for the Software and the Debian packaging:
-
-    Public domain.
-
-License for the Documentation:
-
-    Creative Commons Attribution Share-Alike 3.0
-    (http://creativecommons.org/licenses/by-sa/3.0/)
