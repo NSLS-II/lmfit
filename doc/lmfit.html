@@ -51,7 +51,6 @@
 		<li><a href="#how_should_i_cite_lmfit_in_scientific_publications_">How should I cite lmfit in scientific publications ?</a></li>
 	</ul>
 
-	<li><a href="#bugs">BUGS</a></li>
 	<li><a href="#references">REFERENCES</a></li>
 	<li><a href="#author">AUTHOR</a></li>
 	<li><a href="#copying">COPYING</a></li>
@@ -87,15 +86,15 @@
                   int</strong> <em>printflags</em><strong>, int</strong> <em>iflag</em><strong>, int</strong> <em>iter</em><strong>, int</strong> <em>nfev</em><strong> );</strong></p>
 <p>For the latter, a default implementation is available:</p>
 <p><strong>void </strong><em>lm_printout_std</em><strong>(...);</strong></p>
-<p>Furthermore, the user must supply a record with control parameters</p>
+<p>Control parameters must be given in form of a record</p>
 <p><strong>typedef struct { double</strong> <em>ftol</em><strong>; double</strong> <em>xtol</em><strong>; double</strong> <em>gtol</em><strong>;
                  double</strong> <em>epsilon</em><strong>; double</strong> <em>stepbound</em><strong>; int</strong> <em>maxcall</em><strong>;
                } lm_control_struct;</strong></p>
-<p>and a record to receive status information</p>
-<p><strong>typedef struct { double</strong> <em>fnorm</em><strong>; int</strong> <em>nfev</em><strong>; int</strong> <em>info</em><strong>; } lm_status_struct;</strong></p>
-<p>The <em>control</em> record should be initialized from one of</p>
+<p>Default values:</p>
 <p><strong>extern const lm_control_struct</strong> <em>lm_control_float</em><strong>,</strong> <em>lm_control_double</em><strong>;</strong></p>
-<p>Status messages, indexed by <em>status.info</em>) are available through</p>
+<p>Finally, the user must provide a record to receive status information</p>
+<p><strong>typedef struct { double</strong> <em>fnorm</em><strong>; int</strong> <em>nfev</em><strong>; int</strong> <em>info</em><strong>; } lm_status_struct;</strong></p>
+<p>Status messages, indexed by <em>status.info</em>, are supplied in</p>
 <p><strong>extern const char *lm_infmsg[];</strong></p>
 <p>
 </p>
@@ -133,30 +132,105 @@
 </p>
 <h2><a name="generic_minimization_routine_">Generic minimization routine:</a></h2>
 <p>The minimization routine <strong>lm_minimize</strong> requires the following arguments:</p>
-<p><em>n_par</em>: dimension of parameter vector <em>par</em>;</p>
-<p><em>par</em>: parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<em>fvec</em>||;</p>
-<p><em>m_dat</em>: dimension of residue vector <em>fvec</em>;</p>
-<p><em>data</em>: <strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>;</p>
-<p><em>evaluate</em>: a routine that calculates the residue vector <em>fvec</em> for given parameter vector <em>par</em>; setting *<em>info</em> to a negative value causes <strong>lm_minimize</strong> to terminate;</p>
-<p><em>control</em>: a record holding numeric limits and other auxiliary parameters;
+<dl>
+<dt><strong><a name="n_par" class="item"><em>n_par</em></a></strong></dt>
+
+<dd>
+<p>dimension of parameter vector <em>par</em>;</p>
+</dd>
+<dt><strong><a name="par" class="item"><em>par</em></a></strong></dt>
+
+<dd>
+<p>parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||<em>fvec</em>||;</p>
+</dd>
+<dt><strong><a name="m_dat" class="item"><em>m_dat</em></a></strong></dt>
+
+<dd>
+<p>dimension of residue vector <em>fvec</em>;</p>
+</dd>
+<dt><strong><a name="data" class="item"><em>data</em></a></strong></dt>
+
+<dd>
+<p><strong>lm_minimize</strong> does not care about this pointer; it just forwards it to <em>evaluate</em> and <em>printout</em>;</p>
+</dd>
+<dt><strong><a name="evaluate" class="item"><em>evaluate</em></a></strong></dt>
+
+<dd>
+<p>a routine that calculates the residue vector <em>fvec</em> for given parameter vector <em>par</em>; setting *<em>info</em> to a negative value causes <strong>lm_minimize</strong> to terminate;</p>
+</dd>
+<dt><strong><a name="control" class="item"><em>control</em></a></strong></dt>
+
+<dd>
+<p>a record holding numeric limits and other auxiliary parameters;
 it should always be initialized from provided default records
 to ensure upward compatibility;
 available default records: <em>lm_control_float</em>, <em>lm_control_double</em>
 (for <em>fvec</em> computed to single or double precision, respectively);</p>
-<p><strong>double</strong> <em>control.ftol</em>: relative error desired in the sum of squares;</p>
-<p><strong>double</strong> <em>control.xtol</em>: relative error between last two approximations;</p>
-<p><strong>double</strong> <em>control.gtol</em>: orthogonality desired between fvec and its derivs;</p>
-<p><strong>double</strong> <em>control.epsilon</em>: step used to calculate the Jacobian;</p>
-<p><strong>double</strong> <em>control.stepbound</em>: initial bound to steps in the outer loop;</p>
-<p><strong>int</strong> <em>control.maxcall</em>: maximum number of iterations;</p>
-<p><strong>int</strong> <em>control.printflags</em>: OR'ed bits to print (1) status, (2) parameters and norm, (4) residues at end of fit, (8) residues at every step;</p>
-<p><em>status</em>: a record describing the status of the minimization process.</p>
-<p><strong>double</strong> <em>status.fnorm</em>: norm of the residue vector fvec;</p>
-<p><strong>int</strong> <em>status.nfev</em>: actual number of iterations;</p>
-<p><strong>int</strong> <em>status.info</em>: status of minimization; for explanation print <em>lm_infmsg</em><strong>[</strong><em>status.info</em><strong>]</strong>;</p>
-<p><em>printout</em>: a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to <em>evaluate</em>);
+<dl>
+<dt><strong><a name="double_control_ftol" class="item"><strong>double</strong> <em>control.ftol</em></a></strong></dt>
+
+<dd>
+<p>relative error desired in the sum of squares;</p>
+</dd>
+<dt><strong><a name="double_control_xtol" class="item"><strong>double</strong> <em>control.xtol</em></a></strong></dt>
+
+<dd>
+<p>relative error between last two approximations;</p>
+</dd>
+<dt><strong><a name="double_control_gtol" class="item"><strong>double</strong> <em>control.gtol</em></a></strong></dt>
+
+<dd>
+<p>orthogonality desired between fvec and its derivs;</p>
+</dd>
+<dt><strong><a name="double_control_epsilon" class="item"><strong>double</strong> <em>control.epsilon</em></a></strong></dt>
+
+<dd>
+<p>step used to calculate the Jacobian;</p>
+</dd>
+<dt><strong><a name="double_control_stepbound" class="item"><strong>double</strong> <em>control.stepbound</em></a></strong></dt>
+
+<dd>
+<p>initial bound to steps in the outer loop;</p>
+</dd>
+<dt><strong><a name="int_control_maxcall" class="item"><strong>int</strong> <em>control.maxcall</em></a></strong></dt>
+
+<dd>
+<p>maximum number of iterations;</p>
+</dd>
+<dt><strong><a name="int_control_printflags" class="item"><strong>int</strong> <em>control.printflags</em></a></strong></dt>
+
+<dd>
+<p>OR'ed bits to print (1) status, (2) parameters and norm, (4) residues at end of fit, (8) residues at every step;</p>
+</dd>
+</dl>
+<p><em>status</em></p>
+<p>a record describing the status of the minimization process.</p>
+<dl>
+<dt><strong><a name="double_status_fnorm" class="item"><strong>double</strong> <em>status.fnorm</em></a></strong></dt>
+
+<dd>
+<p>norm of the residue vector fvec;</p>
+</dd>
+<dt><strong><a name="int_status_nfev" class="item"><strong>int</strong> <em>status.nfev</em></a></strong></dt>
+
+<dd>
+<p>actual number of iterations;</p>
+</dd>
+<dt><strong><a name="int_status_info" class="item"><strong>int</strong> <em>status.info</em></a></strong></dt>
+
+<dd>
+<p>status of minimization; for explanation print <em>lm_infmsg</em><strong>[</strong><em>status.info</em><strong>]</strong>;</p>
+</dd>
+</dl>
+</dd>
+<dt><strong><a name="printout" class="item"><em>printout</em></a></strong></dt>
+
+<dd>
+<p>a routine that can be used to inform about the progress of the minimization (<em>iflag</em>: location of call within <strong>lm_minimize</strong>, <em>iter</em>: outer loop counter, <em>nfev</em>: number of calls to <em>evaluate</em>);
 if no monitoring is desired, <strong>lm_minimize</strong>
 may be called with <em>printout</em> or <em>control.printflags</em> set to 0.</p>
+</dd>
+</dl>
 <p>
 </p>
 <h2><a name="one_dimensional_curve_fitting_">One-dimensional curve fitting:</a></h2>
@@ -208,16 +282,6 @@ In the above examples: use p0^2 and 10*tanh(p1) instead of p0 and p1.</p>
 <p>If fit results are robust, it does not matter by which implementation they have been obtained. If the results are not robust, they should not be published anyway. Therefore, in publishing fit results obtained with lmfit it is generally not necessary to cite the software.</p>
 <p>However, in methodological publications that describe software and data analysis procedures based on lmfit, it might be appropriate to provide a reference. The preferred form of citation is:</p>
 <p>Joachim Wuttke: lmfit - a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. Mor&eacute;, and S. Moshier. Version &lt;..&gt;, retrieved on &lt;..&gt; from <a href="http://www.messen-und-deuten.de/lmfit/.">http://www.messen-und-deuten.de/lmfit/.</a></p>
-<p>
-</p>
-<hr />
-<h1><a name="bugs">BUGS</a></h1>
-<p>The code contained in version 2.6 has been stable for several years,
-and it has been used by hundreds of researchers.
-There is a fair chance that it is free of bugs.</p>
-<p>With series 3.x, a new round of improvements is starting.
-The code is better than ever,
-but not yet as thoroughly tested as the old one.</p>
 <p>
 </p>
 <hr />
