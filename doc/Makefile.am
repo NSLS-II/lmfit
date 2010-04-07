@@ -1,4 +1,12 @@
-# Before running make, the maintainer has to run dmake.
-# Just because I don't know how to include dmake into the Makefile.
-
 man_MANS = lmfit.3 lmmin.3 lmcurve_fit.3
+auxdir = $(datadir)/lmfit/html
+aux_DATA = lmfit.html podstyle.css index.html
+
+lmfit.3 lmmin.3 lmcurve_fit.3 : lmfit.pod
+	pod2man -s 3 -c "lmfit manual" lmfit.pod > lmfit.3
+	pod2man -s 3 -c "lmfit manual" -n "lmmin" lmfit.pod > lmmin.3
+	pod2man -s 3 -c "lmfit manual" -n "lmcurve_fit" lmfit.pod > lmcurve_fit.3
+
+lmfit.html : lmfit.pod
+	pod2html --title="Levenberg-Marquardt least-squares minimization and curve fitting in C/C++" --noindex lmfit.pod > lmfit.html
+

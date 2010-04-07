@@ -15,8 +15,6 @@
 
 @SET_MAKE@
 
-# Before running make, the maintainer has to run dmake.
-# Just because I don't know how to include dmake into the Makefile.
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -73,9 +71,10 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 man3dir = $(mandir)/man3
-am__installdirs = "$(DESTDIR)$(man3dir)"
+am__installdirs = "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(auxdir)"
 NROFF = nroff
 MANS = $(man_MANS)
+DATA = $(aux_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -189,6 +188,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 man_MANS = lmfit.3 lmmin.3 lmcurve_fit.3
+auxdir = $(datadir)/lmfit/html
+aux_DATA = lmfit.html podstyle.css index.html
 all: all-am
 
 .SUFFIXES:
@@ -266,6 +267,26 @@ uninstall-man3:
 	test -z "$$files" || { \
 	  echo " ( cd '$(DESTDIR)$(man3dir)' && rm -f" $$files ")"; \
 	  cd "$(DESTDIR)$(man3dir)" && rm -f $$files; }
+install-auxDATA: $(aux_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(auxdir)" || $(MKDIR_P) "$(DESTDIR)$(auxdir)"
+	@list='$(aux_DATA)'; test -n "$(auxdir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(auxdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(auxdir)" || exit $$?; \
+	done
+
+uninstall-auxDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(aux_DATA)'; test -n "$(auxdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(auxdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(auxdir)" && rm -f $$files
 tags: TAGS
 TAGS:
 
@@ -318,9 +339,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(MANS)
+all-am: Makefile $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(man3dir)"; do \
+	for dir in "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(auxdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -368,7 +389,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-man
+install-data-am: install-auxDATA install-man
 
 install-dvi: install-dvi-am
 
@@ -412,7 +433,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-man
+uninstall-am: uninstall-auxDATA uninstall-man
 
 uninstall-man: uninstall-man3
 
@@ -421,15 +442,24 @@ uninstall-man: uninstall-man3
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man3 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	uninstall uninstall-am uninstall-man uninstall-man3
+	install-auxDATA install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man3 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
+	ps ps-am uninstall uninstall-am uninstall-auxDATA \
+	uninstall-man uninstall-man3
 
+
+lmfit.3 lmmin.3 lmcurve_fit.3 : lmfit.pod
+	pod2man -s 3 -c "lmfit manual" lmfit.pod > lmfit.3
+	pod2man -s 3 -c "lmfit manual" -n "lmmin" lmfit.pod > lmmin.3
+	pod2man -s 3 -c "lmfit manual" -n "lmcurve_fit" lmfit.pod > lmcurve_fit.3
+
+lmfit.html : lmfit.pod
+	pod2html --title="Levenberg-Marquardt least-squares minimization and curve fitting in C/C++" --noindex lmfit.pod > lmfit.html
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
