@@ -1,3 +1,5 @@
+- moved "int" declarations to top of lm_printout_std() and lmmin()
+  (required by Visual Studio 2005: bug report M. Beek)
 - man pages now produced by make; finally got rid of dmake
 
 Changes in lmfit-3.2, released 28mar10 (preview 27mar10):

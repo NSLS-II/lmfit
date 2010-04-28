@@ -112,10 +112,10 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
  *       nfev  : number of calls to *evaluate
  */
 {
+    int i;
+
     if( !printflags )
         return;
-
-    int i;
 
     if( printflags & 1 ){
         /* location of printout call within lmdif */
@@ -164,7 +164,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 /*** allocate work space. ***/
 
     double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wa4;
-    int *ipvt;
+    int *ipvt, j;
 
     int n = n_par;
     int m = m_dat;
@@ -182,7 +182,6 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 	return;
     }
 
-    int j;
     if( ! control->scale_diag )
         for( j=0; j<n_par; ++j )
             diag[j] = 1;
