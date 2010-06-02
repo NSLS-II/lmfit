@@ -36,7 +36,7 @@ typedef struct {
 typedef struct {
     double fnorm;     /* norm of the residue vector fvec. */
     int nfev;	      /* actual number of iterations. */
-    int info;	      /* status of minimization. */
+    int info;	      /* status (index for lm_infmsg and lm_shortmsg). */
 } lm_status_struct;
 
 /* Recommended control parameter settings. */
