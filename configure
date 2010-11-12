@@ -743,20 +743,14 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='am__EXEEXT_FALSE
-am__EXEEXT_TRUE
-LTLIBOBJS
+ac_subst_vars='LTLIBOBJS
 LIBOBJS
 CPP
-OTOOL64
-OTOOL
-LIPO
 NMEDIT
 DSYMUTIL
 lt_ECHO
 RANLIB
 AR
-OBJDUMP
 LN_S
 NM
 ac_ct_DUMPBIN
@@ -798,7 +792,6 @@ am__leading_dot
 SET_MAKE
 AWK
 mkdir_p
-MKDIR_P
 INSTALL_STRIP_PROGRAM
 STRIP
 install_sh
@@ -810,7 +803,6 @@ ACLOCAL
 VERSION
 PACKAGE
 CYGPATH_W
-am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
@@ -2233,8 +2225,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
  # assure we have source dir's
 ac_config_headers="$ac_config_headers config.h"
 
-am__api_version='1.11'
-
+am__api_version="1.9"
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
 # incompatible versions:
@@ -2333,29 +2324,16 @@ $as_echo_n "checking whether build environment is sane... " >&6; }
 # Just in case
 sleep 1
 echo timestamp > conftest.file
-# Reject unsafe characters in $srcdir or the absolute working directory
-# name.  Accept space and tab only in the latter.
-am_lf='
-'
-case `pwd` in
-  *[\\\"\#\$\&\'\`$am_lf]*)
-    as_fn_error "unsafe absolute working directory name" "$LINENO" 5;;
-esac
-case $srcdir in
-  *[\\\"\#\$\&\'\`$am_lf\ \	]*)
-    as_fn_error "unsafe srcdir value: \`$srcdir'" "$LINENO" 5;;
-esac
-
 # Do `set' in a subshell so we don't clobber the current shell's
 # arguments.  Must try -L first in case configure is actually a
 # symlink; some systems play weird games with the mod time of symlinks
 # (eg FreeBSD returns the mod time of the symlink's containing
 # directory).
 if (
-   set X `ls -Lt "$srcdir/configure" conftest.file 2> /dev/null`
+   set X `ls -Lt $srcdir/configure conftest.file 2> /dev/null`
    if test "$*" = "X"; then
       # -L didn't work.
-      set X `ls -t "$srcdir/configure" conftest.file`
+      set X `ls -t $srcdir/configure conftest.file`
    fi
    rm -f conftest.file
    if test "$*" != "X $srcdir/configure conftest.file" \
@@ -2393,14 +2371,7 @@ program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 # expand $ac_aux_dir to an absolute path
 am_aux_dir=`cd $ac_aux_dir && pwd`
 
-if test x"${MISSING+set}" != xset; then
-  case $am_aux_dir in
-  *\ * | *\	*)
-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
-  *)
-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
-  esac
-fi
+test x"${MISSING+set}" = xset || MISSING="\${SHELL} $am_aux_dir/missing"
 # Use eval to expand $SHELL
 if eval "$MISSING --run true"; then
   am_missing_run="$MISSING --run "
@@ -2410,14 +2381,168 @@ else
 $as_echo "$as_me: WARNING: \`missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
-  case $am_aux_dir in
-  *\ * | *\	*)
-    install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
-  *)
-    install_sh="\${SHELL} $am_aux_dir/install-sh"
-  esac
+if mkdir -p --version . >/dev/null 2>&1 && test ! -d ./--version; then
+  # We used to keeping the `.' as first argument, in order to
+  # allow $(mkdir_p) to be used without argument.  As in
+  #   $(mkdir_p) $(somedir)
+  # where $(somedir) is conditionally defined.  However this is wrong
+  # for two reasons:
+  #  1. if the package is installed by a user who cannot write `.'
+  #     make install will fail,
+  #  2. the above comment should most certainly read
+  #     $(mkdir_p) $(DESTDIR)$(somedir)
+  #     so it does not work when $(somedir) is undefined and
+  #     $(DESTDIR) is not.
+  #  To support the latter case, we have to write
+  #     test -z "$(somedir)" || $(mkdir_p) $(DESTDIR)$(somedir),
+  #  so the `.' trick is pointless.
+  mkdir_p='mkdir -p --'
+else
+  # On NextStep and OpenStep, the `mkdir' command does not
+  # recognize any option.  It will interpret all options as
+  # directories to create, and then abort because `.' already
+  # exists.
+  for d in ./-p ./--version;
+  do
+    test -d $d && rmdir $d
+  done
+  # $(mkinstalldirs) is defined by Automake if mkinstalldirs exists.
+  if test -f "$ac_aux_dir/mkinstalldirs"; then
+    mkdir_p='$(mkinstalldirs)'
+  else
+    mkdir_p='$(install_sh) -d'
+  fi
 fi
+
+for ac_prog in gawk mawk nawk awk
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_prog_AWK+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$AWK"; then
+  ac_cv_prog_AWK="$AWK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_AWK="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+AWK=$ac_cv_prog_AWK
+if test -n "$AWK"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AWK" >&5
+$as_echo "$AWK" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$AWK" && break
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5
+$as_echo_n "checking whether ${MAKE-make} sets \$(MAKE)... " >&6; }
+set x ${MAKE-make}
+ac_make=`$as_echo "$2" | sed 's/+/p/g; s/[^a-zA-Z0-9_]/_/g'`
+if { as_var=ac_cv_prog_make_${ac_make}_set; eval "test \"\${$as_var+set}\" = set"; }; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat >conftest.make <<\_ACEOF
+SHELL = /bin/sh
+all:
+	@echo '@@@%%%=$(MAKE)=@@@%%%'
+_ACEOF
+# GNU make sometimes prints "make[1]: Entering...", which would confuse us.
+case `${MAKE-make} -f conftest.make 2>/dev/null` in
+  *@@@%%%=?*=@@@%%%*)
+    eval ac_cv_prog_make_${ac_make}_set=yes;;
+  *)
+    eval ac_cv_prog_make_${ac_make}_set=no;;
+esac
+rm -f conftest.make
+fi
+if eval test \$ac_cv_prog_make_${ac_make}_set = yes; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+  SET_MAKE=
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+  SET_MAKE="MAKE=${MAKE-make}"
+fi
+
+rm -rf .tst 2>/dev/null
+mkdir .tst 2>/dev/null
+if test -d .tst; then
+  am__leading_dot=.
+else
+  am__leading_dot=_
+fi
+rmdir .tst 2>/dev/null
+
+# test to see if srcdir already configured
+if test "`cd $srcdir && pwd`" != "`pwd`" &&
+   test -f $srcdir/config.status; then
+  as_fn_error "source directory already configured; run \"make distclean\" there first" "$LINENO" 5
+fi
+
+# test whether we have cygpath
+if test -z "$CYGPATH_W"; then
+  if (cygpath --version) >/dev/null 2>/dev/null; then
+    CYGPATH_W='cygpath -w'
+  else
+    CYGPATH_W=echo
+  fi
+fi
+
+
+# Define the identity of the package.
+ PACKAGE='lmfit'
+ VERSION='3:2:0'
+
+
+cat >>confdefs.h <<_ACEOF
+#define PACKAGE "$PACKAGE"
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define VERSION "$VERSION"
+_ACEOF
+
+# Some tools Automake needs.
+
+ACLOCAL=${ACLOCAL-"${am_missing_run}aclocal-${am__api_version}"}
+
+
+AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
+
+
+AUTOMAKE=${AUTOMAKE-"${am_missing_run}automake-${am__api_version}"}
+
+
+AUTOHEADER=${AUTOHEADER-"${am_missing_run}autoheader"}
+
+
+MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
+
+install_sh=${install_sh-"$am_aux_dir/install-sh"}
 
 # Installed binaries are usually stripped using `strip' when the user
 # run `make install-strip'.  However `strip' might not be the right
@@ -2517,187 +2642,7 @@ else
 fi
 
 fi
-INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a thread-safe mkdir -p" >&5
-$as_echo_n "checking for a thread-safe mkdir -p... " >&6; }
-if test -z "$MKDIR_P"; then
-  if test "${ac_cv_path_mkdir+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH$PATH_SEPARATOR/opt/sfw/bin
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in mkdir gmkdir; do
-	 for ac_exec_ext in '' $ac_executable_extensions; do
-	   { test -f "$as_dir/$ac_prog$ac_exec_ext" && $as_test_x "$as_dir/$ac_prog$ac_exec_ext"; } || continue
-	   case `"$as_dir/$ac_prog$ac_exec_ext" --version 2>&1` in #(
-	     'mkdir (GNU coreutils) '* | \
-	     'mkdir (coreutils) '* | \
-	     'mkdir (fileutils) '4.1*)
-	       ac_cv_path_mkdir=$as_dir/$ac_prog$ac_exec_ext
-	       break 3;;
-	   esac
-	 done
-       done
-  done
-IFS=$as_save_IFS
-
-fi
-
-  test -d ./--version && rmdir ./--version
-  if test "${ac_cv_path_mkdir+set}" = set; then
-    MKDIR_P="$ac_cv_path_mkdir -p"
-  else
-    # As a last resort, use the slow shell script.  Don't cache a
-    # value for MKDIR_P within a source directory, because that will
-    # break other packages using the cache if that directory is
-    # removed, or if the value is a relative name.
-    MKDIR_P="$ac_install_sh -d"
-  fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $MKDIR_P" >&5
-$as_echo "$MKDIR_P" >&6; }
-
-mkdir_p="$MKDIR_P"
-case $mkdir_p in
-  [\\/$]* | ?:[\\/]*) ;;
-  */*) mkdir_p="\$(top_builddir)/$mkdir_p" ;;
-esac
-
-for ac_prog in gawk mawk nawk awk
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_AWK+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$AWK"; then
-  ac_cv_prog_AWK="$AWK" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_AWK="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-AWK=$ac_cv_prog_AWK
-if test -n "$AWK"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AWK" >&5
-$as_echo "$AWK" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$AWK" && break
-done
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} sets \$(MAKE)" >&5
-$as_echo_n "checking whether ${MAKE-make} sets \$(MAKE)... " >&6; }
-set x ${MAKE-make}
-ac_make=`$as_echo "$2" | sed 's/+/p/g; s/[^a-zA-Z0-9_]/_/g'`
-if { as_var=ac_cv_prog_make_${ac_make}_set; eval "test \"\${$as_var+set}\" = set"; }; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat >conftest.make <<\_ACEOF
-SHELL = /bin/sh
-all:
-	@echo '@@@%%%=$(MAKE)=@@@%%%'
-_ACEOF
-# GNU make sometimes prints "make[1]: Entering...", which would confuse us.
-case `${MAKE-make} -f conftest.make 2>/dev/null` in
-  *@@@%%%=?*=@@@%%%*)
-    eval ac_cv_prog_make_${ac_make}_set=yes;;
-  *)
-    eval ac_cv_prog_make_${ac_make}_set=no;;
-esac
-rm -f conftest.make
-fi
-if eval test \$ac_cv_prog_make_${ac_make}_set = yes; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-  SET_MAKE=
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-  SET_MAKE="MAKE=${MAKE-make}"
-fi
-
-rm -rf .tst 2>/dev/null
-mkdir .tst 2>/dev/null
-if test -d .tst; then
-  am__leading_dot=.
-else
-  am__leading_dot=_
-fi
-rmdir .tst 2>/dev/null
-
-if test "`cd $srcdir && pwd`" != "`pwd`"; then
-  # Use -I$(srcdir) only when $(srcdir) != ., so that make's output
-  # is not polluted with repeated "-I."
-  am__isrc=' -I$(srcdir)'
-  # test to see if srcdir already configured
-  if test -f $srcdir/config.status; then
-    as_fn_error "source directory already configured; run \"make distclean\" there first" "$LINENO" 5
-  fi
-fi
-
-# test whether we have cygpath
-if test -z "$CYGPATH_W"; then
-  if (cygpath --version) >/dev/null 2>/dev/null; then
-    CYGPATH_W='cygpath -w'
-  else
-    CYGPATH_W=echo
-  fi
-fi
-
-
-# Define the identity of the package.
- PACKAGE='lmfit'
- VERSION='3:2:0'
-
-
-cat >>confdefs.h <<_ACEOF
-#define PACKAGE "$PACKAGE"
-_ACEOF
-
-
-cat >>confdefs.h <<_ACEOF
-#define VERSION "$VERSION"
-_ACEOF
-
-# Some tools Automake needs.
-
-ACLOCAL=${ACLOCAL-"${am_missing_run}aclocal-${am__api_version}"}
-
-
-AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
-
-
-AUTOMAKE=${AUTOMAKE-"${am_missing_run}automake-${am__api_version}"}
-
-
-AUTOHEADER=${AUTOHEADER-"${am_missing_run}autoheader"}
-
-
-MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
+INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 
 # We need awk for the "check" target.  The system "awk" is bad on
 # some platforms.
@@ -2721,8 +2666,8 @@ esac
 
 
 
-macro_version='2.2.6b'
-macro_revision='1.3017'
+macro_version='2.2'
+macro_revision='1.2599'
 
 
 
@@ -2817,7 +2762,7 @@ ac_config_commands="$ac_config_commands depfiles"
 am_make=${MAKE-make}
 cat > confinc << 'END'
 am__doit:
-	@echo this is the am__doit target
+	@echo done
 .PHONY: am__doit
 END
 # If we don't find an include directive, just comment out the code.
@@ -2828,24 +2773,24 @@ am__quote=
 _am_result=none
 # First try GNU make style include.
 echo "include confinc" > confmf
-# Ignore all kinds of additional output from `make'.
-case `$am_make -s -f confmf 2> /dev/null` in #(
-*the\ am__doit\ target*)
-  am__include=include
-  am__quote=
-  _am_result=GNU
-  ;;
-esac
+# We grep out `Entering directory' and `Leaving directory'
+# messages which can occur if `w' ends up in MAKEFLAGS.
+# In particular we don't look at `^make:' because GNU make might
+# be invoked under some other name (usually "gmake"), in which
+# case it prints its new name instead of `make'.
+if test "`$am_make -s -f confmf 2> /dev/null | grep -v 'ing directory'`" = "done"; then
+   am__include=include
+   am__quote=
+   _am_result=GNU
+fi
 # Now try BSD make style include.
 if test "$am__include" = "#"; then
    echo '.include "confinc"' > confmf
-   case `$am_make -s -f confmf 2> /dev/null` in #(
-   *the\ am__doit\ target*)
-     am__include=.include
-     am__quote="\""
-     _am_result=BSD
-     ;;
-   esac
+   if test "`$am_make -s -f confmf 2> /dev/null`" = "done"; then
+      am__include=.include
+      am__quote="\""
+      _am_result=BSD
+   fi
 fi
 
 
@@ -2862,13 +2807,16 @@ if test "x$enable_dependency_tracking" != xno; then
   am_depcomp="$ac_aux_dir/depcomp"
   AMDEPBACKSLASH='\'
 fi
- if test "x$enable_dependency_tracking" != xno; then
+
+
+if test "x$enable_dependency_tracking" != xno; then
   AMDEP_TRUE=
   AMDEP_FALSE='#'
 else
   AMDEP_TRUE='#'
   AMDEP_FALSE=
 fi
+
 
 
 ac_ext=c
@@ -3692,11 +3640,6 @@ else
   if test "$am_compiler_list" = ""; then
      am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
   fi
-  am__universal=false
-  case " $depcc " in #(
-     *\ -arch\ *\ -arch\ *) am__universal=true ;;
-     esac
-
   for depmode in $am_compiler_list; do
     # Setup a source with many dependencies, because some compilers
     # like to wrap large dependency lists on column 80 (with \), and
@@ -3714,17 +3657,7 @@ else
     done
     echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
 
-    # We check with `-c' and `-o' for the sake of the "dashmstdout"
-    # mode.  It turns out that the SunPro C++ compiler does not properly
-    # handle `-M -o', and we need to detect this.  Also, some Intel
-    # versions had trouble with output in subdirs
-    am__obj=sub/conftest.${OBJEXT-o}
-    am__minus_obj="-o $am__obj"
     case $depmode in
-    gcc)
-      # This depmode causes a compiler race in universal mode.
-      test "$am__universal" = false || continue
-      ;;
     nosideeffect)
       # after this tag, mechanisms are not by side-effect, so they'll
       # only be used when explicitly requested
@@ -3734,23 +3667,18 @@ else
 	break
       fi
       ;;
-    msvisualcpp | msvcmsys)
-      # This compiler won't grok `-c -o', but also, the minuso test has
-      # not run yet.  These depmodes are late enough in the game, and
-      # so weak that their functioning should not be impacted.
-      am__obj=conftest.${OBJEXT-o}
-      am__minus_obj=
-      ;;
     none) break ;;
     esac
+    # We check with `-c' and `-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle `-M -o', and we need to detect this.
     if depmode=$depmode \
-       source=sub/conftest.c object=$am__obj \
+       source=sub/conftest.c object=sub/conftest.${OBJEXT-o} \
        depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
-       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+       $SHELL ./depcomp $depcc -c -o sub/conftest.${OBJEXT-o} sub/conftest.c \
          >/dev/null 2>conftest.err &&
-       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
        grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
-       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
@@ -3778,7 +3706,9 @@ fi
 $as_echo "$am_cv_CC_dependencies_compiler_type" >&6; }
 CCDEPMODE=depmode=$am_cv_CC_dependencies_compiler_type
 
- if
+
+
+if
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CC_dependencies_compiler_type" = gcc3; then
   am__fastdepCC_TRUE=
@@ -4199,6 +4129,7 @@ with_gnu_ld=$lt_cv_prog_gnu_ld
 
 
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for BSD- or MS-compatible name lister (nm)" >&5
 $as_echo_n "checking for BSD- or MS-compatible name lister (nm)... " >&6; }
 if test "${lt_cv_path_NM+set}" = set; then :
@@ -4373,13 +4304,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4376: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4307: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4379: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4310: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4382: output\"" >&5)
+  (eval echo "\"\$as_me:4313: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -4425,7 +4356,7 @@ else
     lt_cv_sys_max_cmd_len=-1;
     ;;
 
-  cygwin* | mingw* | cegcc*)
+  cygwin* | mingw*)
     # On Win9x/ME, this test blows up -- it succeeds, but takes
     # about 5 minutes as the teststring grows exponentially.
     # Worse, since 9x/ME are not pre-emptively multitasking,
@@ -4534,6 +4465,7 @@ max_cmd_len=$lt_cv_sys_max_cmd_len
 
 
 
+
 : ${CP="cp -f"}
 : ${MV="mv -f"}
 : ${RM="rm -f"}
@@ -4544,9 +4476,7 @@ $as_echo_n "checking whether the shell understands some XSI constructs... " >&6;
 xsi_shell=no
 ( _lt_dummy="a/b/c"
   test "${_lt_dummy##*/},${_lt_dummy%/*},"${_lt_dummy%"$_lt_dummy"}, \
-      = c,a/b,, \
-    && eval 'test $(( 1 + 1 )) -eq 2 \
-    && test "${#_lt_dummy}" -eq 5' ) >/dev/null 2>&1 \
+      = c,a/b,, ) >/dev/null 2>&1 \
   && xsi_shell=yes
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $xsi_shell" >&5
 $as_echo "$xsi_shell" >&6; }
@@ -4626,107 +4556,6 @@ esac
 
 
 
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}objdump", so it can be a program name with args.
-set dummy ${ac_tool_prefix}objdump; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_OBJDUMP+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$OBJDUMP"; then
-  ac_cv_prog_OBJDUMP="$OBJDUMP" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_OBJDUMP="${ac_tool_prefix}objdump"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-OBJDUMP=$ac_cv_prog_OBJDUMP
-if test -n "$OBJDUMP"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $OBJDUMP" >&5
-$as_echo "$OBJDUMP" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_prog_OBJDUMP"; then
-  ac_ct_OBJDUMP=$OBJDUMP
-  # Extract the first word of "objdump", so it can be a program name with args.
-set dummy objdump; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_ac_ct_OBJDUMP+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_OBJDUMP"; then
-  ac_cv_prog_ac_ct_OBJDUMP="$ac_ct_OBJDUMP" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_OBJDUMP="objdump"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_OBJDUMP=$ac_cv_prog_ac_ct_OBJDUMP
-if test -n "$ac_ct_OBJDUMP"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_OBJDUMP" >&5
-$as_echo "$ac_ct_OBJDUMP" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_ct_OBJDUMP" = x; then
-    OBJDUMP="false"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    OBJDUMP=$ac_ct_OBJDUMP
-  fi
-else
-  OBJDUMP="$ac_cv_prog_OBJDUMP"
-fi
-
-test -z "$OBJDUMP" && OBJDUMP=objdump
-
-
-
-
-
-
-
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to recognize dependent libraries" >&5
 $as_echo_n "checking how to recognize dependent libraries... " >&6; }
@@ -4779,12 +4608,6 @@ mingw* | pw32*)
     lt_cv_deplibs_check_method='file_magic file format pei*-i386(.*architecture: i386)?'
     lt_cv_file_magic_cmd='$OBJDUMP -f'
   fi
-  ;;
-
-cegcc)
-  # use the weaker test based on 'objdump'. See mingw*.
-  lt_cv_deplibs_check_method='file_magic file format pe-arm-.*little(.*architecture: arm)?'
-  lt_cv_file_magic_cmd='$OBJDUMP -f'
   ;;
 
 darwin* | rhapsody*)
@@ -4845,11 +4668,11 @@ irix5* | irix6* | nonstopux*)
   ;;
 
 # This must be Linux ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu)
+linux* | k*bsd*-gnu)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd* | netbsdelf*-gnu)
+netbsd*)
   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so\.[0-9]+\.[0-9]+|_pic\.a)$'
   else
@@ -5325,7 +5148,7 @@ case $host_os in
 aix*)
   symcode='[BCDT]'
   ;;
-cygwin* | mingw* | pw32* | cegcc*)
+cygwin* | mingw* | pw32*)
   symcode='[ABCDGISTW]'
   ;;
 hpux*)
@@ -5585,7 +5408,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5588 "configure"' > conftest.$ac_ext
+  echo '#line 5411 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5934,297 +5757,6 @@ else
   NMEDIT="$ac_cv_prog_NMEDIT"
 fi
 
-    if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}lipo", so it can be a program name with args.
-set dummy ${ac_tool_prefix}lipo; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_LIPO+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$LIPO"; then
-  ac_cv_prog_LIPO="$LIPO" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_LIPO="${ac_tool_prefix}lipo"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-LIPO=$ac_cv_prog_LIPO
-if test -n "$LIPO"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LIPO" >&5
-$as_echo "$LIPO" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_prog_LIPO"; then
-  ac_ct_LIPO=$LIPO
-  # Extract the first word of "lipo", so it can be a program name with args.
-set dummy lipo; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_ac_ct_LIPO+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_LIPO"; then
-  ac_cv_prog_ac_ct_LIPO="$ac_ct_LIPO" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_LIPO="lipo"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_LIPO=$ac_cv_prog_ac_ct_LIPO
-if test -n "$ac_ct_LIPO"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_LIPO" >&5
-$as_echo "$ac_ct_LIPO" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_ct_LIPO" = x; then
-    LIPO=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    LIPO=$ac_ct_LIPO
-  fi
-else
-  LIPO="$ac_cv_prog_LIPO"
-fi
-
-    if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}otool", so it can be a program name with args.
-set dummy ${ac_tool_prefix}otool; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_OTOOL+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$OTOOL"; then
-  ac_cv_prog_OTOOL="$OTOOL" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_OTOOL="${ac_tool_prefix}otool"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-OTOOL=$ac_cv_prog_OTOOL
-if test -n "$OTOOL"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $OTOOL" >&5
-$as_echo "$OTOOL" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_prog_OTOOL"; then
-  ac_ct_OTOOL=$OTOOL
-  # Extract the first word of "otool", so it can be a program name with args.
-set dummy otool; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_ac_ct_OTOOL+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_OTOOL"; then
-  ac_cv_prog_ac_ct_OTOOL="$ac_ct_OTOOL" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_OTOOL="otool"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_OTOOL=$ac_cv_prog_ac_ct_OTOOL
-if test -n "$ac_ct_OTOOL"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_OTOOL" >&5
-$as_echo "$ac_ct_OTOOL" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_ct_OTOOL" = x; then
-    OTOOL=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    OTOOL=$ac_ct_OTOOL
-  fi
-else
-  OTOOL="$ac_cv_prog_OTOOL"
-fi
-
-    if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}otool64", so it can be a program name with args.
-set dummy ${ac_tool_prefix}otool64; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_OTOOL64+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$OTOOL64"; then
-  ac_cv_prog_OTOOL64="$OTOOL64" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_OTOOL64="${ac_tool_prefix}otool64"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-OTOOL64=$ac_cv_prog_OTOOL64
-if test -n "$OTOOL64"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $OTOOL64" >&5
-$as_echo "$OTOOL64" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_prog_OTOOL64"; then
-  ac_ct_OTOOL64=$OTOOL64
-  # Extract the first word of "otool64", so it can be a program name with args.
-set dummy otool64; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_ac_ct_OTOOL64+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_OTOOL64"; then
-  ac_cv_prog_ac_ct_OTOOL64="$ac_ct_OTOOL64" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_OTOOL64="otool64"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_OTOOL64=$ac_cv_prog_ac_ct_OTOOL64
-if test -n "$ac_ct_OTOOL64"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_OTOOL64" >&5
-$as_echo "$ac_ct_OTOOL64" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_ct_OTOOL64" = x; then
-    OTOOL64=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    OTOOL64=$ac_ct_OTOOL64
-  fi
-else
-  OTOOL64="$ac_cv_prog_OTOOL64"
-fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -6247,20 +5779,14 @@ else
 	# by either setting the environment variable LT_MULTI_MODULE
 	# non-empty at configure time, or by adding -multi_module to the
 	# link flags.
-	rm -rf libconftest.dylib*
 	echo "int foo(void){return 1;}" > conftest.c
-	echo "$LTCC $LTCFLAGS $LDFLAGS -o libconftest.dylib \
--dynamiclib -Wl,-single_module conftest.c" >&5
 	$LTCC $LTCFLAGS $LDFLAGS -o libconftest.dylib \
-	  -dynamiclib -Wl,-single_module conftest.c 2>conftest.err
-        _lt_result=$?
-	if test -f libconftest.dylib && test ! -s conftest.err && test $_lt_result = 0; then
+	  -dynamiclib ${wl}-single_module conftest.c
+	if test -f libconftest.dylib; then
 	  lt_cv_apple_cc_single_mod=yes
-	else
-	  cat conftest.err >&5
+	  rm -rf libconftest.dylib*
 	fi
-	rm -rf libconftest.dylib*
-	rm -f conftest.*
+	rm conftest.c
       fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_apple_cc_single_mod" >&5
@@ -7115,11 +6641,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7118: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6644: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7122: \$? = $ac_status" >&5
+   echo "$as_me:6648: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7169,25 +6695,19 @@ $as_echo_n "checking for $compiler option to produce PIC... " >&6; }
       ;;
 
     amigaos*)
-      case $host_cpu in
-      powerpc)
-            # see comment about AmigaOS4 .so support
-            lt_prog_compiler_pic='-fPIC'
-        ;;
-      m68k)
-            # FIXME: we need at least 68020 code to build shared libraries, but
-            # adding the `-m68020' flag to GCC prevents building anything better,
-            # like `-m68040'.
-            lt_prog_compiler_pic='-m68020 -resident32 -malways-restore-a4'
-        ;;
-      esac
+      if test "$host_cpu" = m68k; then
+        # FIXME: we need at least 68020 code to build shared libraries, but
+        # adding the `-m68020' flag to GCC prevents building anything better,
+        # like `-m68040'.
+        lt_prog_compiler_pic='-m68020 -resident32 -malways-restore-a4'
+      fi
       ;;
 
     beos* | irix5* | irix6* | nonstopux* | osf3* | osf4* | osf5*)
       # PIC is the default for these OSes.
       ;;
 
-    mingw* | cygwin* | pw32* | os2* | cegcc*)
+    mingw* | cygwin* | pw32* | os2*)
       # This hack is so that the source file can tell whether it is being
       # built for inclusion in a dll (and should export symbols for example).
       # Although the cygwin gcc ignores -fPIC, still need this for old-style
@@ -7202,11 +6722,10 @@ $as_echo_n "checking for $compiler option to produce PIC... " >&6; }
       ;;
 
     hpux*)
-      # PIC is the default for 64-bit PA HP-UX, but not for 32-bit
-      # PA HP-UX.  On IA64 HP-UX, PIC is the default but the pic flag
-      # sets the default TLS model and affects inlining.
+      # PIC is the default for IA64 HP-UX and 64-bit HP-UX, but
+      # not for PA HP-UX.
       case $host_cpu in
-      hppa*64*)
+      hppa*64*|ia64*)
 	# +Z the default
 	;;
       *)
@@ -7256,7 +6775,7 @@ $as_echo_n "checking for $compiler option to produce PIC... " >&6; }
       fi
       ;;
 
-    mingw* | cygwin* | pw32* | os2* | cegcc*)
+    mingw* | cygwin* | pw32* | os2*)
       # This hack is so that the source file can tell whether it is being
       # built for inclusion in a dll (and should export symbols for example).
       lt_prog_compiler_pic='-DDLL_EXPORT'
@@ -7284,27 +6803,13 @@ $as_echo_n "checking for $compiler option to produce PIC... " >&6; }
       lt_prog_compiler_static='-non_shared'
       ;;
 
-    linux* | k*bsd*-gnu | kopensolaris*-gnu)
+    linux* | k*bsd*-gnu)
       case $cc_basename in
-      # old Intel for x86_64 which still supported -KPIC.
-      ecc*)
+      icc* | ecc* | ifort*)
 	lt_prog_compiler_wl='-Wl,'
 	lt_prog_compiler_pic='-KPIC'
 	lt_prog_compiler_static='-static'
         ;;
-      # icc used to be incompatible with GCC.
-      # ICC 10 doesn't accept -KPIC any more.
-      icc* | ifort*)
-	lt_prog_compiler_wl='-Wl,'
-	lt_prog_compiler_pic='-fPIC'
-	lt_prog_compiler_static='-static'
-        ;;
-      # Lahey Fortran 8.1.
-      lf95*)
-	lt_prog_compiler_wl='-Wl,'
-	lt_prog_compiler_pic='--shared'
-	lt_prog_compiler_static='--static'
-	;;
       pgcc* | pgf77* | pgf90* | pgf95*)
         # Portland Group compilers (*not* the Pentium gcc compiler,
 	# which looks to be a dead project)
@@ -7454,11 +6959,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7457: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6962: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7461: \$? = $ac_status" >&5
+   echo "$as_me:6966: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7559,11 +7064,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7562: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7067: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7566: \$? = $ac_status" >&5
+   echo "$as_me:7071: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7614,11 +7119,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7617: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7122: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7621: \$? = $ac_status" >&5
+   echo "$as_me:7126: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7718,7 +7223,7 @@ $as_echo_n "checking whether the $compiler linker ($LD) supports shared librarie
   extract_expsyms_cmds=
 
   case $host_os in
-  cygwin* | mingw* | pw32* | cegcc*)
+  cygwin* | mingw* | pw32*)
     # FIXME: the MSVC++ port hasn't been tested in a loooong time
     # When not using gcc, we currently assume that we are using
     # Microsoft Visual C++.
@@ -7732,9 +7237,6 @@ $as_echo_n "checking whether the $compiler linker ($LD) supports shared librarie
     ;;
   openbsd*)
     with_gnu_ld=no
-    ;;
-  linux* | k*bsd*-gnu)
-    link_all_deplibs=no
     ;;
   esac
 
@@ -7757,7 +7259,6 @@ $as_echo_n "checking whether the $compiler linker ($LD) supports shared librarie
     fi
     supports_anon_versioning=no
     case `$LD -v 2>&1` in
-      *GNU\ gold*) supports_anon_versioning=yes ;;
       *\ [01].* | *\ 2.[0-9].* | *\ 2.10.*) ;; # catch versions < 2.11
       *\ 2.11.93.0.2\ *) supports_anon_versioning=yes ;; # RH7.3 ...
       *\ 2.11.92.0.12\ *) supports_anon_versioning=yes ;; # Mandrake 8.2 ...
@@ -7784,18 +7285,19 @@ _LT_EOF
       ;;
 
     amigaos*)
-      case $host_cpu in
-      powerpc)
-            # see comment about AmigaOS4 .so support
-            archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname -o $lib'
-            archive_expsym_cmds=''
-        ;;
-      m68k)
-            archive_cmds='$RM $output_objdir/a2ixlibrary.data~$ECHO "#define NAME $libname" > $output_objdir/a2ixlibrary.data~$ECHO "#define LIBRARY_ID 1" >> $output_objdir/a2ixlibrary.data~$ECHO "#define VERSION $major" >> $output_objdir/a2ixlibrary.data~$ECHO "#define REVISION $revision" >> $output_objdir/a2ixlibrary.data~$AR $AR_FLAGS $lib $libobjs~$RANLIB $lib~(cd $output_objdir && a2ixlibrary -32)'
-            hardcode_libdir_flag_spec='-L$libdir'
-            hardcode_minus_L=yes
-        ;;
-      esac
+      if test "$host_cpu" = m68k; then
+        archive_cmds='$RM $output_objdir/a2ixlibrary.data~$ECHO "#define NAME $libname" > $output_objdir/a2ixlibrary.data~$ECHO "#define LIBRARY_ID 1" >> $output_objdir/a2ixlibrary.data~$ECHO "#define VERSION $major" >> $output_objdir/a2ixlibrary.data~$ECHO "#define REVISION $revision" >> $output_objdir/a2ixlibrary.data~$AR $AR_FLAGS $lib $libobjs~$RANLIB $lib~(cd $output_objdir && a2ixlibrary -32)'
+        hardcode_libdir_flag_spec='-L$libdir'
+        hardcode_minus_L=yes
+      fi
+
+      # Samuel A. Falvo II <kc5tja@dolphin.openprojects.net> reports
+      # that the semantics of dynamic libraries on AmigaOS, at least up
+      # to version 4, is to share data among multiple programs linked
+      # with the same dynamic library.  Since this doesn't match the
+      # behavior of shared libraries on other platforms, we can't use
+      # them.
+      ld_shlibs=no
       ;;
 
     beos*)
@@ -7809,7 +7311,7 @@ _LT_EOF
       fi
       ;;
 
-    cygwin* | mingw* | pw32* | cegcc*)
+    cygwin* | mingw* | pw32*)
       # _LT_TAGVAR(hardcode_libdir_flag_spec, ) is actually meaningless,
       # as there is no search path for DLLs.
       hardcode_libdir_flag_spec='-L$libdir'
@@ -7849,7 +7351,7 @@ _LT_EOF
       archive_expsym_cmds='sed "s,^,_," $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags ${wl}-h,$soname ${wl}--retain-symbols-file,$output_objdir/$soname.expsym ${wl}--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
       ;;
 
-    gnu* | linux* | tpf* | k*bsd*-gnu | kopensolaris*-gnu)
+    gnu* | linux* | tpf* | k*bsd*-gnu)
       tmp_diet=no
       if test "$host_os" = linux-dietlibc; then
 	case $cc_basename in
@@ -7875,9 +7377,6 @@ _LT_EOF
 	  tmp_addflag=' -i_dynamic -nofor_main' ;;
 	ifc* | ifort*)			# Intel Fortran compiler
 	  tmp_addflag=' -nofor_main' ;;
-	lf95*)				# Lahey Fortran 8.1
-	  whole_archive_flag_spec=
-	  tmp_sharedflag='--shared' ;;
 	xl[cC]*)			# IBM XL C 8.0 on PPC (deal with xlf below)
 	  tmp_sharedflag='-qmkshrobj'
 	  tmp_addflag= ;;
@@ -7919,7 +7418,7 @@ _LT_EOF
       fi
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -8094,7 +7593,6 @@ _LT_EOF
 	if test "$aix_use_runtimelinking" = yes; then
 	  shared_flag="$shared_flag "'${wl}-G'
 	fi
-	link_all_deplibs=no
       else
 	# not using gcc
 	if test "$host_cpu" = ia64; then
@@ -8110,7 +7608,6 @@ _LT_EOF
 	fi
       fi
 
-      export_dynamic_flag_spec='${wl}-bexpall'
       # It seems that -bexpall does not export symbols beginning with
       # underscore (_), so it is better to generate a list of symbols to export.
       always_export_symbols=yes
@@ -8205,25 +7702,20 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       ;;
 
     amigaos*)
-      case $host_cpu in
-      powerpc)
-            # see comment about AmigaOS4 .so support
-            archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname -o $lib'
-            archive_expsym_cmds=''
-        ;;
-      m68k)
-            archive_cmds='$RM $output_objdir/a2ixlibrary.data~$ECHO "#define NAME $libname" > $output_objdir/a2ixlibrary.data~$ECHO "#define LIBRARY_ID 1" >> $output_objdir/a2ixlibrary.data~$ECHO "#define VERSION $major" >> $output_objdir/a2ixlibrary.data~$ECHO "#define REVISION $revision" >> $output_objdir/a2ixlibrary.data~$AR $AR_FLAGS $lib $libobjs~$RANLIB $lib~(cd $output_objdir && a2ixlibrary -32)'
-            hardcode_libdir_flag_spec='-L$libdir'
-            hardcode_minus_L=yes
-        ;;
-      esac
+      if test "$host_cpu" = m68k; then
+        archive_cmds='$RM $output_objdir/a2ixlibrary.data~$ECHO "#define NAME $libname" > $output_objdir/a2ixlibrary.data~$ECHO "#define LIBRARY_ID 1" >> $output_objdir/a2ixlibrary.data~$ECHO "#define VERSION $major" >> $output_objdir/a2ixlibrary.data~$ECHO "#define REVISION $revision" >> $output_objdir/a2ixlibrary.data~$AR $AR_FLAGS $lib $libobjs~$RANLIB $lib~(cd $output_objdir && a2ixlibrary -32)'
+        hardcode_libdir_flag_spec='-L$libdir'
+        hardcode_minus_L=yes
+      fi
+      # see comment about different semantics on the GNU ld section
+      ld_shlibs=no
       ;;
 
     bsdi[45]*)
       export_dynamic_flag_spec=-rdynamic
       ;;
 
-    cygwin* | mingw* | pw32* | cegcc*)
+    cygwin* | mingw* | pw32*)
       # When not using gcc, we currently assume that we are using
       # Microsoft Visual C++.
       # hardcode_libdir_flag_spec is actually meaningless, as there is
@@ -8254,11 +7746,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
   whole_archive_flag_spec=''
   link_all_deplibs=yes
   allow_undefined_flag="$_lt_dar_allow_undefined"
-  case $cc_basename in
-     ifort*) _lt_dar_can_shared=yes ;;
-     *) _lt_dar_can_shared=$GCC ;;
-  esac
-  if test "$_lt_dar_can_shared" = "yes"; then
+  if test "$GCC" = "yes"; then
     output_verbose_link_cmd=echo
     archive_cmds="\$CC -dynamiclib \$allow_undefined_flag -o \$lib \$libobjs \$deplibs \$compiler_flags -install_name \$rpath/\$soname \$verstring $_lt_dar_single_mod${_lt_dsymutil}"
     module_cmds="\$CC \$allow_undefined_flag -o \$lib -bundle \$libobjs \$deplibs \$compiler_flags${_lt_dsymutil}"
@@ -8350,7 +7838,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
 	  archive_cmds='$CC -shared ${wl}+h ${wl}$soname -o $lib $libobjs $deplibs $compiler_flags'
 	  ;;
 	ia64*)
-	  archive_cmds='$CC -shared -fPIC ${wl}+h ${wl}$soname ${wl}+nodefaultrpath -o $lib $libobjs $deplibs $compiler_flags'
+	  archive_cmds='$CC -shared ${wl}+h ${wl}$soname ${wl}+nodefaultrpath -o $lib $libobjs $deplibs $compiler_flags'
 	  ;;
 	*)
 	  archive_cmds='$CC -shared -fPIC ${wl}+h ${wl}$soname ${wl}+b ${wl}$install_libdir -o $lib $libobjs $deplibs $compiler_flags'
@@ -8421,7 +7909,7 @@ rm -f core conftest.err conftest.$ac_objext \
       link_all_deplibs=yes
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -9032,18 +8520,13 @@ aix[4-9]*)
   ;;
 
 amigaos*)
-  case $host_cpu in
-  powerpc)
-    # Since July 2007 AmigaOS4 officially supports .so libraries.
-    # When compiling the executable, add -use-dynld -Lsobjs: to the compileline.
-    library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
-    ;;
-  m68k)
+  if test "$host_cpu" = m68k; then
     library_names_spec='$libname.ixlibrary $libname.a'
     # Create ${libname}_ixlibrary.a entries in /sys/libs.
     finish_eval='for lib in `ls $libdir/*.ixlibrary 2>/dev/null`; do libname=`$ECHO "X$lib" | $Xsed -e '\''s%^.*/\([^/]*\)\.ixlibrary$%\1%'\''`; test $RM /sys/libs/${libname}_ixlibrary.a; $show "cd /sys/libs && $LN_S $lib ${libname}_ixlibrary.a"; cd /sys/libs && $LN_S $lib ${libname}_ixlibrary.a || exit 1; done'
-    ;;
-  esac
+  else
+    dynamic_linker=no
+  fi
   ;;
 
 beos*)
@@ -9066,14 +8549,14 @@ bsdi[45]*)
   # libtool to hard-code these into programs
   ;;
 
-cygwin* | mingw* | pw32* | cegcc*)
+cygwin* | mingw* | pw32*)
   version_type=windows
   shrext_cmds=".dll"
   need_version=no
   need_lib_prefix=no
 
   case $GCC,$host_os in
-  yes,cygwin* | yes,mingw* | yes,pw32* | yes,cegcc*)
+  yes,cygwin* | yes,mingw* | yes,pw32*)
     library_names_spec='$libname.dll.a'
     # DLL is installed to $(libdir)/../bin by postinstall_cmds
     postinstall_cmds='base_file=`basename \${file}`~
@@ -9096,7 +8579,7 @@ cygwin* | mingw* | pw32* | cegcc*)
       soname_spec='`echo ${libname} | sed -e 's/^lib/cyg/'``echo ${release} | $SED -e 's/[.]/-/g'`${versuffix}${shared_ext}'
       sys_lib_search_path_spec="/usr/lib /lib/w32api /lib /usr/local/lib"
       ;;
-    mingw* | cegcc*)
+    mingw*)
       # MinGW DLLs use traditional 'lib' prefix
       soname_spec='${libname}`echo ${release} | $SED -e 's/[.]/-/g'`${versuffix}${shared_ext}'
       sys_lib_search_path_spec=`$CC -print-search-dirs | $GREP "^libraries:" | $SED -e "s/^libraries://" -e "s,=/,/,g"`
@@ -9311,7 +8794,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be Linux ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu)
+linux* | k*bsd*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -9364,18 +8847,6 @@ rm -f core conftest.err conftest.$ac_objext \
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
-  ;;
-
-netbsdelf*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -9549,7 +9020,7 @@ tpf*)
   version_type=linux
   need_lib_prefix=no
   need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
+  library_name_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
   shlibpath_var=LD_LIBRARY_PATH
   shlibpath_overrides_runpath=no
   hardcode_into_libs=yes
@@ -9726,7 +9197,7 @@ else
     lt_cv_dlopen_self=yes
     ;;
 
-  mingw* | pw32* | cegcc*)
+  mingw* | pw32*)
     lt_cv_dlopen="LoadLibrary"
     lt_cv_dlopen_libs=
     ;;
@@ -9998,7 +9469,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10001 "configure"
+#line 9472 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10039,6 +9510,10 @@ else
 #  endif
 #endif
 
+#ifdef __cplusplus
+extern "C" void exit (int);
+#endif
+
 void fnord() { int i=42;}
 int main ()
 {
@@ -10054,7 +9529,7 @@ int main ()
   else
     puts (dlerror ());
 
-  return status;
+    exit (status);
 }
 _LT_EOF
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_link\""; } >&5
@@ -10094,7 +9569,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10097 "configure"
+#line 9572 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10135,6 +9610,10 @@ else
 #  endif
 #endif
 
+#ifdef __cplusplus
+extern "C" void exit (int);
+#endif
+
 void fnord() { int i=42;}
 int main ()
 {
@@ -10150,7 +9629,7 @@ int main ()
   else
     puts (dlerror ());
 
-  return status;
+    exit (status);
 }
 _LT_EOF
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_link\""; } >&5
@@ -10891,11 +10370,6 @@ else
   if test "$am_compiler_list" = ""; then
      am_compiler_list=`sed -n 's/^#*\([a-zA-Z0-9]*\))$/\1/p' < ./depcomp`
   fi
-  am__universal=false
-  case " $depcc " in #(
-     *\ -arch\ *\ -arch\ *) am__universal=true ;;
-     esac
-
   for depmode in $am_compiler_list; do
     # Setup a source with many dependencies, because some compilers
     # like to wrap large dependency lists on column 80 (with \), and
@@ -10913,17 +10387,7 @@ else
     done
     echo "${am__include} ${am__quote}sub/conftest.Po${am__quote}" > confmf
 
-    # We check with `-c' and `-o' for the sake of the "dashmstdout"
-    # mode.  It turns out that the SunPro C++ compiler does not properly
-    # handle `-M -o', and we need to detect this.  Also, some Intel
-    # versions had trouble with output in subdirs
-    am__obj=sub/conftest.${OBJEXT-o}
-    am__minus_obj="-o $am__obj"
     case $depmode in
-    gcc)
-      # This depmode causes a compiler race in universal mode.
-      test "$am__universal" = false || continue
-      ;;
     nosideeffect)
       # after this tag, mechanisms are not by side-effect, so they'll
       # only be used when explicitly requested
@@ -10933,23 +10397,18 @@ else
 	break
       fi
       ;;
-    msvisualcpp | msvcmsys)
-      # This compiler won't grok `-c -o', but also, the minuso test has
-      # not run yet.  These depmodes are late enough in the game, and
-      # so weak that their functioning should not be impacted.
-      am__obj=conftest.${OBJEXT-o}
-      am__minus_obj=
-      ;;
     none) break ;;
     esac
+    # We check with `-c' and `-o' for the sake of the "dashmstdout"
+    # mode.  It turns out that the SunPro C++ compiler does not properly
+    # handle `-M -o', and we need to detect this.
     if depmode=$depmode \
-       source=sub/conftest.c object=$am__obj \
+       source=sub/conftest.c object=sub/conftest.${OBJEXT-o} \
        depfile=sub/conftest.Po tmpdepfile=sub/conftest.TPo \
-       $SHELL ./depcomp $depcc -c $am__minus_obj sub/conftest.c \
+       $SHELL ./depcomp $depcc -c -o sub/conftest.${OBJEXT-o} sub/conftest.c \
          >/dev/null 2>conftest.err &&
-       grep sub/conftst1.h sub/conftest.Po > /dev/null 2>&1 &&
        grep sub/conftst6.h sub/conftest.Po > /dev/null 2>&1 &&
-       grep $am__obj sub/conftest.Po > /dev/null 2>&1 &&
+       grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
       # or remarks (even with -Werror).  So we grep stderr for any message
@@ -10977,7 +10436,9 @@ fi
 $as_echo "$am_cv_CC_dependencies_compiler_type" >&6; }
 CCDEPMODE=depmode=$am_cv_CC_dependencies_compiler_type
 
- if
+
+
+if
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CC_dependencies_compiler_type" = gcc3; then
   am__fastdepCC_TRUE=
@@ -11087,14 +10548,6 @@ LIBOBJS=$ac_libobjs
 
 LTLIBOBJS=$ac_ltlibobjs
 
-
- if test -n "$EXEEXT"; then
-  am__EXEEXT_TRUE=
-  am__EXEEXT_FALSE='#'
-else
-  am__EXEEXT_TRUE='#'
-  am__EXEEXT_FALSE=
-fi
 
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   as_fn_error "conditional \"AMDEP\" was never defined.
@@ -11593,7 +11046,6 @@ gives unlimited permission to copy, distribute and modify it."
 ac_pwd='$ac_pwd'
 srcdir='$srcdir'
 INSTALL='$INSTALL'
-MKDIR_P='$MKDIR_P'
 AWK='$AWK'
 test -n "\$AWK" || AWK=awk
 _ACEOF
@@ -11733,7 +11185,6 @@ lt_SP2NL='`$ECHO "X$lt_SP2NL" | $Xsed -e "$delay_single_quote_subst"`'
 lt_NL2SP='`$ECHO "X$lt_NL2SP" | $Xsed -e "$delay_single_quote_subst"`'
 reload_flag='`$ECHO "X$reload_flag" | $Xsed -e "$delay_single_quote_subst"`'
 reload_cmds='`$ECHO "X$reload_cmds" | $Xsed -e "$delay_single_quote_subst"`'
-OBJDUMP='`$ECHO "X$OBJDUMP" | $Xsed -e "$delay_single_quote_subst"`'
 deplibs_check_method='`$ECHO "X$deplibs_check_method" | $Xsed -e "$delay_single_quote_subst"`'
 file_magic_cmd='`$ECHO "X$file_magic_cmd" | $Xsed -e "$delay_single_quote_subst"`'
 AR='`$ECHO "X$AR" | $Xsed -e "$delay_single_quote_subst"`'
@@ -11763,9 +11214,6 @@ lt_cv_prog_compiler_c_o='`$ECHO "X$lt_cv_prog_compiler_c_o" | $Xsed -e "$delay_s
 need_locks='`$ECHO "X$need_locks" | $Xsed -e "$delay_single_quote_subst"`'
 DSYMUTIL='`$ECHO "X$DSYMUTIL" | $Xsed -e "$delay_single_quote_subst"`'
 NMEDIT='`$ECHO "X$NMEDIT" | $Xsed -e "$delay_single_quote_subst"`'
-LIPO='`$ECHO "X$LIPO" | $Xsed -e "$delay_single_quote_subst"`'
-OTOOL='`$ECHO "X$OTOOL" | $Xsed -e "$delay_single_quote_subst"`'
-OTOOL64='`$ECHO "X$OTOOL64" | $Xsed -e "$delay_single_quote_subst"`'
 libext='`$ECHO "X$libext" | $Xsed -e "$delay_single_quote_subst"`'
 shrext_cmds='`$ECHO "X$shrext_cmds" | $Xsed -e "$delay_single_quote_subst"`'
 extract_expsyms_cmds='`$ECHO "X$extract_expsyms_cmds" | $Xsed -e "$delay_single_quote_subst"`'
@@ -11839,7 +11287,6 @@ LN_S \
 lt_SP2NL \
 lt_NL2SP \
 reload_flag \
-OBJDUMP \
 deplibs_check_method \
 file_magic_cmd \
 AR \
@@ -11863,9 +11310,6 @@ lt_cv_prog_compiler_c_o \
 need_locks \
 DSYMUTIL \
 NMEDIT \
-LIPO \
-OTOOL \
-OTOOL64 \
 shrext_cmds \
 export_dynamic_flag_spec \
 whole_archive_flag_spec \
@@ -12405,11 +11849,6 @@ ac_abs_srcdir=$ac_abs_top_srcdir$ac_dir_suffix
   [\\/$]* | ?:[\\/]* ) ac_INSTALL=$INSTALL ;;
   *) ac_INSTALL=$ac_top_build_prefix$INSTALL ;;
   esac
-  ac_MKDIR_P=$MKDIR_P
-  case $MKDIR_P in
-  [\\/$]* | ?:[\\/]* ) ;;
-  */*) ac_MKDIR_P=$ac_top_build_prefix$MKDIR_P ;;
-  esac
 _ACEOF
 
 cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
@@ -12464,7 +11903,6 @@ s&@builddir@&$ac_builddir&;t t
 s&@abs_builddir@&$ac_abs_builddir&;t t
 s&@abs_top_builddir@&$ac_abs_top_builddir&;t t
 s&@INSTALL@&$ac_INSTALL&;t t
-s&@MKDIR_P@&$ac_MKDIR_P&;t t
 $ac_datarootdir_hack
 "
 eval sed \"\$ac_sed_extra\" "$ac_file_inputs" | $AWK -f "$tmp/subs.awk" >$tmp/out \
@@ -12509,22 +11947,21 @@ $as_echo "$as_me: $ac_file is unchanged" >&6;}
       || as_fn_error "could not create -" "$LINENO" 5
   fi
 # Compute "$ac_file"'s index in $config_headers.
-_am_arg="$ac_file"
 _am_stamp_count=1
 for _am_header in $config_headers :; do
   case $_am_header in
-    $_am_arg | $_am_arg:* )
+    "$ac_file" | "$ac_file":* )
       break ;;
     * )
       _am_stamp_count=`expr $_am_stamp_count + 1` ;;
   esac
 done
-echo "timestamp for $_am_arg" >`$as_dirname -- "$_am_arg" ||
-$as_expr X"$_am_arg" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-	 X"$_am_arg" : 'X\(//\)[^/]' \| \
-	 X"$_am_arg" : 'X\(//\)$' \| \
-	 X"$_am_arg" : 'X\(/\)' \| . 2>/dev/null ||
-$as_echo X"$_am_arg" |
+echo "timestamp for "$ac_file"" >`$as_dirname -- "$ac_file" ||
+$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+	 X"$ac_file" : 'X\(//\)[^/]' \| \
+	 X"$ac_file" : 'X\(//\)$' \| \
+	 X"$ac_file" : 'X\(/\)' \| . 2>/dev/null ||
+$as_echo X"$ac_file" |
     sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
 	    s//\1/
 	    q
@@ -12551,28 +11988,17 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
 
   case $ac_file$ac_mode in
-    "depfiles":C) test x"$AMDEP_TRUE" != x"" || {
-  # Autoconf 2.62 quotes --file arguments for eval, but not when files
-  # are listed without --file.  Let's play safe and only enable the eval
-  # if we detect the quoting.
-  case $CONFIG_FILES in
-  *\'*) eval set x "$CONFIG_FILES" ;;
-  *)   set x $CONFIG_FILES ;;
-  esac
-  shift
-  for mf
-  do
-    # Strip MF so we end up with the name of the file.
-    mf=`echo "$mf" | sed -e 's/:.*$//'`
-    # Check whether this is an Automake generated Makefile or not.
-    # We used to match only the files named `Makefile.in', but
-    # some people rename them; so instead we look at the file content.
-    # Grep'ing the first line is not enough: some people post-process
-    # each Makefile.in and add a new line on top of each file to say so.
-    # Grep'ing the whole file is not good either: AIX grep has a line
-    # limit of 2048, but all sed's we know have understand at least 4000.
-    if sed -n 's,^#.*generated by automake.*,X,p' "$mf" | grep X >/dev/null 2>&1; then
-      dirpart=`$as_dirname -- "$mf" ||
+    "depfiles":C) test x"$AMDEP_TRUE" != x"" || for mf in $CONFIG_FILES; do
+  # Strip MF so we end up with the name of the file.
+  mf=`echo "$mf" | sed -e 's/:.*$//'`
+  # Check whether this is an Automake generated Makefile or not.
+  # We used to match only the files named `Makefile.in', but
+  # some people rename them; so instead we look at the file content.
+  # Grep'ing the first line is not enough: some people post-process
+  # each Makefile.in and add a new line on top of each file to say so.
+  # So let's grep whole file.
+  if grep '^#.*generated by automake' $mf > /dev/null 2>&1; then
+    dirpart=`$as_dirname -- "$mf" ||
 $as_expr X"$mf" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
 	 X"$mf" : 'X\(//\)[^/]' \| \
 	 X"$mf" : 'X\(//\)$' \| \
@@ -12595,28 +12021,28 @@ $as_echo X"$mf" |
 	    q
 	  }
 	  s/.*/./; q'`
-    else
-      continue
-    fi
-    # Extract the definition of DEPDIR, am__include, and am__quote
-    # from the Makefile without running `make'.
-    DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
-    test -z "$DEPDIR" && continue
-    am__include=`sed -n 's/^am__include = //p' < "$mf"`
-    test -z "am__include" && continue
-    am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
-    # When using ansi2knr, U may be empty or an underscore; expand it
-    U=`sed -n 's/^U = //p' < "$mf"`
-    # Find all dependency output files, they are included files with
-    # $(DEPDIR) in their names.  We invoke sed twice because it is the
-    # simplest approach to changing $(DEPDIR) to its actual value in the
-    # expansion.
-    for file in `sed -n "
-      s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
-	 sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
-      # Make sure the directory exists.
-      test -f "$dirpart/$file" && continue
-      fdir=`$as_dirname -- "$file" ||
+  else
+    continue
+  fi
+  # Extract the definition of DEPDIR, am__include, and am__quote
+  # from the Makefile without running `make'.
+  DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
+  test -z "$DEPDIR" && continue
+  am__include=`sed -n 's/^am__include = //p' < "$mf"`
+  test -z "am__include" && continue
+  am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
+  # When using ansi2knr, U may be empty or an underscore; expand it
+  U=`sed -n 's/^U = //p' < "$mf"`
+  # Find all dependency output files, they are included files with
+  # $(DEPDIR) in their names.  We invoke sed twice because it is the
+  # simplest approach to changing $(DEPDIR) to its actual value in the
+  # expansion.
+  for file in `sed -n "
+    s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
+       sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
+    # Make sure the directory exists.
+    test -f "$dirpart/$file" && continue
+    fdir=`$as_dirname -- "$file" ||
 $as_expr X"$file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
 	 X"$file" : 'X\(//\)[^/]' \| \
 	 X"$file" : 'X\(//\)$' \| \
@@ -12639,12 +12065,11 @@ $as_echo X"$file" |
 	    q
 	  }
 	  s/.*/./; q'`
-      as_dir=$dirpart/$fdir; as_fn_mkdir_p
-      # echo "creating $dirpart/$file"
-      echo '# dummy' > "$dirpart/$file"
-    done
+    as_dir=$dirpart/$fdir; as_fn_mkdir_p
+    # echo "creating $dirpart/$file"
+    echo '# dummy' > "$dirpart/$file"
   done
-}
+done
  ;;
     "libtool":C)
 
@@ -12662,7 +12087,7 @@ $as_echo X"$file" |
 #! $SHELL
 
 # `$ECHO "$ofile" | sed 's%^.*/%%'` - Provide generalized library-building support services.
-# Generated automatically by $as_me ($PACKAGE$TIMESTAMP) $VERSION
+# Generated automatically by $as_me (GNU $PACKAGE$TIMESTAMP) $VERSION
 # Libtool was configured on host `(hostname || uname -n) 2>/dev/null | sed 1q`:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
@@ -12768,9 +12193,6 @@ NL2SP=$lt_lt_NL2SP
 reload_flag=$lt_reload_flag
 reload_cmds=$lt_reload_cmds
 
-# An object symbol dumper.
-OBJDUMP=$lt_OBJDUMP
-
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method=$lt_deplibs_check_method
 
@@ -12827,15 +12249,6 @@ DSYMUTIL=$lt_DSYMUTIL
 
 # Tool to change global to local symbols on Mac OS X.
 NMEDIT=$lt_NMEDIT
-
-# Tool to manipulate fat objects and archives on Mac OS X.
-LIPO=$lt_LIPO
-
-# ldd/readelf like tool for Mach-O binaries on Mac OS X.
-OTOOL=$lt_OTOOL
-
-# ldd/readelf like tool for 64 bit Mach-O binaries on Mac OS X 10.4.
-OTOOL64=$lt_OTOOL64
 
 # Old archive suffix (normally "a").
 libext=$libext
@@ -13077,7 +12490,6 @@ ltmain="$ac_aux_dir/ltmain.sh"
   case $xsi_shell in
   yes)
     cat << \_LT_EOF >> "$cfgfile"
-
 # func_dirname file append nondir_replacement
 # Compute the dirname of FILE.  If nonempty, add APPEND to the result,
 # otherwise set result to NONDIR_REPLACEMENT.
@@ -13145,31 +12557,10 @@ func_lo2o ()
     *)    func_lo2o_result=${1} ;;
   esac
 }
-
-# func_xform libobj-or-source
-func_xform ()
-{
-  func_xform_result=${1%.*}.lo
-}
-
-# func_arith arithmetic-term...
-func_arith ()
-{
-  func_arith_result=$(( $* ))
-}
-
-# func_len string
-# STRING may not start with a hyphen.
-func_len ()
-{
-  func_len_result=${#1}
-}
-
 _LT_EOF
     ;;
   *) # Bourne compatible functions.
     cat << \_LT_EOF >> "$cfgfile"
-
 # func_dirname file append nondir_replacement
 # Compute the dirname of FILE.  If nonempty, add APPEND to the result,
 # otherwise set result to NONDIR_REPLACEMENT.
@@ -13190,6 +12581,29 @@ func_basename ()
   func_basename_result=`$ECHO "X${1}" | $Xsed -e "$basename"`
 }
 
+# func_dirname_and_basename file append nondir_replacement
+# perform func_basename and func_dirname in a single function
+# call:
+#   dirname:  Compute the dirname of FILE.  If nonempty,
+#             add APPEND to the result, otherwise set result
+#             to NONDIR_REPLACEMENT.
+#             value returned in "$func_dirname_result"
+#   basename: Compute filename of FILE.
+#             value retuned in "$func_basename_result"
+# Implementation must be kept synchronized with func_dirname
+# and func_basename. For efficiency, we do not delegate to
+# those functions but instead duplicate the functionality here.
+func_dirname_and_basename ()
+{
+  # Extract subdirectory from the argument.
+  func_dirname_result=`$ECHO "X${1}" | $Xsed -e "$dirname"`
+  if test "X$func_dirname_result" = "X${1}"; then
+    func_dirname_result="${3}"
+  else
+    func_dirname_result="$func_dirname_result${2}"
+  fi
+  func_basename_result=`$ECHO "X${1}" | $Xsed -e "$basename"`
+}
 
 # func_stripname prefix suffix name
 # strip PREFIX and SUFFIX off of NAME.
@@ -13223,26 +12637,6 @@ func_lo2o ()
 {
   func_lo2o_result=`$ECHO "X${1}" | $Xsed -e "$lo2o"`
 }
-
-# func_xform libobj-or-source
-func_xform ()
-{
-  func_xform_result=`$ECHO "X${1}" | $Xsed -e 's/\.[^.]*$/.lo/'`
-}
-
-# func_arith arithmetic-term...
-func_arith ()
-{
-  func_arith_result=`expr "$@"`
-}
-
-# func_len string
-# STRING may not start with a hyphen.
-func_len ()
-{
-  func_len_result=`expr "$1" : ".*" 2>/dev/null || echo $max_cmd_len`
-}
-
 _LT_EOF
 esac
 
@@ -13267,7 +12661,6 @@ func_append ()
 {
   eval "$1=\$$1\$2"
 }
-
 _LT_EOF
     ;;
   esac
