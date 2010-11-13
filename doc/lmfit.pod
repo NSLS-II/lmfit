@@ -219,10 +219,18 @@ Main web site: http://www.messen-und-deuten.de/lmfit/
 
 Download location: http://www.messen-und-deuten.de/lmfit/src/
 
-Installation with the usual sequence (B<./configure; make; sudo make install>).
-After installation, this documentation is available through B<man lmfit>.
-
 The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)
+
+
+=head1 INSTALLATION
+
+Installation with the usual sequence (B<./configure; make; sudo make install>).
+By default, installation goes to B</usr/local>.
+Make sure LD_LIBRARY_PATH contains B</usr/local/lib>.
+In some Linux distributions, it is necessary to run B<sudo ldconfig>
+to register the library. 
+
+After installation, this documentation is available through B<man lmfit>.
 
 
 =head1 FAQ
