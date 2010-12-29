@@ -7,7 +7,10 @@
 =end html
 
 =begin html
-<img src="http://vg06.met.vgwort.de/na/d504226082098fdbc96b0cdf2054ba" width="1" height="1" alt="">
+
+<img src="http://vg06.met.vgwort.de/na/d504226082098fdbc96b0cdf2054ba"
+     width="1" height="1" alt="">
+
 =end html
 
 =head1 NAME
@@ -280,7 +283,7 @@ K Madsen, H B Nielsen, O Tingleff: Methods for non-linear least squares problems
 
 =head1 AUTHOR
 
-Joachim Wuttke <j.wuttke@fz-juelich.de>
+Joachim Wuttke <j.wuttke@fz-juelich.de> L<http://www.messen-und-deuten.de>
 
 
 =head1 COPYING
