@@ -622,7 +622,7 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 		if (actred >= 0.)
 		    temp = 0.5;
 		else
-		    temp = 0.5 * dirder / (dirder + 0.55 * actred);
+		    temp = 0.5 * dirder / (dirder + 0.5 * actred);
 		if (p1 * fnorm1 >= fnorm || temp < p1)
 		    temp = p1;
 		delta = temp * MIN(delta, pnorm / p1);
