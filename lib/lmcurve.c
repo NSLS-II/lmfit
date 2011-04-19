@@ -29,7 +29,7 @@ void lmcurve_evaluate( const double *par, int m_dat, const void *data,
 {
     int i;
     for ( i = 0; i < m_dat; i++ )
-	fvec[i] =
+        fvec[i] =
             ((lmcurve_data_struct*)data)->y[i] -
             ((lmcurve_data_struct*)data)->f(
                 ((lmcurve_data_struct*)data)->t[i], par );
@@ -47,4 +47,3 @@ void lmcurve_fit( int n_par, double *par, int m_dat,
     lmmin( n_par, par, m_dat, (const void*) &data,
            lmcurve_evaluate, control, status, lm_printout_std );
 }
-

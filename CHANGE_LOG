@@ -2,6 +2,7 @@
   (required by Visual Studio 2005: bug report M. Beek)
 - corrected typo 0.55 -> 0.5 (bug report M. Kardas)
 - man pages now produced by make; finally got rid of dmake
+- untabified code (hint by W. Pimenta)
 
 Changes in lmfit-3.2, released 28mar10 (preview 27mar10):
 

@@ -35,8 +35,8 @@ typedef struct {
 /* Collection of status (output) parameters. */
 typedef struct {
     double fnorm;     /* norm of the residue vector fvec. */
-    int nfev;	      /* actual number of iterations. */
-    int info;	      /* status (index for lm_infmsg and lm_shortmsg). */
+    int nfev;         /* actual number of iterations. */
+    int info;         /* status (index for lm_infmsg and lm_shortmsg). */
 } lm_status_struct;
 
 /* Recommended control parameter settings. */
@@ -66,10 +66,10 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 /* Alternative to lm_minimize, allowing full control, and read-out
    of auxiliary arrays. For usage, see implementation of lm_minimize. */
 void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
-	       double xtol, double gtol, int maxfev, double epsfcn,
-	       double *diag, int mode, double factor, int *info, int *nfev,
-	       double *fjac, int *ipvt, double *qtf, double *wa1,
-	       double *wa2, double *wa3, double *wa4,
+               double xtol, double gtol, int maxfev, double epsfcn,
+               double *diag, int mode, double factor, int *info, int *nfev,
+               double *fjac, int *ipvt, double *qtf, double *wa1,
+               double *wa2, double *wa3, double *wa4,
                void (*evaluate) (const double *par, int m_dat, const void *data,
                                  double *fvec, int *info),
                void (*printout) (int n_par, const double *par, int m_dat,
