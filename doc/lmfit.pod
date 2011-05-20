@@ -6,13 +6,6 @@
 
 =end html
 
-=begin html
-
-<img src="http://vg06.met.vgwort.de/na/d504226082098fdbc96b0cdf2054ba"
-     width="1" height="1" alt="">
-
-=end html
-
 =head1 NAME
 
 lmfit - C/C++ library for Levenberg-Marquardt least-squares minimization and curve fitting
@@ -221,9 +214,9 @@ F<demo/hat.c>: I<m>=2, I<n>=1, asymetric mexican hat function ||I<F>(I<p>)||. Fi
 
 lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.
 
-Main web site: http://www.joachimwuttke.de/lmfit/
+Main web site: http://joachimwuttke.de/lmfit/
 
-Download location: http://www.joachimwuttke.de/src/
+Download location: http://joachimwuttke.de/src/
 
 The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)
 
@@ -283,7 +276,7 @@ K Madsen, H B Nielsen, O Tingleff: Methods for non-linear least squares problems
 
 =head1 AUTHOR
 
-Joachim Wuttke <j.wuttke@fz-juelich.de> L<http://www.joachimwuttke.de>
+Joachim Wuttke <j.wuttke@fz-juelich.de>
 
 
 =head1 COPYING
@@ -293,3 +286,11 @@ Copyright (C) 2009-10 Joachim Wuttke.
 Software: Public Domain.
 
 Documentation: Creative Commons Attribution Share Alike.
+
+=begin html
+
+<img src="http://vg06.met.vgwort.de/na/d504226082098fdbc96b0cdf2054ba"
+     width="1" height="1" alt="">
+
+=end html
+
