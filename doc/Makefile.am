@@ -1,6 +1,6 @@
 man_MANS = lmfit.3 lmmin.3 lmcurve_fit.3
 auxdir = $(datadir)/lmfit/html
-aux_DATA = lmfit.html podstyle.css index.html
+aux_DATA = lmfit.html
 
 lmfit.3 lmmin.3 lmcurve_fit.3 : lmfit.pod
 	pod2man -s 3 -c "lmfit manual" lmfit.pod > lmfit.3

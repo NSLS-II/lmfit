@@ -2,7 +2,7 @@
 
 =begin html
 
-<link rel="stylesheet" href="podstyle.css" type="text/css" />
+<link rel="stylesheet" href="../podstyle.css" type="text/css" />
 
 =end html
 
@@ -221,9 +221,9 @@ F<demo/hat.c>: I<m>=2, I<n>=1, asymetric mexican hat function ||I<F>(I<p>)||. Fi
 
 lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.
 
-Main web site: http://www.messen-und-deuten.de/lmfit/
+Main web site: http://www.joachimwuttke.de/lmfit/
 
-Download location: http://www.messen-und-deuten.de/lmfit/src/
+Download location: http://www.joachimwuttke.de/src/
 
 The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)
 
@@ -283,14 +283,13 @@ K Madsen, H B Nielsen, O Tingleff: Methods for non-linear least squares problems
 
 =head1 AUTHOR
 
-Joachim Wuttke <j.wuttke@fz-juelich.de> L<http://www.messen-und-deuten.de>
+Joachim Wuttke <j.wuttke@fz-juelich.de> L<http://www.joachimwuttke.de>
 
 
 =head1 COPYING
 
 Copyright (C) 2009-10 Joachim Wuttke.
 
-Software: Public Domain. If you think this work is worth it, you can
-drink a beer in my honor.
+Software: Public Domain.
 
 Documentation: Creative Commons Attribution Share Alike.
