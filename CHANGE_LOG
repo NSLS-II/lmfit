@@ -1,3 +1,5 @@
+Changes in lmfit-3.3
+
 - moved "int" declarations to top of lm_printout_std() and lmmin()
   (required by Visual Studio 2005: bug report M. Beek)
 - corrected typo 0.55 -> 0.5 (bug report M. Kardas)

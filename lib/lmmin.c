@@ -216,7 +216,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
     free(wa3);
     free(wa4);
     free(ipvt);
-} /*** lm_minimize. ***/
+} /*** lmmin. ***/
 
 
 /*****************************************************************************/

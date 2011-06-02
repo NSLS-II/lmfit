@@ -64,7 +64,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 /** Legacy low-level interface. **/
 
 /* Alternative to lm_minimize, allowing full control, and read-out
-   of auxiliary arrays. For usage, see implementation of lm_minimize. */
+   of auxiliary arrays. For usage, see implementation of lmmin. */
 void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
                double xtol, double gtol, int maxfev, double epsfcn,
                double *diag, int mode, double factor, int *info, int *nfev,
