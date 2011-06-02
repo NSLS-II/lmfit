@@ -8,7 +8,7 @@
  *
  * Author:   Joachim Wuttke 2010, following a suggestion by Mario Rudolphi
  * 
- * Homepage: www.messen-und-deuten.de/lmfit
+ * Homepage: joachimwuttke.de/lmfit
  *
  * Licence:  I don't care
  */

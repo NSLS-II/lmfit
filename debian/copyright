@@ -1,7 +1,7 @@
 Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
 Name: lmfit
 Maintainer: Joachim Wuttke <j.wuttke@fz-juelich.de>
-Source: http://www.messen-und-deuten.de/lmfit
+Source: http://joachimwuttke.de/lmfit
 
 Copyright: 1960s, lapack authors
            1970s, Burton S. Garbow

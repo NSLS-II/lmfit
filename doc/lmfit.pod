@@ -260,7 +260,7 @@ If fit results are robust, it does not matter by which implementation they have 
 
 However, in methodological publications that describe software and data analysis procedures based on lmfit, it might be appropriate to provide a reference. The preferred form of citation is:
 
-Joachim Wuttke: lmfit - a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. MorE<eacute>, and S. Moshier. Version <..>, retrieved on <..> from http://www.messen-und-deuten.de/lmfit/.
+Joachim Wuttke: lmfit - a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. MorE<eacute>, and S. Moshier. Version <..>, retrieved on <..> from http://joachimwuttke.de/lmfit/.
 
 
 =head1 REFERENCES

@@ -20,7 +20,7 @@
  *
  * Author:   Joachim Wuttke 2010
  * 
- * Homepage: www.messen-und-deuten.de/lmfit
+ * Homepage: joachimwuttke.de/lmfit
  */
  
 #include "lmcurve.h"

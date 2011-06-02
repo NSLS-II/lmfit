@@ -4,7 +4,7 @@ Maintainer: Joachim Wuttke <j.wuttke@fz-juelich.de>
 Build-Depends: debhelper (>= 7), autotools-dev
 Standards-Version: 3.8.4
 Section: libs
-Homepage: http://messen-und-deuten.de/lmfit/lmfit.html
+Homepage: http://joachimwuttke.de/lmfit
 
 Package: liblmmin-dev
 Section: libdevel

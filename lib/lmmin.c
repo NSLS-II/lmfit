@@ -8,7 +8,7 @@
  *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de>
  *
- * Homepage: www.messen-und-deuten.de/lmfit
+ * Homepage: joachimwuttke.de/lmfit
  */
 
 /*

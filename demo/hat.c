@@ -17,7 +17,7 @@
  *
  * Author:   Joachim Wuttke 2010
  * 
- * Homepage: www.messen-und-deuten.de/lmfit
+ * Homepage: joachimwuttke.de/lmfit
  *
  * Licence:  The Mexican-Hat-Do-What-You-Want-License Rev. 7.31
  */

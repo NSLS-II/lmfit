@@ -8,7 +8,7 @@
  *
  * Author:   Joachim Wuttke 2004-10
  * 
- * Homepage: www.messen-und-deuten.de/lmfit
+ * Homepage: joachimwuttke.de/lmfit
  */
  
 #include "lmcurve.h"

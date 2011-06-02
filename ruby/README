@@ -1,0 +1,17 @@
+SWIG wrapper for lmfit
+
+prepared as follows:
+
+$ vi lmfit-ruby.i
+$ swig -ruby lmfit-ruby.i 
+$ ruby extconf.rb
+$ make
+# make install
+
+test:
+
+$ irb
+require 'lmfit'
+def f(t,p)
+    return p[0]+p[1]*t
+end
