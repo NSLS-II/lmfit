@@ -9,7 +9,9 @@
 %include "carrays.i"
 
 %pointer_functions(unsigned short, usp)
-%array_functions(unsigned char, uca)
+%array_functions(double, doubleArray);
+
+double lm_enorm( int, const double * );
 
 void lmcurve_fit( int, double*, int, const double*, const double*,
                   double (*f)( double, const double *),

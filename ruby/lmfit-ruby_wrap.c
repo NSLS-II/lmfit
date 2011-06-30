@@ -1791,10 +1791,9 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 #define SWIGTYPE_p_f_double_p_q_const__double__double swig_types[2]
 #define SWIGTYPE_p_lm_control_struct swig_types[3]
 #define SWIGTYPE_p_lm_status_struct swig_types[4]
-#define SWIGTYPE_p_unsigned_char swig_types[5]
-#define SWIGTYPE_p_unsigned_short swig_types[6]
-static swig_type_info *swig_types[8];
-static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
+#define SWIGTYPE_p_unsigned_short swig_types[5]
+static swig_type_info *swig_types[7];
+static swig_module_info swig_module = {swig_types, 6, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1921,18 +1920,18 @@ SWIG_From_unsigned_SS_short  (unsigned short value)
 }
 
 
-  static unsigned char *new_uca(size_t nelements) { 
-    return (unsigned char *)malloc((nelements)*sizeof(unsigned char));
+  static double *new_doubleArray(size_t nelements) { 
+    return (double *)malloc((nelements)*sizeof(double));
   }
 
-  static void delete_uca(unsigned char *ary) {
+  static void delete_doubleArray(double *ary) {
     free((char*)ary);
   }
 
-  static unsigned char uca_getitem(unsigned char *ary, size_t index) {
+  static double doubleArray_getitem(double *ary, size_t index) {
     return ary[index];
   }
-  static void uca_setitem(unsigned char *ary, size_t index, unsigned char value) {
+  static void doubleArray_setitem(double *ary, size_t index, double value) {
     ary[index] = value;
   }
 
@@ -1947,26 +1946,35 @@ SWIG_AsVal_size_t (VALUE obj, size_t *val)
 }
 
 
-SWIGINTERNINLINE VALUE
-SWIG_From_unsigned_SS_char  (unsigned char value)
-{    
-  return SWIG_From_unsigned_SS_long  (value);
-}
+  #define SWIG_From_double   rb_float_new 
 
+
+/*@SWIG:/usr/share/swig1.3/ruby/rubyprimtypes.swg,23,%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2DBL(VALUE *args)
+{
+  VALUE obj = args[0];
+  VALUE type = TYPE(obj);
+  double *res = (double *)(args[1]);
+  *res = NUM2DBL(obj);
+  return obj;
+}
+/*@SWIG@*/
 
 SWIGINTERN int
-SWIG_AsVal_unsigned_SS_char (VALUE obj, unsigned char *val)
+SWIG_AsVal_double (VALUE obj, double *val)
 {
-  unsigned long v;
-  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v > UCHAR_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (unsigned char)(v);
+  VALUE type = TYPE(obj);
+  if ((type == T_FLOAT) || (type == T_FIXNUM) || (type == T_BIGNUM)) {
+    double v;
+    VALUE a[2];
+    a[0] = obj;
+    a[1] = (VALUE)(&v);
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2DBL), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+      if (val) *val = v;
+      return SWIG_OK;
     }
-  }  
-  return res;
+  }
+  return SWIG_TypeError;
 }
 
 
@@ -2129,11 +2137,11 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_new_uca(int argc, VALUE *argv, VALUE self) {
+_wrap_new_doubleArray(int argc, VALUE *argv, VALUE self) {
   size_t arg1 ;
   size_t val1 ;
   int ecode1 = 0 ;
-  unsigned char *result = 0 ;
+  double *result = 0 ;
   VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
@@ -2141,11 +2149,11 @@ _wrap_new_uca(int argc, VALUE *argv, VALUE self) {
   }
   ecode1 = SWIG_AsVal_size_t(argv[0], &val1);
   if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "size_t","new_uca", 1, argv[0] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "size_t","new_doubleArray", 1, argv[0] ));
   } 
   arg1 = (size_t)(val1);
-  result = (unsigned char *)new_uca(arg1);
-  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_unsigned_char, 0 |  0 );
+  result = (double *)new_doubleArray(arg1);
+  vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_double, 0 |  0 );
   return vresult;
 fail:
   return Qnil;
@@ -2153,20 +2161,20 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_delete_uca(int argc, VALUE *argv, VALUE self) {
-  unsigned char *arg1 = (unsigned char *) 0 ;
+_wrap_delete_doubleArray(int argc, VALUE *argv, VALUE self) {
+  double *arg1 = (double *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
   if ((argc < 1) || (argc > 1)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
-  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_double, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "unsigned char *","delete_uca", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "double *","delete_doubleArray", 1, argv[0] )); 
   }
-  arg1 = (unsigned char *)(argp1);
-  delete_uca(arg1);
+  arg1 = (double *)(argp1);
+  delete_doubleArray(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -2174,31 +2182,31 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_uca_getitem(int argc, VALUE *argv, VALUE self) {
-  unsigned char *arg1 = (unsigned char *) 0 ;
+_wrap_doubleArray_getitem(int argc, VALUE *argv, VALUE self) {
+  double *arg1 = (double *) 0 ;
   size_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
   int ecode2 = 0 ;
-  unsigned char result;
+  double result;
   VALUE vresult = Qnil;
   
   if ((argc < 2) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_double, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "unsigned char *","uca_getitem", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "double *","doubleArray_getitem", 1, argv[0] )); 
   }
-  arg1 = (unsigned char *)(argp1);
+  arg1 = (double *)(argp1);
   ecode2 = SWIG_AsVal_size_t(argv[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","uca_getitem", 2, argv[1] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","doubleArray_getitem", 2, argv[1] ));
   } 
   arg2 = (size_t)(val2);
-  result = (unsigned char)uca_getitem(arg1,arg2);
-  vresult = SWIG_From_unsigned_SS_char((unsigned char)(result));
+  result = (double)doubleArray_getitem(arg1,arg2);
+  vresult = SWIG_From_double((double)(result));
   return vresult;
 fail:
   return Qnil;
@@ -2206,37 +2214,69 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_uca_setitem(int argc, VALUE *argv, VALUE self) {
-  unsigned char *arg1 = (unsigned char *) 0 ;
+_wrap_doubleArray_setitem(int argc, VALUE *argv, VALUE self) {
+  double *arg1 = (double *) 0 ;
   size_t arg2 ;
-  unsigned char arg3 ;
+  double arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
   int ecode2 = 0 ;
-  unsigned char val3 ;
+  double val3 ;
   int ecode3 = 0 ;
   
   if ((argc < 3) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
   }
-  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_unsigned_char, 0 |  0 );
+  res1 = SWIG_ConvertPtr(argv[0], &argp1,SWIGTYPE_p_double, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "unsigned char *","uca_setitem", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "double *","doubleArray_setitem", 1, argv[0] )); 
   }
-  arg1 = (unsigned char *)(argp1);
+  arg1 = (double *)(argp1);
   ecode2 = SWIG_AsVal_size_t(argv[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","uca_setitem", 2, argv[1] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "size_t","doubleArray_setitem", 2, argv[1] ));
   } 
   arg2 = (size_t)(val2);
-  ecode3 = SWIG_AsVal_unsigned_SS_char(argv[2], &val3);
+  ecode3 = SWIG_AsVal_double(argv[2], &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "unsigned char","uca_setitem", 3, argv[2] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "double","doubleArray_setitem", 3, argv[2] ));
   } 
-  arg3 = (unsigned char)(val3);
-  uca_setitem(arg1,arg2,arg3);
+  arg3 = (double)(val3);
+  doubleArray_setitem(arg1,arg2,arg3);
   return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_lm_enorm(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  double *arg2 = (double *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  double result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","lm_enorm", 1, argv[0] ));
+  } 
+  arg1 = (int)(val1);
+  res2 = SWIG_ConvertPtr(argv[1], &argp2,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "double const *","lm_enorm", 2, argv[1] )); 
+  }
+  arg2 = (double *)(argp2);
+  result = (double)lm_enorm(arg1,(double const *)arg2);
+  vresult = SWIG_From_double((double)(result));
+  return vresult;
 fail:
   return Qnil;
 }
@@ -2326,7 +2366,6 @@ static swig_type_info _swigt__p_double = {"_p_double", "double *", 0, 0, (void*)
 static swig_type_info _swigt__p_f_double_p_q_const__double__double = {"_p_f_double_p_q_const__double__double", "double (*)(double,double const *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_lm_control_struct = {"_p_lm_control_struct", "lm_control_struct *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_lm_status_struct = {"_p_lm_status_struct", "lm_status_struct *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "unsigned short *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
@@ -2335,7 +2374,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_f_double_p_q_const__double__double,
   &_swigt__p_lm_control_struct,
   &_swigt__p_lm_status_struct,
-  &_swigt__p_unsigned_char,
   &_swigt__p_unsigned_short,
 };
 
@@ -2344,7 +2382,6 @@ static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0
 static swig_cast_info _swigc__p_f_double_p_q_const__double__double[] = {  {&_swigt__p_f_double_p_q_const__double__double, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_lm_control_struct[] = {  {&_swigt__p_lm_control_struct, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_lm_status_struct[] = {  {&_swigt__p_lm_status_struct, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
@@ -2353,7 +2390,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_f_double_p_q_const__double__double,
   _swigc__p_lm_control_struct,
   _swigc__p_lm_status_struct,
-  _swigc__p_unsigned_char,
   _swigc__p_unsigned_short,
 };
 
@@ -2620,10 +2656,11 @@ SWIGEXPORT void Init_lmfit(void) {
   rb_define_module_function(mLmfit, "delete_usp", _wrap_delete_usp, -1);
   rb_define_module_function(mLmfit, "usp_assign", _wrap_usp_assign, -1);
   rb_define_module_function(mLmfit, "usp_value", _wrap_usp_value, -1);
-  rb_define_module_function(mLmfit, "new_uca", _wrap_new_uca, -1);
-  rb_define_module_function(mLmfit, "delete_uca", _wrap_delete_uca, -1);
-  rb_define_module_function(mLmfit, "uca_getitem", _wrap_uca_getitem, -1);
-  rb_define_module_function(mLmfit, "uca_setitem", _wrap_uca_setitem, -1);
+  rb_define_module_function(mLmfit, "new_doubleArray", _wrap_new_doubleArray, -1);
+  rb_define_module_function(mLmfit, "delete_doubleArray", _wrap_delete_doubleArray, -1);
+  rb_define_module_function(mLmfit, "doubleArray_getitem", _wrap_doubleArray_getitem, -1);
+  rb_define_module_function(mLmfit, "doubleArray_setitem", _wrap_doubleArray_setitem, -1);
+  rb_define_module_function(mLmfit, "lm_enorm", _wrap_lm_enorm, -1);
   rb_define_module_function(mLmfit, "lmcurve_fit", _wrap_lmcurve_fit, -1);
 }
 
