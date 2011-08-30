@@ -1821,6 +1821,10 @@ static VALUE mLmfit;
 #include <lmcurve.h>
 
 
+extern const lm_control_struct lm_control_float;
+extern const lm_control_struct lm_control_double;
+
+
   static unsigned short *new_usp() { 
     return (unsigned short *)malloc(sizeof(unsigned short));
   }
@@ -2013,6 +2017,27 @@ SWIG_AsVal_int (VALUE obj, int *val)
   }  
   return res;
 }
+
+
+  #define SWIG_From_double   rb_float_new 
+
+SWIGINTERN VALUE
+_wrap_lm_control_float_get(VALUE self) {
+  VALUE _val;
+  
+  _val = SWIG_NewPointerObj(SWIG_as_voidptr(&lm_control_float), SWIGTYPE_p_lm_control_struct,  0 );
+  return _val;
+}
+
+
+SWIGINTERN VALUE
+_wrap_lm_control_double_get(VALUE self) {
+  VALUE _val;
+  
+  _val = SWIG_NewPointerObj(SWIG_as_voidptr(&lm_control_double), SWIGTYPE_p_lm_control_struct,  0 );
+  return _val;
+}
+
 
 SWIGINTERN VALUE
 _wrap_new_usp(int argc, VALUE *argv, VALUE self) {
@@ -2237,6 +2262,38 @@ _wrap_uca_setitem(int argc, VALUE *argv, VALUE self) {
   arg3 = (unsigned char)(val3);
   uca_setitem(arg1,arg2,arg3);
   return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_lm_enorm(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  double *arg2 = (double *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  double result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","lm_enorm", 1, argv[0] ));
+  } 
+  arg1 = (int)(val1);
+  res2 = SWIG_ConvertPtr(argv[1], &argp2,SWIGTYPE_p_double, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "double const *","lm_enorm", 2, argv[1] )); 
+  }
+  arg2 = (double *)(argp2);
+  result = (double)lm_enorm(arg1,(double const *)arg2);
+  vresult = SWIG_From_double((double)(result));
+  return vresult;
 fail:
   return Qnil;
 }
@@ -2615,6 +2672,8 @@ SWIGEXPORT void Init_lmfit(void) {
   }
   
   SWIG_RubyInitializeTrackings();
+  rb_define_singleton_method(mLmfit, "lm_control_float", _wrap_lm_control_float_get, 0);
+  rb_define_singleton_method(mLmfit, "lm_control_double", _wrap_lm_control_double_get, 0);
   rb_define_module_function(mLmfit, "new_usp", _wrap_new_usp, -1);
   rb_define_module_function(mLmfit, "copy_usp", _wrap_copy_usp, -1);
   rb_define_module_function(mLmfit, "delete_usp", _wrap_delete_usp, -1);
@@ -2624,6 +2683,7 @@ SWIGEXPORT void Init_lmfit(void) {
   rb_define_module_function(mLmfit, "delete_uca", _wrap_delete_uca, -1);
   rb_define_module_function(mLmfit, "uca_getitem", _wrap_uca_getitem, -1);
   rb_define_module_function(mLmfit, "uca_setitem", _wrap_uca_setitem, -1);
+  rb_define_module_function(mLmfit, "lm_enorm", _wrap_lm_enorm, -1);
   rb_define_module_function(mLmfit, "lmcurve_fit", _wrap_lmcurve_fit, -1);
 }
 
