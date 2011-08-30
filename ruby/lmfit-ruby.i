@@ -14,7 +14,9 @@ extern const lm_control_struct lm_control_double;
 %}
 
 %pointer_functions(unsigned short, usp)
-%array_functions(unsigned char, uca)
+%array_functions(double, doubleArray);
+
+double lm_enorm( int, const double * );
 
 double lm_enorm( int, const double * );
 
