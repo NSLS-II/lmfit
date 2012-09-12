@@ -1,8 +1,10 @@
-Changes in lmfit-3.3
+Changes in lmfit-3.4 ?
+
+Changes in lmfit-3.3, released 12sep12
 
 - moved "int" declarations to top of lm_printout_std() and lmmin()
   (required by Visual Studio 2005: bug report M. Beek)
-- corrected typo 0.55 -> 0.5 (bug report M. Kardas)
+- corrected typo 0.55 -> 0.5 (bug reports M. Kardas and D. Pescia)
 - man pages now produced by make; finally got rid of dmake
 - untabified code (hint by W. Pimenta)
 
