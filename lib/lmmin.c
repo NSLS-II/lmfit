@@ -169,19 +169,22 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
     int n = n_par;
     int m = m_dat;
 
-    if ( (fvec = (double *) malloc(m * sizeof(double))) == NULL ||
-         (diag = (double *) malloc(n * sizeof(double))) == NULL ||
-         (qtf  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (fjac = (double *) malloc(n*m*sizeof(double))) == NULL ||
-         (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa4  = (double *) malloc(m * sizeof(double))) == NULL ||
-         (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
+    /* One malloc call to allocate several arrays (Frank Polchow, 2013) */
+    fvec = (double *) malloc( (2*m+5*n+n*m)*sizeof(double) + n*sizeof(int));
+    if (NULL==fvec) {//fail in allocation
         status->info = 9;
         return;
     }
+    diag = (double *) &fvec[m];
+    qtf  = (double *) &diag[n];
+    fjac = (double *) &qtf[n];
+    wa1  = (double *) &fjac[n*m];
+    wa2  = (double *) &wa1[n];
+    wa3  = (double *) &wa2[n];
+    wa4  = (double *) &wa3[n];
+    ipvt = (int    *) &wa4[m];
 
+    /* default diagonal */
     if( ! control->scale_diag )
         for( j=0; j<n_par; ++j )
             diag[j] = 1;
@@ -191,31 +194,23 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
     status->info = 0;
 
     /* this goes through the modified legacy interface: */
-    lm_lmdif( m, n, par, fvec, control->ftol, control->xtol, control->gtol,
-              control->maxcall * (n + 1), control->epsilon, diag,
-              ( control->scale_diag ? 1 : 2 ),
-              control->stepbound, &(status->info),
-              &(status->nfev), fjac, ipvt, qtf, wa1, wa2, wa3, wa4,
-              evaluate, printout, control->printflags, data );
+    lm_lmdif(
+        m, n, par, fvec, control->ftol, control->xtol, control->gtol,
+        control->maxcall * (n+1), control->epsilon, diag,
+        ( control->scale_diag ? 1 : 2 ), control->stepbound, &(status->info),
+        &(status->nfev), fjac, ipvt, qtf, wa1, wa2, wa3, wa4,
+        evaluate, printout, control->printflags, data );
 
     if ( printout )
-        (*printout)( n, par, m, data, fvec,
-                     control->printflags, -1, 0, status->nfev );
+        (*printout)(
+            n, par, m, data, fvec, control->printflags, -1, 0, status->nfev );
     status->fnorm = lm_enorm(m, fvec);
     if ( status->info < 0 )
         status->info = 11;
 
 /*** clean up. ***/
-
     free(fvec);
-    free(diag);
-    free(qtf);
-    free(fjac);
-    free(wa1);
-    free(wa2);
-    free(wa3);
-    free(wa4);
-    free(ipvt);
+
 } /*** lmmin. ***/
 
 

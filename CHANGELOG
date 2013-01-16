@@ -1,5 +1,10 @@
 Changes in lmfit-3.4 ?
 
+- only one malloc call to allocate all arrays (proposal by F. Polchow)
+- liblmmin_la_LDFLAGS += -lm (required by Ubuntu, report by J. M. Agosta)
+- there is now an alternative ruby binding, using inline instead of swig
+  (contribution by I. Drozdov)
+
 Changes in lmfit-3.3, released 12sep12
 
 - moved "int" declarations to top of lm_printout_std() and lmmin()
