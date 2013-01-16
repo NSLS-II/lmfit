@@ -71,7 +71,7 @@ const char *lm_infmsg[] = {
     "success (the relative error in the sum of squares is at most tol)",
     "success (the relative error between x and the solution is at most tol)",
     "success (both errors are at most tol)",
-    "trapped by degeneracy (fvec is orthogonal to the columns of the jacobian)",
+    "trapped by degeneracy (increasing epsilon might help)",
     "timeout (number of calls to fcn has reached maxcall*(n+1))",
     "failure (ftol<tol: cannot reduce sum of squares any further)",
     "failure (xtol<tol: cannot improve approximate solution any further)",

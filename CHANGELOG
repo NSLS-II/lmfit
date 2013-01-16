@@ -4,6 +4,8 @@ Changes in lmfit-3.4 ?
 - liblmmin_la_LDFLAGS += -lm (required by Ubuntu, report by J. M. Agosta)
 - there is now an alternative ruby binding, using inline instead of swig
   (contribution by I. Drozdov)
+- long message for degenerate case now suggests increasing epsilon
+  (suggestion by Nghia Ho)
 
 Changes in lmfit-3.3, released 12sep12
 
