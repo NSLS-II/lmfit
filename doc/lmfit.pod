@@ -218,8 +218,6 @@ Main web site: http://joachimwuttke.de/lmfit/
 
 Download location: http://joachimwuttke.de/src/
 
-The old download location at sourceforge.net is no longer maintained (too much advertising there, too slow, too complicated)
-
 
 =head1 INSTALLATION
 
@@ -258,7 +256,7 @@ I would be glad to include code for the calculation of parameter covariances in 
 
 If fit results are robust, it does not matter by which implementation they have been obtained. If the results are not robust, they should not be published anyway. Therefore, in publishing fit results obtained with lmfit it is generally not necessary to cite the software.
 
-However, in methodological publications that describe software and data analysis procedures based on lmfit, it might be appropriate to provide a reference. The preferred form of citation is:
+However, in methodological publications that involve usage of lmfit a citation might be in order. The preferred form is:
 
 Joachim Wuttke: lmfit - a C/C++ routine for Levenberg-Marquardt minimization with wrapper for least-squares curve fitting, based on work by B. S. Garbow, K. E. Hillstrom, J. J. MorE<eacute>, and S. Moshier. Version <..>, retrieved on <..> from http://joachimwuttke.de/lmfit/.
 
@@ -281,7 +279,7 @@ Joachim Wuttke <j.wuttke@fz-juelich.de>
 
 =head1 COPYING
 
-Copyright (C) 2009-10 Joachim Wuttke.
+Copyright (C) 2009-13 Joachim Wuttke.
 
 Software: Public Domain.
 
