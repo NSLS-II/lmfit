@@ -1,4 +1,4 @@
-Changes in lmfit-3.4 ?
+Changes in lmfit-3.4, released 21jan13
 
 - only one malloc call to allocate all arrays (proposal by F. Polchow)
 - liblmmin_la_LDFLAGS += -lm (required by Ubuntu, report by J. M. Agosta)
