@@ -1,5 +1,5 @@
 man_MANS = lmfit.3 lmmin.3 lmcurve_fit.3
-auxdir = $(datadir)/lmfit/html
+auxdir = $(datadir)/man/html
 aux_DATA = lmfit.html
 
 lmfit.3 lmmin.3 lmcurve_fit.3 : lmfit.pod

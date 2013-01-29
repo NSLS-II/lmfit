@@ -1,3 +1,7 @@
+Changes in ?
+
+- directory doc renamed man
+
 Changes in lmfit-3.4, released 21jan13
 
 - only one malloc call to allocate all arrays (proposal by F. Polchow)
