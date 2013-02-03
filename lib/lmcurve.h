@@ -7,6 +7,8 @@
  *
  * Author:   Joachim Wuttke 2010
  * 
+ * Licence:  see ../COPYING (FreeBSD)
+ * 
  * Homepage: joachimwuttke.de/lmfit
  */
  

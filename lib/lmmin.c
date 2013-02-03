@@ -8,21 +8,17 @@
  *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de>
  *
+ * Acknowledgments:
+ *           This software has been build on top of public domain work
+ *           by Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. Moré,
+ *           Steve Moshier, and the authors of lapack.
+ *           Over the years, it has been much improved thanks to
+ *           feedback from numerous users. See ../CHANGELOG.
+ *
+ * Licence:  see ../COPYING (FreeBSD)
+ * 
  * Homepage: joachimwuttke.de/lmfit
  */
-
-/*
- * lmfit is released under the LMFIT-BEER-WARE licence:
- *
- * In writing this software, I borrowed heavily from the public domain,
- * especially from work by Burton S. Garbow, Kenneth E. Hillstrom,
- * Jorge J. Moré, Steve Moshier, and the authors of lapack. To avoid
- * unneccessary complications, I put my additions and amendments also
- * into the public domain. Please retain this notice. Otherwise feel
- * free to do whatever you want with this stuff. If we meet some day,
- * and you think this work is worth it, you can buy me a beer in return.
- */
- 
 
 #include <stdlib.h>
 #include <stdio.h>

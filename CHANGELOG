@@ -1,5 +1,7 @@
-Changes in ?
+Changes in lmfit-3.5, released 3feb13
 
+- changed overall license to FreeBSD to facilitate inclusion in Linux
+  distributions (request by M. Hrončok)
 - directory doc renamed man
 
 Changes in lmfit-3.4, released 21jan13

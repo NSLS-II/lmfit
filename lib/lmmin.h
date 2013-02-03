@@ -5,7 +5,9 @@
  *
  * Contents: Public interface to the Levenberg-Marquardt core implementation.
  *
- * Author:   Joachim Wuttke 2004-2010
+ * Author:   Joachim Wuttke 2004-2013
+ *
+ * Licence:  see ../COPYING (FreeBSD)
  * 
  * Homepage: joachimwuttke.de/lmfit
  */

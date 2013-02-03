@@ -281,7 +281,7 @@ Joachim Wuttke <j.wuttke@fz-juelich.de>
 
 Copyright (C) 2009-13 Joachim Wuttke.
 
-Software: Public Domain.
+Software: FreeBSD License
 
 Documentation: Creative Commons Attribution Share Alike.
 
