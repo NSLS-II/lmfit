@@ -210,7 +210,7 @@ F<demo/powell.c>: I<m>=2, I<n>=2, Powell 1970, with singular Jacobian at the sol
 F<demo/hat.c>: I<m>=2, I<n>=1, asymetric mexican hat function ||I<F>(I<p>)||. Fit result depends on starting value - lmfit does not strive to overcome the limitation to local optimisation.
 
 
-=head1 RESSOURCES
+=head1 RESOURCES
 
 lmfit is ready for use with C or C++ code. The implementation is self-contained; it does not require external libraries.
 
