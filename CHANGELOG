@@ -1,7 +1,13 @@
+TODO
+
+- lmcurve.h must not depend on lmmin.h, but only on new lmpars.h
+- test executables should not install
+- test executables should have composite names starting with lm_
+
 Changes in lmfit-3.5, released 3feb13
 
 - changed overall license to FreeBSD to facilitate inclusion in Linux
-  distributions (request by M. Hrončok)
+  distributions (request by M. Hroncok)
 - directory doc renamed man
 
 Changes in lmfit-3.4, released 21jan13
