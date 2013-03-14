@@ -167,7 +167,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 
     /* One malloc call to allocate several arrays (Frank Polchow, 2013) */
     fvec = (double *) malloc( (2*m+5*n+n*m)*sizeof(double) + n*sizeof(int));
-    if (NULL==fvec) {//fail in allocation
+    if (NULL==fvec) { /* fail in allocation */
         status->info = 9;
         return;
     }
@@ -408,13 +408,13 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
     if ((n <= 0) || (m < n) || (ftol < 0.)
         || (xtol < 0.) || (gtol < 0.) || (maxfev <= 0) || (factor <= 0.)) {
-        *info = 10;             // invalid parameter
+        *info = 10;             /* invalid parameter */
         return;
     }
     if (mode == 2) {            /* scaling by diag[] */
         for (j = 0; j < n; j++) {       /* check for nonpositive elements */
             if (diag[j] <= 0.0) {
-                *info = 10;     // invalid parameter
+                *info = 10;     /* invalid parameter */
                 return;
             }
         }

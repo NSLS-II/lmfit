@@ -4,6 +4,12 @@ TODO
 - test executables should not install
 - test executables should have composite names starting with lm_
 
+Changes in lmfit-3.6
+
+- configure.ac: cleaned up, and inserted comments
+- ensure strict C90 compliance (no C++ comments; resolve invalid
+  struct assignement first noticed by Elio from Adelaide using LCC)
+
 Changes in lmfit-3.5, released 3feb13
 
 - changed overall license to FreeBSD to facilitate inclusion in Linux
