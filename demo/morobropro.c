@@ -59,15 +59,15 @@ int main( int argc, char **argv )
 
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.printflags = 15; // monitor status (+1) and parameters (+2)
+    control.printflags = 3+16; // monitor status (+1) and parameters (+2)
     control.scale_diag = 1;
-    control.pivot = 0;
+    control.pivot = 1;
 
     /* perform the fit */
 
     printf( "demo morobropro starting\n" );
     lmmin( n_par, par, m_dat, (const void*) &lambda,
-           evaluate_morobropro, &control, &status, lm_printout_std );
+           evaluate_morobropro, &control, &status, lm_printout_compact );
 
     /* print results */
 

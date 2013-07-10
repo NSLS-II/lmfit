@@ -29,7 +29,7 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-#define LMFIT_DEBUG_MESSAGES 1
+/* #define LMFIT_DEBUG_MESSAGES 1 */
 /* #define LMFIT_DEBUG_MATRIX 1 */
 
 /* function declarations (implemented below). */
@@ -112,6 +112,13 @@ const char *lm_shortmsg[] = {
 /*  lm_printout_std (default monitoring routine)                             */
 /*****************************************************************************/
 
+const char *lm_action_msg[] = {
+    "trying step in gradient direction",
+    "determining gradient",
+    "starting minimization",
+    "terminating minimization",
+};
+
 void lm_printout_std( int n_par, const double *par, int m_dat,
                       const void *data, const double *fvec,
                       int printflags, int iflag, int iter, int nfev)
@@ -125,7 +132,7 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
  *    Input parameters:
  *       data  : for soft control of printout behaviour, add control
  *                 variables to the data struct
- *       iflag : 0 (init) 1 (outer loop) 2(inner loop) -1(terminated)
+ *       iflag : 0 (init) 1 (outer loop) 2(inner loop) 3(terminated)
  *       iter  : outer loop counter
  *       nfev  : number of calls to *evaluate
  */
@@ -135,30 +142,65 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
     if( !printflags )
         return;
 
-    if( printflags & 1 ){
-        /* location of printout call within lmmin */
-        if (iflag == 2) {
-            printf("lmmin monitor: trying step in gradient direction\n");
-        } else if (iflag == 1) {
-            printf("lmmin monitor: determining gradient (iteration %d)\n",iter);
-        } else if (iflag == 0) {
-            printf("lmmin monitor: starting minimization\n");
-        } else if (iflag == -1) {
-            printf("lmmin monitor: terminated after %3d evaluations\n", nfev);
-        }
-    }
+    printf("lmmin monitor (nfev=%d, iter=%d)\n", nfev, iter );
+    printf( "  %s\n", lm_action_msg[iflag] );
 
     if( printflags & 2 ){
-        printf("lmmin monitor: pars ");
+        printf("  pars ");
         for (i = 0; i < n_par; ++i)
             printf(" %18.11g", par[i]);
         printf(" => norm %18.11g\n", lm_enorm(m_dat, fvec));
     }
 
-    if ( (printflags & 8) || ((printflags & 4) && iflag == -1) ) {
-        printf("lmmin monitor: residuals");
+    if ( (printflags & 8) || ((printflags & 4) && iflag == 3) ) {
+        printf("  residuals (i -> fvec[i])");
         for (i = 0; i < m_dat; ++i)
-            printf(" %12g", fvec[i] );
+            printf(" %3i %12g\n", i, fvec[i] );
+        printf("\n");
+    }
+}
+
+/*****************************************************************************/
+/*  lm_printout_compact (compact monitoring for experts)                     */
+/*****************************************************************************/
+
+const char lm_action_code[] = { 'S', 'G', 'I', 'F' };
+
+void lm_printout_compact( int n_par, const double *par, int m_dat,
+                          const void *data, const double *fvec,
+                          int printflags, int iflag, int iter, int nfev)
+/*
+ *    This is the default monitoring routine.
+ *
+ *    It can also be used as a template for other ways of monitoring the fit:
+ *    Copy this code to your application; rename the routine; modify it;
+ *    and call lmmin with parameter printout = <your modified routine>.
+ *
+ *    Input parameters:
+ *       data  : for soft control of printout behaviour, add control
+ *                 variables to the data struct
+ *       iflag : 0 (init) 1 (outer loop) 2(inner loop) 3(terminated)
+ *       iter  : outer loop counter
+ *       nfev  : number of calls to *evaluate
+ */
+{
+    int i;
+
+    if( !printflags )
+        return;
+
+    printf("lmmin:: %3d %2d %c", nfev, iter, lm_action_code[iflag] );
+
+    if( printflags & 2 ){
+        for (i = 0; i < n_par; ++i)
+            printf(" %16.9g", par[i]);
+        printf(" => %18.11g\n", lm_enorm(m_dat, fvec));
+    }
+
+    if ( (printflags & 8) || ((printflags & 4) && iflag == -1) ) {
+        printf("  residuals");
+        for (i = 0; i < m_dat; ++i)
+            printf(" %10g", fvec[i] );
         printf("\n");
     }
 }
@@ -417,7 +459,7 @@ void lmmin( int n, double *x, int m, const void *data,
     do {
 #ifdef LMFIT_DEBUG_MESSAGES
         printf("\n");
-        printf("debug lmmin outer loop iter=%d nfev=%d fnorm=%.10e\n",
+        printf("debug lmmin outer loop %d:%d fnorm=%.10e\n",
                iter, S->nfev, fnorm);
 #endif
 
@@ -426,7 +468,7 @@ void lmmin( int n, double *x, int m, const void *data,
         for (j = 0; j < n; j++) {
             temp = x[j];
             step = MAX(eps*eps, eps * fabs(temp));
-            x[j] = temp + step; /* replace temporarily */
+            x[j] += step; /* replace temporarily */
             S->info = 0;
             (*evaluate) (x, m, data, wa4, &(S->info));
             ++(S->nfev);
@@ -518,7 +560,7 @@ void lmmin( int n, double *x, int m, const void *data,
         do {
 #ifdef LMFIT_DEBUG_MESSAGES
             printf("\n");
-            printf("debug lmmin inner loop iter=%d nfev=%d\n", iter, S->nfev);
+            printf("debug lmmin inner loop %d:%d\n", iter, S->nfev);
 #endif
 
 /*** inner: determine the levenberg-marquardt parameter. ***/
@@ -666,7 +708,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
     if ( printout )
         (*printout)(
-            n, x, m, data, fvec, C->printflags, -1, 0, S->nfev );
+            n, x, m, data, fvec, C->printflags, 3, 0, S->nfev );
     S->fnorm = lm_enorm(m, fvec);
     if ( S->info < 0 )
         S->info = 11;
@@ -774,7 +816,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
             aux[j] = 0;
     }
 #ifdef LMFIT_DEBUG_MESSAGES
-    printf("debug lmpar nsing=%d ", nsing);
+    printf("debug lmpar nsing=%d\n", nsing);
 #endif
     for (j = nsing - 1; j >= 0; j--) {
         aux[j] = aux[j] / r[j + ldr * j];

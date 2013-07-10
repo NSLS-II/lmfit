@@ -27,6 +27,11 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
                       const void *data, const double *fvec,
                       int printflags, int iflag, int iter, int nfev );
 
+/* Compact monitoring routine. */
+void lm_printout_compact( int n_par, const double *par, int m_dat,
+                      const void *data, const double *fvec,
+                      int printflags, int iflag, int iter, int nfev );
+
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
 double lm_enorm( int, const double * );
 
