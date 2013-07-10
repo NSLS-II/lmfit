@@ -65,9 +65,9 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 */
 
 const lm_control_struct lm_control_double = {
-    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 0 };
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 0, 1 };
 const lm_control_struct lm_control_float = {
-    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100, 0, 0 };
+    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100, 0, 0, 1 };
 
 
 /*****************************************************************************/
@@ -452,7 +452,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /*** outer: compute the qr factorization of the Jacobian. ***/
 
-        lm_qrfac(m, n, fjac, 1, ipvt, wa1, wa2, wa3);
+        lm_qrfac(m, n, fjac, C->pivot, ipvt, wa1, wa2, wa3);
         /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
         if (!iter) { 

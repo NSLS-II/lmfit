@@ -29,6 +29,7 @@ typedef struct {
     int maxcall;      /* maximum number of iterations. */
     int scale_diag;   /* UNDOCUMENTED, TESTWISE automatical diag rescaling? */
     int printflags;   /* OR'ed to produce more noise */
+    int pivot;        /* use pivoting in QR factorization? */
 } lm_control_struct;
 
 /* Collection of status (output) parameters. */
