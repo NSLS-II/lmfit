@@ -93,13 +93,20 @@ const char *lm_shortmsg[] = {
 
 
 /*****************************************************************************/
-/*  lm_printout_std (default monitoring routine)                             */
+/*  lm_printout_std                                                          */
 /*****************************************************************************/
 
 void lm_printout_std( int n_par, const double *par, int m_dat,
                       const void *data, const double *fvec,
                       int printflags, int iflag, int iter, int nfev)
 /*
+ *    This is the default monitoring routine.
+ *
+ *    It can also be used as a template for other ways of monitoring the fit:
+ *    Copy this code to your application; rename the routine; modify it;
+ *    and call lmmin with parameter printout = <your modified routine>.
+ *
+ *    Input parameters:
  *       data  : for soft control of printout behaviour, add control
  *                 variables to the data struct
  *       iflag : 0 (init) 1 (outer loop) 2(inner loop) -1(terminated)
