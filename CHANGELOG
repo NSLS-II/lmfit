@@ -9,6 +9,7 @@ Changes in lmfit-3.6
 - configure.ac: cleaned up, and inserted comments
 - ensure strict C90 compliance: no C++ comments; replace non-standard
   struct assignement (reported by Elio Mazzocca, using LCC)
+- revert malloc trick of release 3.4 (readability is more important)
 
 Changes in lmfit-3.5, released 3feb13
 

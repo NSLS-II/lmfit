@@ -165,20 +165,18 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
     int n = n_par;
     int m = m_dat;
 
-    /* One malloc call to allocate several arrays (Frank Polchow, 2013) */
-    fvec = (double *) malloc( (2*m+5*n+n*m)*sizeof(double) + n*sizeof(int));
-    if (NULL==fvec) { /* fail in allocation */
+    if ( (fvec = (double *) malloc(m * sizeof(double))) == NULL ||
+         (diag = (double *) malloc(n * sizeof(double))) == NULL ||
+         (qtf  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (fjac = (double *) malloc(n*m*sizeof(double))) == NULL ||
+         (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (wa4  = (double *) malloc(m * sizeof(double))) == NULL ||
+         (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
         status->info = 9;
         return;
     }
-    diag = (double *) &fvec[m];
-    qtf  = (double *) &diag[n];
-    fjac = (double *) &qtf[n];
-    wa1  = (double *) &fjac[n*m];
-    wa2  = (double *) &wa1[n];
-    wa3  = (double *) &wa2[n];
-    wa4  = (double *) &wa3[n];
-    ipvt = (int    *) &wa4[m];
 
     /* default diagonal */
     if( ! control->scale_diag )
