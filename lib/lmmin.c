@@ -230,7 +230,7 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 #define SQR(x)   (x)*(x)
 
 
-void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
+void lm_lmdif( int m_dat, int n_par, double *x, double *fvec, double ftol,
                double xtol, double gtol, int maxfev, double epsfcn,
                double *diag, int mode, double factor, int *info, int *nfev,
                double *fjac, int *ipvt, double *qtf, double *wa1,
@@ -259,17 +259,17 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
  *
  *   Parameters:
  *
- *      m is a positive integer input variable set to the number
+ *      m_dat is a positive integer input variable set to the number
  *        of functions.
  *
- *      n is a positive integer input variable set to the number
- *        of variables; n must not exceed m.
+ *      n_par is a positive integer input variable set to the number
+ *        of variables; n_par must not exceed m_dat.
  *
- *      x is an array of length n. On input x must contain an initial
+ *      x is an array of length n_par. On input x must contain an initial
  *        estimate of the solution vector. On OUTPUT x contains the
  *        final estimate of the solution vector.
  *
- *      fvec is an OUTPUT array of length m which contains
+ *      fvec is an OUTPUT array of length m_dat which contains
  *        the functions evaluated at the output x.
  *
  *      ftol is a nonnegative input variable. Termination occurs when
@@ -296,7 +296,7 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
  *        the forward-difference approximation. The relative errors in
  *        the functions are assumed to be of the order of epsfcn.
  *
- *      diag is an array of length n. If mode = 1 (see below), diag is
+ *      diag is an array of length n_par. If mode = 1 (see below), diag is
  *        internally set. If mode = 2, diag must contain positive entries
  *        that serve as multiplicative scale factors for the variables.
  *
@@ -346,8 +346,8 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
  *      nfev is an OUTPUT variable set to the number of calls to the
  *        user-supplied routine *evaluate.
  *
- *      fjac is an OUTPUT m by n array. The upper n by n submatrix
- *        of fjac contains an upper triangular matrix r with
+ *      fjac is an OUTPUT m_dat by n_par array. The upper n_par by n_par
+ *        submatrix of fjac contains an upper triangular matrix r with
  *        diagonal elements of nonincreasing magnitude such that
  *
  *              pT*(jacT*jac)*p = rT*r
@@ -360,23 +360,23 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
  *        part of fjac contains information generated during
  *        the computation of r.
  *
- *      ipvt is an integer OUTPUT array of length n. It defines a
+ *      ipvt is an integer OUTPUT array of length n_par. It defines a
  *        permutation matrix p such that jac*p = q*r, where jac is
  *        the final calculated jacobian, q is orthogonal (not stored),
  *        and r is upper triangular with diagonal elements of
  *        nonincreasing magnitude. Column j of p is column ipvt(j)
  *        of the identity matrix.
  *
- *      qtf is an OUTPUT array of length n which contains
- *        the first n elements of the vector (q transpose)*fvec.
+ *      qtf is an OUTPUT array of length n_par which contains
+ *        the first n_par elements of the vector (q transpose)*fvec.
  *
- *      wa1, wa2, and wa3 are work arrays of length n.
+ *      wa1, wa2, and wa3 are work arrays of length n_par.
  *
- *      wa4 is a work array of length m, used among others to hold
+ *      wa4 is a work array of length m_dat, used among others to hold
  *        residuals from evaluate.
  *
- *      evaluate points to the subroutine which calculates the
- *        m nonlinear functions. Implementations should be written as follows:
+ *      evaluate points to the subroutine which calculates the m_dat nonlinear
+ *        functions. Implementations should be written as follows:
  *
  *        void evaluate( double* par, int m_dat, void *data,
  *                       double* fvec, int *info )
@@ -413,13 +413,13 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
 /*** lmdif: check input parameters for errors. ***/
 
-    if ((n <= 0) || (m < n) || (ftol < 0.)
+    if ((n_par <= 0) || (m_dat < n_par) || (ftol < 0.)
         || (xtol < 0.) || (gtol < 0.) || (maxfev <= 0) || (factor <= 0.)) {
         *info = 10;             /* invalid parameter */
         return;
     }
     if (mode == 2) {            /* scaling by diag[] */
-        for (j = 0; j < n; j++) {       /* check for nonpositive elements */
+        for (j = 0; j < n_par; j++) {       /* check for nonpositive elements */
             if (diag[j] <= 0.0) {
                 *info = 10;     /* invalid parameter */
                 return;
@@ -433,13 +433,13 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 /*** lmdif: evaluate function at starting point and calculate norm. ***/
 
     *info = 0;
-    (*evaluate) (x, m, data, fvec, info);
+    (*evaluate) (x, m_dat, data, fvec, info);
     ++(*nfev);
     if( printout )
-        (*printout) (n, x, m, data, fvec, printflags, 0, 0, *nfev);
+        (*printout) (n_par, x, m_dat, data, fvec, printflags, 0, 0, *nfev);
     if (*info < 0)
         return;
-    fnorm = lm_enorm(m, fvec);
+    fnorm = lm_enorm(m_dat, fvec);
     if( fnorm <= LM_DWARF ){
         *info = 0;
         return;
@@ -455,88 +455,89 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
 /*** outer: calculate the Jacobian. ***/
 
-        for (j = 0; j < n; j++) {
+        for (j = 0; j < n_par; j++) {
             temp = x[j];
             step = MAX(eps*eps, eps * fabs(temp));
             x[j] = temp + step; /* replace temporarily */
             *info = 0;
-            (*evaluate) (x, m, data, wa4, info);
+            (*evaluate) (x, m_dat, data, wa4, info);
             ++(*nfev);
             if( printout )
-                (*printout) (n, x, m, data, wa4, printflags, 1, iter, *nfev);
+                (*printout) (n_par, x, m_dat, data,
+                             wa4, printflags, 1, iter, *nfev);
             if (*info < 0)
                 return; /* user requested break */
-            for (i = 0; i < m; i++)
-                fjac[j*m+i] = (wa4[i] - fvec[i]) / step;
+            for (i = 0; i < m_dat; i++)
+                fjac[j*m_dat+i] = (wa4[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
         }
 #ifdef LMFIT_DEBUG_MATRIX
         /* print the entire matrix */
-        for (i = 0; i < m; i++) {
-            for (j = 0; j < n; j++)
-                printf("%.5e ", fjac[j*m+i]);
+        for (i = 0; i < m_dat; i++) {
+            for (j = 0; j < n_par; j++)
+                printf("%.5e ", fjac[j*m_dat+i]);
             printf("\n");
         }
 #endif
 
 /*** outer: compute the qr factorization of the Jacobian. ***/
 
-        lm_qrfac(m, n, fjac, 1, ipvt, wa1, wa2, wa3);
+        lm_qrfac(m_dat, n_par, fjac, 1, ipvt, wa1, wa2, wa3);
         /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
         if (!iter) { 
             /* first iteration only */
             if (mode != 2) {
                 /* diag := norms of the columns of the initial Jacobian */
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < n_par; j++) {
                     diag[j] = wa2[j];
                     if (wa2[j] == 0.)
                         diag[j] = 1.;
                 }
             }
             /* use diag to scale x, then calculate the norm */
-            for (j = 0; j < n; j++)
+            for (j = 0; j < n_par; j++)
                 wa3[j] = diag[j] * x[j];
-            xnorm = lm_enorm(n, wa3);
+            xnorm = lm_enorm(n_par, wa3);
             /* initialize the step bound delta. */
             delta = factor * xnorm;
             if (delta == 0.)
                 delta = factor;
         } else {
             if (mode != 2) {
-                for (j = 0; j < n; j++)
+                for (j = 0; j < n_par; j++)
                     diag[j] = MAX( diag[j], wa2[j] );
             }
         }
 
-/*** outer: form (q transpose)*fvec and store first n components in qtf. ***/
+/*** outer: form (q transpose)*fvec and store first n_par components in qtf. ***/
 
-        for (i = 0; i < m; i++)
+        for (i = 0; i < m_dat; i++)
             wa4[i] = fvec[i];
 
-        for (j = 0; j < n; j++) {
-            temp3 = fjac[j*m+j];
+        for (j = 0; j < n_par; j++) {
+            temp3 = fjac[j*m_dat+j];
             if (temp3 != 0.) {
                 sum = 0;
-                for (i = j; i < m; i++)
-                    sum += fjac[j*m+i] * wa4[i];
+                for (i = j; i < m_dat; i++)
+                    sum += fjac[j*m_dat+i] * wa4[i];
                 temp = -sum / temp3;
-                for (i = j; i < m; i++)
-                    wa4[i] += fjac[j*m+i] * temp;
+                for (i = j; i < m_dat; i++)
+                    wa4[i] += fjac[j*m_dat+i] * temp;
             }
-            fjac[j*m+j] = wa1[j];
+            fjac[j*m_dat+j] = wa1[j];
             qtf[j] = wa4[j];
         }
 
 /*** outer: compute norm of scaled gradient and test for convergence. ***/
 
         gnorm = 0;
-        for (j = 0; j < n; j++) {
+        for (j = 0; j < n_par; j++) {
             if (wa2[ipvt[j]] == 0)
                 continue;
             sum = 0.;
             for (i = 0; i <= j; i++)
-                sum += fjac[j*m+i] * qtf[i];
+                sum += fjac[j*m_dat+i] * qtf[i];
             gnorm = MAX( gnorm, fabs( sum / wa2[ipvt[j]] / fnorm ) );
         }
 
@@ -553,31 +554,32 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
 /*** inner: determine the levenberg-marquardt parameter. ***/
 
-            lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &par,
+            lm_lmpar( n_par, fjac, m_dat, ipvt, diag, qtf, delta, &par,
                       wa1, wa2, wa4, wa3 );
             /* used return values are fjac (partly), par, wa1=x, wa3=diag*x */
 
-            for (j = 0; j < n; j++)
+            for (j = 0; j < n_par; j++)
                 wa2[j] = x[j] - wa1[j]; /* new parameter vector ? */
 
-            pnorm = lm_enorm(n, wa3);
+            pnorm = lm_enorm(n_par, wa3);
 
             /* at first call, adjust the initial step bound. */
 
-            if (*nfev <= 1+n)
+            if (*nfev <= 1+n_par)
                 delta = MIN(delta, pnorm);
 
 /*** inner: evaluate the function at x + p and calculate its norm. ***/
 
             *info = 0;
-            (*evaluate) (wa2, m, data, wa4, info);
+            (*evaluate) (wa2, m_dat, data, wa4, info);
             ++(*nfev);
             if( printout )
-                (*printout) (n, wa2, m, data, wa4, printflags, 2, iter, *nfev);
+                (*printout) (n_par, wa2, m_dat, data,
+                             wa4, printflags, 2, iter, *nfev);
             if (*info < 0)
                 return; /* user requested break. */
 
-            fnorm1 = lm_enorm(m, wa4);
+            fnorm1 = lm_enorm(m_dat, wa4);
 #ifdef LMFIT_DEBUG_MESSAGES
             printf("lmdif/ pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
                    " delta=%.10e par=%.10e\n",
@@ -594,12 +596,12 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 /*** inner: compute the scaled predicted reduction and 
      the scaled directional derivative. ***/
 
-            for (j = 0; j < n; j++) {
+            for (j = 0; j < n_par; j++) {
                 wa3[j] = 0;
                 for (i = 0; i <= j; i++)
-                    wa3[i] -= fjac[j*m+i] * wa1[ipvt[j]];
+                    wa3[i] -= fjac[j*m_dat+i] * wa1[ipvt[j]];
             }
-            temp1 = lm_enorm(n, wa3) / fnorm;
+            temp1 = lm_enorm(n_par, wa3) / fnorm;
             temp2 = sqrt(par) * pnorm / fnorm;
             prered = SQR(temp1) + 2 * SQR(temp2);
             dirder = -(SQR(temp1) + SQR(temp2));
@@ -634,13 +636,13 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
 
             if (ratio >= p0001) {
                 /* yes, success: update x, fvec, and their norms. */
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < n_par; j++) {
                     x[j] = wa2[j];
                     wa2[j] = diag[j] * x[j];
                 }
-                for (i = 0; i < m; i++)
+                for (i = 0; i < m_dat; i++)
                     fvec[i] = wa4[i];
-                xnorm = lm_enorm(n, wa2);
+                xnorm = lm_enorm(n_par, wa2);
                 fnorm = fnorm1;
                 iter++;
             }
