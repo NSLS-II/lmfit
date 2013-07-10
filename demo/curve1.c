@@ -28,7 +28,7 @@ int main()
     /* parameter vector */
 
     int n_par = 3; // number of parameters in model function f
-    double par[3] = { 1, 0, -1 }; // relatively bad starting value
+    double par[3] = { 100, 0, -1 }; // relatively bad starting value
 
     /* data pairs: slightly distorted standard parabola */
 
@@ -42,6 +42,8 @@ int main()
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
     control.printflags = 3; // monitor status (+1) and parameters (+2)
+    control.scale_diag = 1;
+    control.pivot = 0;
 
     /* perform the fit */
 

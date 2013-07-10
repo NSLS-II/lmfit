@@ -67,7 +67,7 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 const lm_control_struct lm_control_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 0, 1 };
 const lm_control_struct lm_control_float = {
-    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100, 0, 0, 1 };
+    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100, 1, 0, 1 };
 
 
 /*****************************************************************************/
@@ -344,21 +344,6 @@ void lmmin( int n, double *x, int m, const void *data,
     S->info = 0;   /* status code */
     S->nfev = 0;   /* function evaluation counter */
 
-/*** allocate work space. ***/
-
-    if ( (fvec = (double *) malloc(m * sizeof(double))) == NULL ||
-         (diag = (double *) malloc(n * sizeof(double))) == NULL ||
-         (qtf  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (fjac = (double *) malloc(n*m*sizeof(double))) == NULL ||
-         (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa4  = (double *) malloc(m * sizeof(double))) == NULL ||
-         (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
-        S->info = 9;
-        return;
-    }
-
 /*** check input parameters for errors. ***/
 
     if ( n <= 0 ) {
@@ -390,14 +375,25 @@ void lmmin( int n, double *x, int m, const void *data,
         S->info = 10;
         return;
     }
-    if (!C->scale_diag) {            /* scaling by diag[] */
-        for (j = 0; j < n; j++) {       /* check for nonpositive elements */
-            if (diag[j] <= 0.) {
-                fprintf( stderr, "lmmin: nonpositive diag[%i]=%g\n",
-                         j, diag[j] );
-                S->info = 10;
-                return;
-            }
+
+/*** allocate work space. ***/
+
+    if ( (fvec = (double *) malloc(m * sizeof(double))) == NULL ||
+         (diag = (double *) malloc(n * sizeof(double))) == NULL ||
+         (qtf  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (fjac = (double *) malloc(n*m*sizeof(double))) == NULL ||
+         (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
+         (wa4  = (double *) malloc(m * sizeof(double))) == NULL ||
+         (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
+        S->info = 9;
+        return;
+    }
+
+    if (!C->scale_diag) {
+        for (j = 0; j < n; j++) {
+            diag[j] = 1.;
         }
     }
 
