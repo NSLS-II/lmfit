@@ -9,11 +9,10 @@
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de>
  *
  * Acknowledgments:
- *           This software has been build on top of public domain work
- *           by Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. Moré,
+ *           This software is built on public domain work by
+ *           Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. Moré,
  *           Steve Moshier, and the authors of lapack.
- *           Over the years, it has been much improved thanks to
- *           feedback from numerous users. See ../CHANGELOG.
+ *           See ../CHANGELOG for contributors of corrections and refinements.
  *
  * Licence:  see ../COPYING (FreeBSD)
  * 
@@ -28,7 +27,7 @@
 
 
 /*****************************************************************************/
-/*  set numeric constants                                                    */
+/*  Numeric constants                                                        */
 /*****************************************************************************/
 
 /* machine-dependent constants from float.h */
@@ -207,9 +206,8 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 
 } /*** lmmin. ***/
 
-
 /*****************************************************************************/
-/*  lm_lmdif (low-level, modified legacy interface for full control)         */
+/*  lm_lmdif (low-level interface for full control)                          */
 /*****************************************************************************/
 
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
@@ -238,15 +236,19 @@ void lm_lmdif( int m, int n, double *x, double *fvec, double ftol,
                int printflags, const void *data )
 {
 /*
- *   The purpose of lmdif is to minimize the sum of the squares of
- *   m nonlinear functions in n variables by a modification of
- *   the levenberg-marquardt algorithm. The user must provide a
- *   subroutine evaluate which calculates the functions. The jacobian
- *   is then calculated by a forward-difference approximation.
+ *   This routine contains the core algorithm of our library.
  *
- *   The multi-parameter interface lm_lmdif is for users who want
- *   full control and flexibility. Most users will be better off using
- *   the simpler interface lmmin provided above.
+ *   It minimizes the sum of the squares of m nonlinear functions
+ *   in n variables by a modified Levenberg-Marquardt algorithm.
+ *   The function evaluation is done by the user-provided routine 'evaluate'.
+ *   The Jacobian is then calculated by a forward-difference approximation.
+ *
+ *   This is a low-level interface for users who want full control and
+ *   flexibility; the parameter list is kept close to that of the original
+ *   MINPACK subroutine LMDIF.
+ *
+ *   For most applications, the simpler interface lmmin provided in lmmin.c
+ *   should be preferred.
  *
  *   Parameters:
  *

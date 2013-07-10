@@ -1,11 +1,11 @@
 TODO
 
-- lmcurve.h must not depend on lmmin.h, but only on new lmpars.h
 - test executables should not install
 - test executables should have composite names starting with lm_
 
 Changes in lmfit-3.6
 
+- lmcurve.h no longer depends on lmmin.h, but only on new lmstruct.h
 - configure.ac: cleaned up, and inserted comments
 - ensure strict C90 compliance: no C++ comments; replace non-standard
   struct assignement (reported by Elio Mazzocca, using LCC)
