@@ -25,6 +25,19 @@
 #include <float.h>
 #include "lmmin.h"
 
+#define MIN(a,b) (((a)<=(b)) ? (a) : (b))
+#define MAX(a,b) (((a)>=(b)) ? (a) : (b))
+#define SQR(x)   (x)*(x)
+
+/* function declarations (implemented below). */
+void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
+               double *qtb, double delta, double *par, double *x,
+               double *sdiag, double *aux, double *xdi );
+void lm_qrfac( int m, int n, double *a, int pivot, int *ipvt,
+               double *rdiag, double *acnorm, double *wa );
+void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
+                double *qtb, double *x, double *sdiag, double *wa );
+
 
 /*****************************************************************************/
 /*  Numeric constants                                                        */
@@ -58,7 +71,7 @@ const lm_control_struct lm_control_float = {
 
 
 /*****************************************************************************/
-/*  set message texts (indexed by status.info)                               */
+/*  Message texts (indexed by status.info)                                   */
 /*****************************************************************************/
 
 const char *lm_infmsg[] = {
@@ -93,7 +106,7 @@ const char *lm_shortmsg[] = {
 
 
 /*****************************************************************************/
-/*  lm_printout_std                                                          */
+/*  lm_printout_std (default monitoring routine)                             */
 /*****************************************************************************/
 
 void lm_printout_std( int n_par, const double *par, int m_dat,
@@ -151,7 +164,7 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
 
 
 /*****************************************************************************/
-/*  lm_minimize (intermediate-level interface)                               */
+/*  lmmin (main minimization routine)                                        */
 /*****************************************************************************/
 
 void lmmin( int n_par, double *par, int m_dat, const void *data, 
@@ -216,19 +229,6 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
 /*****************************************************************************/
 /*  lm_lmdif (low-level interface for full control)                          */
 /*****************************************************************************/
-
-void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
-               double *qtb, double delta, double *par, double *x,
-               double *sdiag, double *aux, double *xdi );
-void lm_qrfac( int m, int n, double *a, int pivot, int *ipvt,
-               double *rdiag, double *acnorm, double *wa );
-void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
-                double *qtb, double *x, double *sdiag, double *wa );
-
-#define MIN(a,b) (((a)<=(b)) ? (a) : (b))
-#define MAX(a,b) (((a)>=(b)) ? (a) : (b))
-#define SQR(x)   (x)*(x)
-
 
 void lm_lmdif( int m_dat, int n_par, double *x, double *fvec, double ftol,
                double xtol, double gtol, int maxfev, double epsfcn,
