@@ -29,7 +29,7 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-#define LMFIT_DEBUG_MESSAGES 1
+/* #define LMFIT_DEBUG_MESSAGES 1 */
 /* #define LMFIT_DEBUG_MATRIX 1 */
 
 /* function declarations (implemented below). */
