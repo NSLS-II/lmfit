@@ -30,7 +30,7 @@
 #define SQR(x)   (x)*(x)
 
 #define LMFIT_DEBUG_MESSAGES 1
-#define LMFIT_DEBUG_MATRIX   0
+/* #define LMFIT_DEBUG_MATRIX 1 */
 
 /* function declarations (implemented below). */
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
@@ -156,9 +156,10 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
     }
 
     if ( (printflags & 8) || ((printflags & 4) && iflag == -1) ) {
-        printf("lmmin monitor: residuals:\n");
+        printf("lmmin monitor: residuals");
         for (i = 0; i < m_dat; ++i)
-            printf("    fvec[%2d]=%12g\n", i, fvec[i] );
+            printf(" %12g", fvec[i] );
+        printf("\n");
     }
 }
 
@@ -415,6 +416,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
     do {
 #ifdef LMFIT_DEBUG_MESSAGES
+        printf("\n");
         printf("debug lmmin outer loop iter=%d nfev=%d fnorm=%.10e\n",
                iter, S->nfev, fnorm);
 #endif
@@ -515,6 +517,7 @@ void lmmin( int n, double *x, int m, const void *data,
 /*** the inner loop. ***/
         do {
 #ifdef LMFIT_DEBUG_MESSAGES
+            printf("\n");
             printf("debug lmmin inner loop iter=%d nfev=%d\n", iter, S->nfev);
 #endif
 
