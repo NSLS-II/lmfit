@@ -59,27 +59,28 @@ int main( int argc, char **argv )
 
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.printflags = 3; // monitor status (+1) and parameters (+2)
+    control.printflags = 15; // monitor status (+1) and parameters (+2)
     control.scale_diag = 1;
     control.pivot = 0;
 
     /* perform the fit */
 
-    printf( "Fitting:\n" );
+    printf( "demo morobropro starting\n" );
     lmmin( n_par, par, m_dat, (const void*) &lambda,
            evaluate_morobropro, &control, &status, lm_printout_std );
 
     /* print results */
 
-    printf( "\nResults:\n" );
-    printf( "status after %d function evaluations:\n  %s\n",
+    printf( "\n" );
+    printf( "demo morobropro results:\n" );
+    printf( "   after %d function evaluations: status: %s\n",
             status.nfev, lm_infmsg[status.info] );
 
-    printf("obtained parameters:\n");
+    printf("  obtained parameters:\n");
     int i;
     for ( i=0; i<n_par; ++i )
-	printf("  par[%i] = %19.11f\n", i, par[i]);
-    printf("obtained norm:\n  %19.11f\n", status.fnorm );
+	printf("    par[%i] = %19.11f\n", i, par[i]);
+    printf("  and norm:   %19.11f\n", status.fnorm );
 
     return 0;
 }

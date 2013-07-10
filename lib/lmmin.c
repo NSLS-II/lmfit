@@ -29,6 +29,9 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
+#define LMFIT_DEBUG_MESSAGES 1
+#define LMFIT_DEBUG_MATRIX   0
+
 /* function declarations (implemented below). */
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
                double *qtb, double delta, double *par, double *x,
@@ -133,30 +136,27 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
         return;
 
     if( printflags & 1 ){
-        /* location of printout call within lmdif */
+        /* location of printout call within lmmin */
         if (iflag == 2) {
-            printf("trying step in gradient direction  ");
+            printf("lmmin monitor: trying step in gradient direction\n");
         } else if (iflag == 1) {
-            printf("determining gradient (iteration %2d)", iter);
+            printf("lmmin monitor: determining gradient (iteration %d)\n",iter);
         } else if (iflag == 0) {
-            printf("starting minimization              ");
+            printf("lmmin monitor: starting minimization\n");
         } else if (iflag == -1) {
-            printf("terminated after %3d evaluations   ", nfev);
+            printf("lmmin monitor: terminated after %3d evaluations\n", nfev);
         }
     }
 
     if( printflags & 2 ){
-        printf("  par: ");
+        printf("lmmin monitor: pars ");
         for (i = 0; i < n_par; ++i)
             printf(" %18.11g", par[i]);
-        printf(" => norm: %18.11g", lm_enorm(m_dat, fvec));
+        printf(" => norm %18.11g\n", lm_enorm(m_dat, fvec));
     }
 
-    if( printflags & 3 )
-        printf( "\n" );
-
     if ( (printflags & 8) || ((printflags & 4) && iflag == -1) ) {
-        printf("  residuals:\n");
+        printf("lmmin monitor: residuals:\n");
         for (i = 0; i < m_dat; ++i)
             printf("    fvec[%2d]=%12g\n", i, fvec[i] );
     }
@@ -237,7 +237,7 @@ void lmmin( int n, double *x, int m, const void *data,
  *        interval (0.1,100.0). Generally, the value 100.0 is recommended.
  *
  *      info is an integer OUTPUT variable that indicates the termination
- *        status of lm_lmdif as follows:
+ *        status of lmmin as follows:
  *
  *        info < 0  termination requested by user-supplied routine *evaluate;
  *
@@ -415,7 +415,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
     do {
 #ifdef LMFIT_DEBUG_MESSAGES
-        printf("lmdif/ outer loop iter=%d nfev=%d fnorm=%.10e\n",
+        printf("debug lmmin outer loop iter=%d nfev=%d fnorm=%.10e\n",
                iter, S->nfev, fnorm);
 #endif
 
@@ -515,7 +515,7 @@ void lmmin( int n, double *x, int m, const void *data,
 /*** the inner loop. ***/
         do {
 #ifdef LMFIT_DEBUG_MESSAGES
-            printf("lmdif/ inner loop iter=%d nfev=%d\n", iter, S->nfev);
+            printf("debug lmmin inner loop iter=%d nfev=%d\n", iter, S->nfev);
 #endif
 
 /*** inner: determine the levenberg-marquardt parameter. ***/
@@ -547,7 +547,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
             fnorm1 = lm_enorm(m, wa4);
 #ifdef LMFIT_DEBUG_MESSAGES
-            printf("lmdif/ pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
+            printf("debug lmmin pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
                    " delta=%.10e par=%.10e\n",
                    pnorm, fnorm1, fnorm, delta, par);
 #endif
@@ -576,7 +576,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
             ratio = prered != 0 ? actred / prered : 0;
 #ifdef LMFIT_DEBUG_MESSAGES
-            printf("lmdif/ actred=%.10e prered=%.10e ratio=%.10e"
+            printf("debug lmmin actred=%.10e prered=%.10e ratio=%.10e"
                    " sq(1)=%.10e sq(2)=%.10e dd=%.10e\n",
                    actred, prered, prered != 0 ? ratio : 0.,
                    SQR(temp1), SQR(temp2), dirder);
@@ -614,7 +614,7 @@ void lmmin( int n, double *x, int m, const void *data,
             }
 #ifdef LMFIT_DEBUG_MESSAGES
             else {
-                printf("ATTN: iteration considered unsuccessful\n");
+                printf("debug lmmin iteration considered unsuccessful\n");
             }
 #endif
 
@@ -759,10 +759,6 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     double sum, temp;
     static double p1 = 0.1;
 
-#ifdef LMFIT_DEBUG_MESSAGES
-    printf("lmpar\n");
-#endif
-
 /*** lmpar: compute and store in x the gauss-newton direction. if the
      jacobian is rank-deficient, obtain a least squares solution. ***/
 
@@ -775,7 +771,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
             aux[j] = 0;
     }
 #ifdef LMFIT_DEBUG_MESSAGES
-    printf("nsing %d ", nsing);
+    printf("debug lmpar nsing=%d ", nsing);
 #endif
     for (j = nsing - 1; j >= 0; j--) {
         aux[j] = aux[j] / r[j + ldr * j];
@@ -797,7 +793,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     fp = dxnorm - delta;
     if (fp <= p1 * delta) {
 #ifdef LMFIT_DEBUG_MESSAGES
-        printf("lmpar/ terminate (fp<p1*delta)\n");
+        printf("debug lmpar terminate (fp<p1*delta)\n");
 #endif
         *par = 0;
         return;
@@ -843,7 +839,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     if (*par == 0.)
         *par = gnorm / dxnorm;
 #ifdef LMFIT_DEBUG_MESSAGES
-    printf("lmpar/ parl %.4e  par %.4e  paru %.4e\n", parl, *par, paru);
+    printf("debug lmpar parl %.4e  par %.4e  paru %.4e\n", parl, *par, paru);
 #endif
 
 /*** lmpar: iterate. ***/
@@ -976,7 +972,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
             ipvt[j] = j;
     }
 #ifdef LMFIT_DEBUG_MESSAGES
-    printf("qrfac\n");
+    printf("debug qrfac\n");
 #endif
 
 /*** qrfac: reduce a to r with Householder transformations. ***/
@@ -1134,10 +1130,6 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
         x[j] = r[j * ldr + j];
         wa[j] = qtb[j];
     }
-#ifdef LMFIT_DEBUG_MESSAGES
-    printf("qrsolv\n");
-#endif
-
 /*** qrsolv: eliminate the diagonal matrix d using a Givens rotation. ***/
 
     for (j = 0; j < n; j++) {

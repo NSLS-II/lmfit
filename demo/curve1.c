@@ -41,7 +41,7 @@ int main()
 
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.printflags = 3; // monitor status (+1) and parameters (+2)
+    control.printflags = 15; // monitor status (+1) and parameters (+2)
     control.scale_diag = 1;
     control.pivot = 0;
 
