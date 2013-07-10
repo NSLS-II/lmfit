@@ -23,7 +23,7 @@
  * Homepage: joachimwuttke.de/lmfit
  */
  
-#include "lmcurve.h"
+#include "lmmin.h"
 #include <stdio.h>
 #include <stdlib.h>
 

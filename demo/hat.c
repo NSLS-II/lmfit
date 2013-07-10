@@ -22,7 +22,7 @@
  * Licence:  The Mexican-Hat-Do-What-You-Want-License Rev. 7.31
  */
  
-#include "lmcurve.h"
+#include "lmmin.h"
 #include <stdio.h>
 #include <stdlib.h>
 

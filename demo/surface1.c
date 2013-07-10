@@ -13,7 +13,7 @@
  * Licence:  I don't care
  */
  
-#include "lmcurve.h"
+#include "lmmin.h"
 #include <stdio.h>
 
 

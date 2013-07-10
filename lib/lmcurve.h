@@ -12,10 +12,10 @@
  * Homepage: joachimwuttke.de/lmfit
  */
  
-#include<lmmin.h>
-
 #ifndef LMCURVE_H
 #define LMCURVE_H
+
+#include<lmstruct.h>
 
 #ifdef __cplusplus
 extern "C" {
