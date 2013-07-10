@@ -929,12 +929,12 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
               double *rdiag, double *acnorm, double *wa)
 {
 /*
- *     This subroutine uses householder transformations with column
+ *     This subroutine uses Householder transformations with column
  *     pivoting (optional) to compute a qr factorization of the
  *     m by n matrix a. That is, qrfac determines an orthogonal
  *     matrix q, a permutation matrix p, and an upper trapezoidal
  *     matrix r with diagonal elements of nonincreasing magnitude,
- *     such that a*p = q*r. The householder transformation for
+ *     such that a*p = q*r. The Householder transformation for
  *     column k, k = 1,2,...,min(m,n), is of the form
  *
  *          i - (1/u(k))*u*uT
@@ -959,8 +959,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
  *        elements of the u vectors described above).
  *
  *      pivot is a logical input variable. If pivot is set true,
- *        then column pivoting is enforced. If pivot is set false,
- *        then no column pivoting is done.
+ *        then column pivoting is enforced.
  *
  *      ipvt is an integer OUTPUT array of length lipvt. This array
  *        defines the permutation matrix p such that a*p = q*r.
@@ -995,7 +994,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
     printf("qrfac\n");
 #endif
 
-/*** qrfac: reduce a to r with householder transformations. ***/
+/*** qrfac: reduce a to r with Householder transformations. ***/
 
     minmn = MIN(m, n);
     for (j = 0; j < minmn; j++) {
