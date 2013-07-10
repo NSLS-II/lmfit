@@ -29,7 +29,7 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-/* #define LMFIT_DEBUG_MESSAGES 1 */
+#define LMFIT_DEBUG_MESSAGES 1
 /* #define LMFIT_DEBUG_MATRIX 1 */
 
 /* function declarations (implemented below). */
@@ -153,9 +153,9 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
     }
 
     if ( (printflags & 8) || ((printflags & 4) && iflag == 3) ) {
-        printf("  residuals (i -> fvec[i])");
+        printf("  residuals (i, fvec[i]):\n");
         for (i = 0; i < m_dat; ++i)
-            printf(" %3i %12g\n", i, fvec[i] );
+            printf("    %3i %18.11g\n", i, fvec[i] );
         printf("\n");
     }
 }
@@ -435,9 +435,12 @@ void lmmin( int n, double *x, int m, const void *data,
     }
 
     if (!C->scale_diag) {
-        for (j = 0; j < n; j++) {
+        for (j = 0; j < n; j++)
             diag[j] = 1.;
-        }
+    }
+    if (!C->pivot) {
+        for (j = 0; j < n; j++)
+            ipvt[j] = j;
     }
 
 /*** evaluate function at starting point and calculate norm. ***/
@@ -621,8 +624,8 @@ void lmmin( int n, double *x, int m, const void *data,
 
             ratio = prered != 0 ? actred / prered : 0;
 #ifdef LMFIT_DEBUG_MESSAGES
-            printf("debug lmmin actred=%.10e prered=%.10e ratio=%.10e"
-                   " sq(1)=%.10e sq(2)=%.10e dd=%.10e\n",
+            printf("debug lmmin actred %.4e prered %.4e ratio %.4e"
+                   " sq1 %.4e sq2 %.4e dd %.4e\n",
                    actred, prered, prered != 0 ? ratio : 0.,
                    SQR(temp1), SQR(temp2), dirder);
 #endif
@@ -815,9 +818,6 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
         if (nsing < n)
             aux[j] = 0;
     }
-#ifdef LMFIT_DEBUG_MESSAGES
-    printf("debug lmpar nsing=%d\n", nsing);
-#endif
     for (j = nsing - 1; j >= 0; j--) {
         aux[j] = aux[j] / r[j + ldr * j];
         temp = aux[j];
@@ -831,14 +831,13 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 /*** lmpar: initialize the iteration counter, evaluate the function at the
      origin, and test for acceptance of the gauss-newton direction. ***/
 
-    iter = 0;
     for (j = 0; j < n; j++)
         xdi[j] = diag[j] * x[j];
     dxnorm = lm_enorm(n, xdi);
     fp = dxnorm - delta;
     if (fp <= p1 * delta) {
 #ifdef LMFIT_DEBUG_MESSAGES
-        printf("debug lmpar terminate (fp<p1*delta)\n");
+        printf("debug lmpar nsing=%d terminate (fp<p1*delta)\n", nsing);
 #endif
         *par = 0;
         return;
@@ -883,13 +882,10 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     *par = MIN(*par, paru);
     if (*par == 0.)
         *par = gnorm / dxnorm;
-#ifdef LMFIT_DEBUG_MESSAGES
-    printf("debug lmpar parl %.4e  par %.4e  paru %.4e\n", parl, *par, paru);
-#endif
 
 /*** lmpar: iterate. ***/
 
-    for (;; iter++) {
+    for (iter=0; ; iter++) {
 
         /** evaluate the function at the current value of par. **/
 
@@ -914,8 +910,14 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 
         if (fabs(fp) <= p1 * delta
             || (parl == 0. && fp <= fp_old && fp_old < 0.)
-            || iter == 10)
+            || iter == 10) {
+#ifdef LMFIT_DEBUG_MESSAGES
+            printf("debug lmpar nsing %d iter %d "
+                   "par %.4e [%.4e %.4e] delta %.4e fp %.4e\n",
+                   nsing, iter, *par, parl, paru, delta, fp);
+#endif
             break; /* the only exit from the iteration. */
+        }
         
         /** compute the Newton correction. **/
 
