@@ -41,14 +41,16 @@ int main()
 
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.printflags = 15; // monitor status (+1) and parameters (+2)
+    lm_princon_struct princon = lm_princon_std;
+    princon.form  = 1;
+    princon.flags = 15; // monitor status (+1) and parameters (+2)
     control.scale_diag = 1;
     control.pivot = 0;
 
     /* perform the fit */
 
     printf( "Fitting:\n" );
-    lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &status );
+    lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &princon, &status );
 
     /* print results */
 

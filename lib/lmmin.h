@@ -25,12 +25,8 @@ extern "C" {
 /* Standard monitoring routine. */
 void lm_printout_std( int n_par, const double *par, int m_dat,
                       const void *data, const double *fvec,
-                      int printflags, int iflag, int iter, int nfev );
-
-/* Compact monitoring routine. */
-void lm_printout_compact( int n_par, const double *par, int m_dat,
-                      const void *data, const double *fvec,
-                      int printflags, int iflag, int iter, int nfev );
+                      const lm_princon_struct *princon,
+                      int iflag, int iter, int nfev );
 
 /* Refined calculation of Eucledian norm, typically used in printout routine. */
 double lm_enorm( int, const double * );
@@ -39,11 +35,13 @@ double lm_enorm( int, const double * );
 void lmmin( int n_par, double *par, int m_dat, const void *data, 
             void (*evaluate) (const double *par, int m_dat, const void *data,
                               double *fvec, int *info),
-            const lm_control_struct *control,
-            lm_status_struct *status,
             void (*printout) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
-                              int printflags, int iflag, int iter, int nfev) );
+                              const lm_princon_struct *princon,
+                              int iflag, int iter, int nfev),
+            const lm_control_struct *control,
+            const lm_princon_struct *princon,
+            lm_status_struct *status );
 
 
 #ifdef __cplusplus

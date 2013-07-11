@@ -67,12 +67,13 @@ int main()
 
         lm_status_struct status;
         lm_control_struct control = lm_control_double;
+        lm_princon_struct princon = lm_princon_std;
         control.maxcall = 8000;
-        control.printflags = 0;
+        princon.flags = 0;
 
         /* perform the fit */
 
-        lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &status );
+        lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &princon, &status );
 
         /* print results */
 

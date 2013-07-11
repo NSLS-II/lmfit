@@ -68,9 +68,11 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 */
 
 const lm_control_struct lm_control_double = {
-    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 0, 1 };
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 0, 1 };
 const lm_control_struct lm_control_float = {
-    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100, 1, 0, 1 };
+    1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 0, 1 };
+const lm_princon_struct lm_princon_std = {
+    0, 0, -1, -1 };
 
 
 /*****************************************************************************/
@@ -119,56 +121,12 @@ const char *lm_action_msg[] = {
     "terminating minimization",
 };
 
-void lm_printout_std( int n_par, const double *par, int m_dat,
-                      const void *data, const double *fvec,
-                      int printflags, int iflag, int iter, int nfev)
-/*
- *    This is the default monitoring routine.
- *
- *    It can also be used as a template for other ways of monitoring the fit:
- *    Copy this code to your application; rename the routine; modify it;
- *    and call lmmin with parameter printout = <your modified routine>.
- *
- *    Input parameters:
- *       data  : for soft control of printout behaviour, add control
- *                 variables to the data struct
- *       iflag : 0 (init) 1 (outer loop) 2(inner loop) 3(terminated)
- *       iter  : outer loop counter
- *       nfev  : number of calls to *evaluate
- */
-{
-    int i;
-
-    if( !printflags )
-        return;
-
-    printf("lmmin monitor (nfev=%d, iter=%d)\n", nfev, iter );
-    printf( "  %s\n", lm_action_msg[iflag] );
-
-    if( printflags & 2 ){
-        printf("  pars ");
-        for (i = 0; i < n_par; ++i)
-            printf(" %18.11g", par[i]);
-        printf(" => norm %18.11g\n", lm_enorm(m_dat, fvec));
-    }
-
-    if ( (printflags & 8) || ((printflags & 4) && iflag == 3) ) {
-        printf("  residuals (i, fvec[i]):\n");
-        for (i = 0; i < m_dat; ++i)
-            printf("    %3i %18.11g\n", i, fvec[i] );
-        printf("\n");
-    }
-}
-
-/*****************************************************************************/
-/*  lm_printout_compact (compact monitoring for experts)                     */
-/*****************************************************************************/
-
 const char lm_action_code[] = { 'S', 'G', 'I', 'F' };
 
-void lm_printout_compact( int n_par, const double *par, int m_dat,
-                          const void *data, const double *fvec,
-                          int printflags, int iflag, int iter, int nfev)
+void lm_printout_std( int n_par, const double *par, int m_dat,
+                      const void *data, const double *fvec,
+                      const lm_princon_struct *P,
+                      int iflag, int iter, int nfev)
 /*
  *    This is the default monitoring routine.
  *
@@ -184,24 +142,54 @@ void lm_printout_compact( int n_par, const double *par, int m_dat,
  *       nfev  : number of calls to *evaluate
  */
 {
-    int i;
+    int i, mout, nout;
 
-    if( !printflags )
+    if( !P )
         return;
 
-    printf("lmmin:: %3d %2d %c", nfev, iter, lm_action_code[iflag] );
+    /* preset limits for printing params and residuals */
 
-    if( printflags & 2 ){
-        for (i = 0; i < n_par; ++i)
-            printf(" %16.9g", par[i]);
-        printf(" => %18.11g\n", lm_enorm(m_dat, fvec));
-    }
+    mout = P->m_maxpri==-1 ? m_dat : MIN( P->m_maxpri, m_dat );
+    nout = P->n_maxpri==-1 ? n_par : MIN( P->n_maxpri, n_par );
 
-    if ( (printflags & 8) || ((printflags & 4) && iflag == -1) ) {
-        printf("  residuals");
-        for (i = 0; i < m_dat; ++i)
-            printf(" %10g", fvec[i] );
-        printf("\n");
+    /* now print according to chosen form */
+
+    if        ( P->form == 0 ) { /** standard verbose form **/
+
+        printf("lmmin monitor (nfev=%d, iter=%d)\n", nfev, iter );
+        printf( "  %s\n", lm_action_msg[iflag] );
+
+        if( P->flags & 2 ){
+            printf("  pars ");
+            for (i = 0; i < nout; ++i)
+                printf(" %18.11g", par[i]);
+            printf(" => norm %18.11g\n", lm_enorm(m_dat, fvec));
+        }
+
+        if ( (P->flags & 8) || ((P->flags & 4) && iflag == 3) ) {
+            printf("  residuals (i, fvec[i]):\n");
+            for (i = 0; i < mout; ++i)
+                printf("    %3i %18.11g\n", i, fvec[i] );
+            printf("\n");
+
+        }
+
+    } else if ( P->form == 1 ) { /** compact form for us experts **/
+
+        printf("lmmin:: %3d %2d %c", nfev, iter, lm_action_code[iflag] );
+
+        if( P->flags & 2 ){
+            for (i = 0; i < nout; ++i)
+                printf(" %16.9g", par[i]);
+            printf(" => %18.11g\n", lm_enorm(m_dat, fvec));
+        }
+
+        if ( (P->flags & 8) || ((P->flags & 4) && iflag == -1) ) {
+            printf("  residuals");
+            for (i = 0; i < mout; ++i)
+                printf(" %10g", fvec[i] );
+            printf("\n");
+        }
     }
 }
 
@@ -213,11 +201,13 @@ void lm_printout_compact( int n_par, const double *par, int m_dat,
 void lmmin( int n, double *x, int m, const void *data, 
             void (*evaluate) (const double *par, int m_dat, const void *data,
                               double *fvec, int *info),
-            const lm_control_struct *C,
-            lm_status_struct *S,
             void (*printout) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
-                              int printflags, int iflag, int iter, int nfev) )
+                              const lm_princon_struct *princon,
+                              int iflag, int iter, int nfev),
+            const lm_control_struct *C,
+            const lm_princon_struct *princon,
+            lm_status_struct *S )
 /*
  *   This routine contains the core algorithm of our library.
  *
@@ -360,7 +350,7 @@ void lmmin( int n, double *x, int m, const void *data,
  *        Call with printout=0 if no printout is desired.
  *        Call with printout=lm_printout_std to use the default implementation.
  *
- *      printflags is passed to printout.
+ *      P->flags is passed to printout.
  *
  *      data is an input pointer to an arbitrary structure that is passed to
  *        evaluate. Typically, it contains experimental data to be fitted.
@@ -448,7 +438,7 @@ void lmmin( int n, double *x, int m, const void *data,
     (*evaluate) (x, m, data, fvec, &(S->info));
     ++(S->nfev);
     if( printout )
-        (*printout) (n, x, m, data, fvec, C->printflags, 0, 0, S->nfev);
+        (*printout) (n, x, m, data, fvec, princon, 0, 0, S->nfev);
     if (S->info < 0)
         return;
     fnorm = lm_enorm(m, fvec);
@@ -476,8 +466,7 @@ void lmmin( int n, double *x, int m, const void *data,
             (*evaluate) (x, m, data, wa4, &(S->info));
             ++(S->nfev);
             if( printout )
-                (*printout) (n, x, m, data,
-                             wa4, C->printflags, 1, iter, S->nfev);
+                (*printout) (n, x, m, data, wa4, princon, 1, iter, S->nfev);
             if (S->info < 0)
                 return; /* user requested break */
             for (i = 0; i < m; i++)
@@ -589,7 +578,7 @@ void lmmin( int n, double *x, int m, const void *data,
             ++(S->nfev);
             if( printout )
                 (*printout) (n, wa2, m, data,
-                             wa4, C->printflags, 2, iter, S->nfev);
+                             wa4, princon, 2, iter, S->nfev);
             if (S->info < 0)
                 return; /* user requested break. */
 
@@ -711,7 +700,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
     if ( printout )
         (*printout)(
-            n, x, m, data, fvec, C->printflags, 3, 0, S->nfev );
+            n, x, m, data, fvec, princon, 3, 0, S->nfev );
     S->fnorm = lm_enorm(m, fvec);
     if ( S->info < 0 )
         S->info = 11;

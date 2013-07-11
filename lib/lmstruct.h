@@ -19,7 +19,7 @@
 extern "C" {
 #endif
 
-/* Collection of control (input) parameters. */
+/* Collection of input parameters for fit control. */
 typedef struct {
     double ftol;      /* relative error desired in the sum of squares. */
     double xtol;      /* relative error between last two approximations. */
@@ -27,12 +27,19 @@ typedef struct {
     double epsilon;   /* step used to calculate the jacobian. */
     double stepbound; /* initial bound to steps in the outer loop. */
     int maxcall;      /* maximum number of iterations. */
-    int scale_diag;   /* UNDOCUMENTED, TESTWISE automatical diag rescaling? */
-    int printflags;   /* OR'ed to produce more noise */
-    int pivot;        /* use pivoting in QR factorization? */
+    int scale_diag;   /* automatical diag rescaling? [UNDOCUMENTED] */
+    int pivot;        /* use pivoting in QR factorization? [UNDOCUMENTED] */
 } lm_control_struct;
 
-/* Collection of status (output) parameters. */
+/* Collection of input parameters for print control. */
+typedef struct {
+    int form;         /* to select one out of several forms. */
+    int flags;        /* OR'ed switches that decide which info gets printed. */
+    int n_maxpri;     /* -1, or max number of parameters to print. */
+    int m_maxpri;     /* -1, or max number of residuals to print. */
+} lm_princon_struct;
+
+/* Collection of output parameters for status info. */
 typedef struct {
     double fnorm;     /* norm of the residue vector fvec. */
     int nfev;         /* actual number of iterations. */
@@ -42,6 +49,8 @@ typedef struct {
 /* Preset (and recommended) control parameter settings. */
 extern const lm_control_struct lm_control_double;
 extern const lm_control_struct lm_control_float;
+
+extern const lm_princon_struct lm_princon_std;
 
 /* Preset message texts. */
 

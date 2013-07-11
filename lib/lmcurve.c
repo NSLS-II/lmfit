@@ -39,7 +39,9 @@ void lmcurve_evaluate( const double *par, int m_dat, const void *data,
 void lmcurve_fit( int n_par, double *par, int m_dat, 
                   const double *t, const double *y,
                   double (*f)( double t, const double *par ),
-                  const lm_control_struct *control, lm_status_struct *status )
+                  const lm_control_struct *control,
+                  const lm_princon_struct *princon,
+                  lm_status_struct *status )
 {
     lmcurve_data_struct data;
     data.t = t;
@@ -47,5 +49,6 @@ void lmcurve_fit( int n_par, double *par, int m_dat,
     data.f = f;
 
     lmmin( n_par, par, m_dat, (const void*) &data,
-           lmcurve_evaluate, control, status, lm_printout_std );
+           lmcurve_evaluate, lm_printout_std,
+           control, princon, status );
 }

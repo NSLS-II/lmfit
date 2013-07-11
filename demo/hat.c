@@ -58,13 +58,14 @@ int main( int argc, char **argv )
 
     lm_status_struct status; // to receive status information
     lm_control_struct control = lm_control_double;
-    control.printflags = 3; // monitor status (+1) and parameters (+2)
+    lm_princon_struct princon = lm_princon_std;
+    princon.flags = 3; // monitor status (+1) and parameters (+2)
 
     /* perform the fit */
 
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, (const void*) &lambda,
-           evaluate_m2n1, &control, &status, lm_printout_std );
+           evaluate_m2n1, lm_printout_std, &control, &princon, &status );
 
     /* print results */
 

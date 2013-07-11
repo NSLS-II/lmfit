@@ -59,7 +59,8 @@ int main( int argc, char **argv )
 
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.printflags = 3; // monitor status (+1) and parameters (+2)
+    lm_princon_struct princon = lm_princon_std;
+    princon.flags = 3; // monitor status (+1) and parameters (+2)
     control.scale_diag = 1;
     control.pivot = 0;
 
@@ -67,7 +68,8 @@ int main( int argc, char **argv )
 
     printf( "demo morobropro starting\n" );
     lmmin( n_par, par, m_dat, (const void*) &lambda,
-           evaluate_morobropro, &control, &status, lm_printout_compact );
+           evaluate_morobropro, lm_printout_std,
+           &control, &princon, &status );
 
     /* print results */
 

@@ -51,13 +51,14 @@ int main()
 
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.printflags = 3; // monitor status (+1) and parameters (+2)
+    lm_princon_struct princon = lm_princon_std;
+    princon.flags = 3; // monitor status (+1) and parameters (+2)
 
     /* perform the fit */
 
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, 0,
-           evaluate_powell, &control, &status, lm_printout_std );
+           evaluate_powell, lm_printout_std, &control, &princon, &status );
 
     /* print results */
 

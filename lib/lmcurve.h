@@ -25,6 +25,7 @@ void lmcurve_fit( int n_par, double *par, int m_dat,
                   const double *t, const double *y,
                   double (*f)( double t, const double *par ),
                   const lm_control_struct *control,
+                  const lm_princon_struct *princon,
                   lm_status_struct *status );
 
 #ifdef __cplusplus
