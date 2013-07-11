@@ -357,7 +357,6 @@ void lmmin( int n, double *x, int m, const void *data,
  *
  */
 {
-
     double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wa4;
     int *ipvt;
     int j, i;
@@ -440,11 +439,11 @@ void lmmin( int n, double *x, int m, const void *data,
     if( printout )
         (*printout) (n, x, m, data, fvec, princon, 0, 0, S->nfev);
     if (S->info < 0)
-        return;
+        goto terminate;
     fnorm = lm_enorm(m, fvec);
     if( fnorm <= LM_DWARF ){
         S->info = 0;
-        return;
+        goto terminate;
     }
 
 /*** the outer loop. ***/
@@ -468,7 +467,7 @@ void lmmin( int n, double *x, int m, const void *data,
             if( printout )
                 (*printout) (n, x, m, data, wa4, princon, 1, iter, S->nfev);
             if (S->info < 0)
-                return; /* user requested break */
+                goto terminate; /* user requested break */
             for (i = 0; i < m; i++)
                 fjac[j*m+i] = (wa4[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
@@ -485,7 +484,7 @@ void lmmin( int n, double *x, int m, const void *data,
 /*** outer: compute the qr factorization of the Jacobian. ***/
 
         lm_qrfac(m, n, fjac, C->pivot, ipvt, wa1, wa2, wa3);
-        /* return values are ipvt, wa1=rdiag, wa2=acnorm */
+        /* goto terminate values are ipvt, wa1=rdiag, wa2=acnorm */
 
         if (!iter) { 
             /* first iteration only */
@@ -545,7 +544,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
         if (gnorm <= C->gtol) {
             S->info = 4;
-            return;
+            goto terminate;
         }
 
 /*** the inner loop. ***/
@@ -577,10 +576,9 @@ void lmmin( int n, double *x, int m, const void *data,
             (*evaluate) (wa2, m, data, wa4, &(S->info));
             ++(S->nfev);
             if( printout )
-                (*printout) (n, wa2, m, data,
-                             wa4, princon, 2, iter, S->nfev);
+                (*printout) (n, wa2, m, data, wa4, princon, 2, iter, S->nfev);
             if (S->info < 0)
-                return; /* user requested break. */
+                goto terminate; /* user requested break. */
 
             fnorm1 = lm_enorm(m, wa4);
 #ifdef LMFIT_DEBUG_MESSAGES
@@ -659,35 +657,35 @@ void lmmin( int n, double *x, int m, const void *data,
 
             if( fnorm<=LM_DWARF ){
                 S->info = 0;
-                return;
+                goto terminate;
             }
 
             S->info = 0;
-            if (fabs(actred) <= C->ftol && prered <= C->ftol && 0.5 * ratio <= 1)
+            if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
                 S->info = 1;
             if (delta <= C->xtol * xnorm)
                 S->info += 2;
             if (S->info != 0)
-                return;
+                goto terminate;
 
 /*** inner: tests for termination and stringent tolerances. ***/
 
             if (S->nfev >= maxfev){
                 S->info = 5;
-                return;
+                goto terminate;
             }
             if (fabs(actred) <= LM_MACHEP &&
                 prered <= LM_MACHEP && 0.5 * ratio <= 1){
                 S->info = 6;
-                return;
+                goto terminate;
             }
             if (delta <= LM_MACHEP * xnorm){
                 S->info = 7;
-                return;
+                goto terminate;
             }
             if (gnorm <= LM_MACHEP){
                 S->info = 8;
-                return;
+                goto terminate;
             }
 
 /*** inner: end of the loop. repeat if iteration unsuccessful. ***/
@@ -698,9 +696,9 @@ void lmmin( int n, double *x, int m, const void *data,
 
     } while (1);
 
+terminate:
     if ( printout )
-        (*printout)(
-            n, x, m, data, fvec, princon, 3, 0, S->nfev );
+        (*printout)( n, x, m, data, fvec, princon, 3, 0, S->nfev );
     S->fnorm = lm_enorm(m, fvec);
     if ( S->info < 0 )
         S->info = 11;
