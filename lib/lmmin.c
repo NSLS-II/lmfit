@@ -390,7 +390,7 @@ void lmmin( int n, double *x, int m, const void *data,
         S->info = 10;
         return;
     }
-    if ((C->ftol < 0.) || (C->xtol < 0.) || (C->gtol < 0.)) {
+    if (C->ftol < 0. || C->xtol < 0. || C->gtol < 0.) {
         fprintf( stderr,
                  "lmmin: negative tolerance (at least one of %g %g %g)\n",
                  C->ftol, C->xtol, C->gtol );
