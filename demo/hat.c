@@ -19,7 +19,7 @@
  * 
  * Homepage: joachimwuttke.de/lmfit
  *
- * Licence:  The Mexican-Hat-Do-What-You-Want-License Rev. 7.31
+ * Licence:  see ../COPYING (FreeBSD)
  */
  
 #include "lmmin.h"

@@ -10,7 +10,7 @@
  * 
  * Homepage: joachimwuttke.de/lmfit
  *
- * Licence:  I don't care
+ * Licence:  see ../COPYING (FreeBSD)
  */
  
 #include "lmmin.h"

@@ -9,6 +9,8 @@
  * Author:   Joachim Wuttke 2004-10
  * 
  * Homepage: joachimwuttke.de/lmfit
+ *
+ * Licence:  see ../COPYING (FreeBSD)
  */
  
 #include "lmcurve.h"

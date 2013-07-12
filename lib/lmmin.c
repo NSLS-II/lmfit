@@ -29,7 +29,7 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-/* #define LMFIT_DEBUG_MESSAGES 1 */
+#define LMFIT_DEBUG_MESSAGES 1
 /* #define LMFIT_DEBUG_MATRIX 1 */
 
 /* function declarations (implemented below). */
@@ -665,8 +665,15 @@ void lmmin( int n, double *x, int m, const void *data,
                 S->info = 1;
             if (delta <= C->xtol * xnorm)
                 S->info += 2;
-            if (S->info != 0)
+            if (S->info != 0) {
+#ifdef LMFIT_DEBUG_MESSAGES
+                printf("debug lmmin success (%i) actred %g prered %g ratio %g "
+                       "delta %g xnorm %g ftol %g xtol %g\n",
+                       S->info, actred, prered, ratio, delta, xnorm,
+                       C->ftol, C->xtol );
+#endif
                 goto terminate;
+            }
 
 /*** inner: tests for termination and stringent tolerances. ***/
 
