@@ -7,6 +7,6 @@ lmfit.7 : lmfit.pod
 %.3 : %.pod
 	pod2man -s 3 -c "lmfit manual" -n "$*"      $< > $@
 
-lmfit.html : lmfit.pod
-	pod2html --title="C library for Levenberg-Marquardt least-squares minimization and curve fitting" --noindex lmfit.pod > lmfit.html
+%.html : %.pod
+	pod2html --title="Levenberg-Marquardt least-squares minimization and curve fitting: a C library" --noindex $< > $@
 
