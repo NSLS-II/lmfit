@@ -10,6 +10,8 @@
  *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
  * 
+ * Licence:  see ../COPYING (FreeBSD)
+ * 
  * Homepage: apps.jcns.fz-juelich.de/lmfit
  */
  

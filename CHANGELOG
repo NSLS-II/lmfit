@@ -7,13 +7,19 @@ Changes in lmfit-4.0
   - lmcurve_fit -> lmcurve
   - new control parameter 'pivot' (default: pivoting is used, as before)
   - new structure lm_princon_struct, generalizing printflags
-  - in consequence thereof, new parameter lists for lmcurve and lmmin 
-- demo programs are no longer installed to $bindir.
-- configure.ac: cleaned up, and inserted comments
-- ensure strict C90 compliance: no C++ comments; replace non-standard
-  struct assignement (reported by Elio Mazzocca, using LCC)
-- revert malloc trick of release 3.4 (readability is more important)
-- source code comment blocks moved around, to reduce duplications.
+  - in consequence thereof, new parameter lists for lmcurve and lmmin
+- code cleanup:
+  - ensure strict C90 compliance: no C++ comments; replace non-standard
+    struct assignement (reported by Elio Mazzocca, using LCC)
+  - revert malloc trick of release 3.4 (readability is more important)
+  - source code comment blocks moved around, to reduce duplications
+- build scripts cleanup:
+  - demo programs are no longer installed to $bindir
+  - configure.ac: cleaned up, and inserted comments
+- Documentation:
+  - new web location: apps.jcns.fz-juelich.de/lmfit.
+  - new entry page (dokuwiki) instead of man page
+  - differentiated man pages lmfit(7), lmcurve(3), lmmin(3)
 
 Changes in lmfit-3.5, released 3feb13
 
