@@ -99,8 +99,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 man3dir = $(mandir)/man3
-am__installdirs = "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(man7dir)"
-man7dir = $(mandir)/man7
+am__installdirs = "$(DESTDIR)$(man3dir)"
 NROFF = nroff
 MANS = $(man_MANS)
 DATA = $(noinst_DATA)
@@ -219,7 +218,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-man_MANS = lmfit.7 lmmin.3 lmcurve.3
+man_MANS = lmmin.3 lmcurve.3
 noinst_DATA = lmfit.html lmmin.html lmcurve.html
 all: all-am
 
@@ -303,49 +302,6 @@ uninstall-man3:
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man3dir)'; $(am__uninstall_files_from_dir)
-install-man7: $(man_MANS)
-	@$(NORMAL_INSTALL)
-	@list1=''; \
-	list2='$(man_MANS)'; \
-	test -n "$(man7dir)" \
-	  && test -n "`echo $$list1$$list2`" \
-	  || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(man7dir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(man7dir)" || exit 1; \
-	{ for i in $$list1; do echo "$$i"; done;  \
-	if test -n "$$list2"; then \
-	  for i in $$list2; do echo "$$i"; done \
-	    | sed -n '/\.7[a-z]*$$/p'; \
-	fi; \
-	} | while read p; do \
-	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; echo "$$p"; \
-	done | \
-	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^7][0-9a-z]*$$,7,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
-	sed 'N;N;s,\n, ,g' | { \
-	list=; while read file base inst; do \
-	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man7dir)/$$inst'"; \
-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man7dir)/$$inst" || exit $$?; \
-	  fi; \
-	done; \
-	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
-	while read files; do \
-	  test -z "$$files" || { \
-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man7dir)'"; \
-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man7dir)" || exit $$?; }; \
-	done; }
-
-uninstall-man7:
-	@$(NORMAL_UNINSTALL)
-	@list=''; test -n "$(man7dir)" || exit 0; \
-	files=`{ for i in $$list; do echo "$$i"; done; \
-	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
-	  sed -n '/\.7[a-z]*$$/p'; \
-	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^7][0-9a-z]*$$,7,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
-	dir='$(DESTDIR)$(man7dir)'; $(am__uninstall_files_from_dir)
 tags: TAGS
 TAGS:
 
@@ -400,7 +356,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(man7dir)"; do \
+	for dir in "$(DESTDIR)$(man3dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -469,7 +425,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man: install-man3 install-man7
+install-man: install-man3
 
 install-pdf: install-pdf-am
 
@@ -499,7 +455,7 @@ ps-am:
 
 uninstall-am: uninstall-man
 
-uninstall-man: uninstall-man3 uninstall-man7
+uninstall-man: uninstall-man3
 
 .MAKE: install-am install-strip
 
@@ -509,16 +465,12 @@ uninstall-man: uninstall-man3 uninstall-man7
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-man3 \
-	install-man7 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am uninstall uninstall-am uninstall-man uninstall-man3 \
-	uninstall-man7
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am uninstall-man uninstall-man3
 
-
-lmfit.7 : lmfit.pod
-	pod2man -s 7 -c "lmfit manual"              lmfit.pod   > lmfit.7
 
 %.3 : %.pod
 	pod2man -s 3 -c "lmfit manual" -n "$*"      $< > $@
