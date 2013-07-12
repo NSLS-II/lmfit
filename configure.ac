@@ -1,4 +1,4 @@
-AC_INIT([lmfit], [3:6], [http://joachimwuttke.de/lmfit])
+AC_INIT([lmfit], [4:0], [http://joachimwuttke.de/lmfit])
 
 # standard configuration for shared libraries
 AC_CONFIG_AUX_DIR([build-aux])

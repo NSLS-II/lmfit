@@ -21,14 +21,32 @@ extern "C" {
 
 /* Collection of input parameters for fit control. */
 typedef struct {
-    double ftol;      /* relative error desired in the sum of squares. */
-    double xtol;      /* relative error between last two approximations. */
-    double gtol;      /* orthogonality desired between fvec and its derivs. */
-    double epsilon;   /* step used to calculate the jacobian. */
-    double stepbound; /* initial bound to steps in the outer loop. */
-    int maxcall;      /* maximum number of iterations. */
-    int scale_diag;   /* automatical diag rescaling? [UNDOCUMENTED] */
-    int pivot;        /* use pivoting in QR factorization? [UNDOCUMENTED] */
+    double ftol;      /* Relative error desired in the sum of squares.
+                         Termination occurs when both the actual and
+                         predicted relative reductions in the sum of squares
+                         are at most ftol. */
+    double xtol;      /* Relative error between last two approximations.
+                         Termination occurs when the relative error between
+                         two consecutive iterates is at most xtol. */
+    double gtol;      /* Orthogonality desired between fvec and its derivs.
+                         Termination occurs when the cosine of the angle
+                         between fvec and any column of the Jacobian is at
+                         most gtol in absolute value. */
+    double epsilon;   /* Step used to calculate the Jacobian, should be
+                         slightly larger than the relative error in the
+                         user-supplied functions. */
+    double stepbound; /* Uused in determining the initial step bound. This
+                         bound is set to the product of stepbound and the
+                         Euclidean norm of diag*x if nonzero, or else to
+                         stepbound itself. In most cases stepbound should lie
+                         in the interval (0.1,100.0). Generally, the value
+                         100.0 is recommended. */
+    int maxcall;      /* Maximum number of minimization steps. Each step
+                         requires at least n+1 function evaluations. */
+    int scale_diag;   /* If 1, the variables will be rescaled internally.
+                         Recommended value is 1. */
+    int pivot;        /* If 1, use pivoting in QR factorization.
+                         Recommended value is 1. */
 } lm_control_struct;
 
 /* Collection of input parameters for print control. */
@@ -43,7 +61,8 @@ typedef struct {
 typedef struct {
     double fnorm;     /* norm of the residue vector fvec. */
     int nfev;         /* actual number of iterations. */
-    int info;         /* status (index for lm_infmsg and lm_shortmsg). */
+    int info;         /* Status indicator. Nonnegative values are used as index
+                         for the message text lm_infmsg, set in lmmin.c. */
 } lm_status_struct;
 
 /* Preset (and recommended) control parameter settings. */

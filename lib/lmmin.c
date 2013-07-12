@@ -29,7 +29,7 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-#define LMFIT_DEBUG_MESSAGES 1
+/* #define LMFIT_DEBUG_MESSAGES 1 */
 /* #define LMFIT_DEBUG_MATRIX 1 */
 
 /* function declarations (implemented below). */
@@ -199,163 +199,15 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
 /*****************************************************************************/
 
 void lmmin( int n, double *x, int m, const void *data, 
-            void (*evaluate) (const double *par, int m_dat, const void *data,
+            void (*evaluate) (const double *x, int m, const void *data,
                               double *fvec, int *info),
-            void (*printout) (int n_par, const double *par, int m_dat,
+            void (*printout) (int n, const double *x, int m,
                               const void *data, const double *fvec,
                               const lm_princon_struct *princon,
                               int iflag, int iter, int nfev),
             const lm_control_struct *C,
             const lm_princon_struct *princon,
             lm_status_struct *S )
-/*
- *   This routine contains the core algorithm of our library.
- *
- *   It minimizes the sum of the squares of m nonlinear functions
- *   in n variables by a modified Levenberg-Marquardt algorithm.
- *   The function evaluation is done by the user-provided routine 'evaluate'.
- *   The Jacobian is then calculated by a forward-difference approximation.
- *
- *   Parameters:
- *
- *      m is a positive integer input variable set to the number
- *        of functions.
- *
- *      n is a positive integer input variable set to the number
- *        of variables; n must not exceed m.
- *
- *      x is an array of length n. On input x must contain an initial
- *        estimate of the solution vector. On OUTPUT x contains the
- *        final estimate of the solution vector.
- *
- *      fvec is an OUTPUT array of length m which contains
- *        the functions evaluated at the output x.
- *
- *      C->ftol is a nonnegative input variable. Termination occurs when
- *        both the actual and predicted relative reductions in the sum
- *        of squares are at most C->ftol. Therefore, C->ftol measures the
- *        relative error desired in the sum of squares.
- *
- *      C->xtol is a nonnegative input variable. Termination occurs when
- *        the relative error between two consecutive iterates is at
- *        most C->xtol. Therefore, C->xtol measures the relative error desired
- *        in the approximate solution.
- *
- *      C->gtol is a nonnegative input variable. Termination occurs when
- *        the cosine of the angle between fvec and any column of the
- *        jacobian is at most C->gtol in absolute value. Therefore, C->gtol
- *        measures the orthogonality desired between the function vector
- *        and the columns of the jacobian.
- *
- *      maxfev is a positive integer input variable. Termination
- *        occurs when the number of calls to lm_fcn is at least
- *        maxfev by the end of an iteration.
- *
- *      C->epsilon is an input variable used in choosing a step length for
- *        the forward-difference approximation. The relative errors in
- *        the functions are assumed to be of the order of C->epsilon.
- *
- *      diag is an array of length n. If C->scale_diag is true, diag is
- *        internally set. If C->scale_diag is false, diag must contain positive entries
- *        that serve as multiplicative scale C->stepbounds for the variables.
- *
- *      C->scale_diag is an integer input variable with boolean semantics.
- *        If true, the variables will be scaled internally.
- *        If false, the scaling is specified by the input diag.
- *
- *      C->stepbound is a positive input variable used in determining the
- *        initial step bound. This bound is set to the product of
- *        C->stepbound and the euclidean norm of diag*x if nonzero, or else
- *        to C->stepbound itself. In most cases C->stepbound should lie in the
- *        interval (0.1,100.0). Generally, the value 100.0 is recommended.
- *
- *      info is an integer OUTPUT variable that indicates the termination
- *        status of lmmin as follows:
- *
- *        info < 0  termination requested by user-supplied routine *evaluate;
- *
- *        info = 0  fnorm almost vanishing;
- *
- *        info = 1  both actual and predicted relative reductions
- *                  in the sum of squares are at most C->ftol;
- *
- *        info = 2  relative error between two consecutive iterates
- *                  is at most C->xtol;
- *
- *        info = 3  conditions for info = 1 and info = 2 both hold;
- *
- *        info = 4  the cosine of the angle between fvec and any
- *                  column of the jacobian is at most C->gtol in
- *                  absolute value;
- *
- *        info = 5  number of calls to lm_fcn has reached or
- *                  exceeded maxfev;
- *
- *        info = 6  C->ftol is too small: no further reduction in
- *                  the sum of squares is possible;
- *
- *        info = 7  C->xtol is too small: no further improvement in
- *                  the approximate solution x is possible;
- *
- *        info = 8  C->gtol is too small: fvec is orthogonal to the
- *                  columns of the jacobian to machine precision;
- *
- *        info =10  improper input parameters;
- *
- *      nfev is an OUTPUT variable set to the number of calls to the
- *        user-supplied routine *evaluate.
- *
- *      fjac is an OUTPUT m by n array. The upper n by n
- *        submatrix of fjac contains an upper triangular matrix r with
- *        diagonal elements of nonincreasing magnitude such that
- *
- *              pT*(jacT*jac)*p = rT*r
- *
- *              (NOTE: T stands for matrix transposition),
- *
- *        where p is a permutation matrix and jac is the final
- *        calculated jacobian. Column j of p is column ipvt(j)
- *        (see below) of the identity matrix. The lower trapezoidal
- *        part of fjac contains information generated during
- *        the computation of r.
- *
- *      ipvt is an integer OUTPUT array of length n. It defines a
- *        permutation matrix p such that jac*p = q*r, where jac is
- *        the final calculated jacobian, q is orthogonal (not stored),
- *        and r is upper triangular with diagonal elements of
- *        nonincreasing magnitude. Column j of p is column ipvt(j)
- *        of the identity matrix.
- *
- *      qtf is an OUTPUT array of length n which contains
- *        the first n elements of the vector (q transpose)*fvec.
- *
- *      wa1, wa2, and wa3 are work arrays of length n.
- *
- *      wa4 is a work array of length m, used among others to hold
- *        residuals from evaluate.
- *
- *      evaluate points to the subroutine which calculates the m nonlinear
- *        functions. Implementations should be written as follows:
- *
- *        void evaluate( double* par, int m, void *data,
- *                       double* fvec, int *info )
- *        {
- *           // for ( i=0; i<m; ++i )
- *           //     calculate fvec[i] for given parameters par;
- *           // to stop the minimization, 
- *           //     set *info to a negative integer.
- *        }
- *
- *      printout points to the subroutine which informs about fit progress.
- *        Call with printout=0 if no printout is desired.
- *        Call with printout=lm_printout_std to use the default implementation.
- *
- *      P->flags is passed to printout.
- *
- *      data is an input pointer to an arbitrary structure that is passed to
- *        evaluate. Typically, it contains experimental data to be fitted.
- *
- */
 {
     double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wa4;
     int *ipvt;
@@ -404,6 +256,18 @@ void lmmin( int n, double *x, int m, const void *data,
     }
     if (C->stepbound <= 0.) {
         fprintf( stderr, "lmmin: nonpositive stepbound %g\n", C->stepbound );
+        S->info = 10;
+        return;
+    }
+    if (C->scale_diag != 0 && C->scale_diag != 1) {
+        fprintf( stderr, "lmmin: logical variable scale_diag=%i, "
+                 "should be 0 or 1\n", C->scale_diag );
+        S->info = 10;
+        return;
+    }
+    if (C->pivot != 0 && C->pivot != 1) {
+        fprintf( stderr, "lmmin: logical variable pivot=%i, "
+                 "should be 0 or 1\n", C->pivot );
         S->info = 10;
         return;
     }
@@ -483,8 +347,28 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /*** outer: compute the qr factorization of the Jacobian. ***/
 
+/*      fjac is an m by n array. The upper n by n submatrix of fjac 
+ *        is made to contain an upper triangular matrix r with diagonal
+ *        elements of nonincreasing magnitude such that
+ *
+ *              pT*(jacT*jac)*p = rT*r
+ *
+ *              (NOTE: T stands for matrix transposition),
+ *
+ *        where p is a permutation matrix and jac is the final calculated
+ *        Jacobian. Column j of p is column ipvt(j) of the identity matrix.
+ *        The lower trapezoidal part of fjac contains information generated
+ *        during the computation of r.
+ *
+ *      ipvt is an integer array of length n. It defines a permutation
+ *        matrix p such that jac*p = q*r, where jac is the final calculated
+ *        Jacobian, q is orthogonal (not stored), and r is upper triangular
+ *        with diagonal elements of nonincreasing magnitude. Column j of p
+ *        is column ipvt(j) of the identity matrix.
+ */
+
         lm_qrfac(m, n, fjac, C->pivot, ipvt, wa1, wa2, wa3);
-        /* goto terminate values are ipvt, wa1=rdiag, wa2=acnorm */
+        /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
         if (!iter) { 
             /* first iteration only */
@@ -806,7 +690,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 
     nsing = n;
     for (j = 0; j < n; j++) {
-        aux[j] = qtb[j];
+        aux[j] = qtb[j];        
         if (r[j * ldr + j] == 0 && nsing == n)
             nsing = j;
         if (nsing < n)
@@ -831,7 +715,8 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     fp = dxnorm - delta;
     if (fp <= p1 * delta) {
 #ifdef LMFIT_DEBUG_MESSAGES
-        printf("debug lmpar nsing=%d terminate (fp<p1*delta)\n", nsing);
+        printf("debug lmpar nsing %d n %d, terminate (fp<p1*delta)\n",
+               nsing, n);
 #endif
         *par = 0;
         return;

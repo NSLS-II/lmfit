@@ -45,7 +45,7 @@ int main()
     lm_control_struct control = lm_control_double;
     lm_princon_struct princon = lm_princon_std;
     princon.form  = 1;
-    princon.flags = 15; // monitor status (+1) and parameters (+2)
+    princon.flags = 3;
     control.scale_diag = 1;
     control.pivot = 0;
 
