@@ -1,15 +1,15 @@
 /*
- * Project:  LevenbergMarquardtLeastSquaresFitting
+ * Library:  lmfit (Levenberg-Marquardt least squares fitting)
  *
  * File:     lmstruct.h
  *
  * Contents: Data structures containing control and status variables.
  *
- * Author:   Joachim Wuttke 2004-2013
+ * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
  *
  * Licence:  see ../COPYING (FreeBSD)
  * 
- * Homepage: joachimwuttke.de/lmfit
+ * Homepage: apps.jcns.fz-juelich.de/lmfit
  */
  
 #ifndef LMSTRUCT_H
