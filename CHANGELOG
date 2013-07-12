@@ -4,9 +4,10 @@ Changes in lmfit-4.0
 - API changes:
   - lmcurve.h no longer depends on lmmin.h, but only on new lmstruct.h
   - low-level API lmdif is removed (code integrated in lmmin)
+  - lmcurve_fit -> lmcurve
   - new control parameter 'pivot' (default: pivoting is used, as before)
   - new structure lm_princon_struct, generalizing printflags
-  - in consequence thereof, new parameter lists for lmcurve_fit and lmmin 
+  - in consequence thereof, new parameter lists for lmcurve and lmmin 
 - demo programs are no longer installed to $bindir.
 - configure.ac: cleaned up, and inserted comments
 - ensure strict C90 compliance: no C++ comments; replace non-standard

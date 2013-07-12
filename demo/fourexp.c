@@ -75,7 +75,7 @@ int main()
 
         /* perform the fit */
 
-        lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &princon, &status );
+        lmcurve( n_par, par, m_dat, t, y, f, &control, &princon, &status );
 
         /* print results */
 

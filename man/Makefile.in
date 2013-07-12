@@ -99,10 +99,11 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 man3dir = $(mandir)/man3
-am__installdirs = "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(auxdir)"
+am__installdirs = "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(man7dir)"
+man7dir = $(mandir)/man7
 NROFF = nroff
 MANS = $(man_MANS)
-DATA = $(aux_DATA)
+DATA = $(noinst_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -218,9 +219,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-man_MANS = lmfit.3 lmmin.3 lmcurve_fit.3
-auxdir = $(datadir)/man/html
-aux_DATA = lmfit.html
+man_MANS = lmfit.7 lmmin.3 lmcurve.3
+noinst_DATA = lmfit.html lmmin.html lmcurve.html
 all: all-am
 
 .SUFFIXES:
@@ -303,27 +303,49 @@ uninstall-man3:
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man3dir)'; $(am__uninstall_files_from_dir)
-install-auxDATA: $(aux_DATA)
+install-man7: $(man_MANS)
 	@$(NORMAL_INSTALL)
-	@list='$(aux_DATA)'; test -n "$(auxdir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(auxdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(auxdir)" || exit 1; \
+	@list1=''; \
+	list2='$(man_MANS)'; \
+	test -n "$(man7dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man7dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man7dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.7[a-z]*$$/p'; \
 	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^7][0-9a-z]*$$,7,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man7dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man7dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(auxdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(auxdir)" || exit $$?; \
-	done
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man7dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man7dir)" || exit $$?; }; \
+	done; }
 
-uninstall-auxDATA:
+uninstall-man7:
 	@$(NORMAL_UNINSTALL)
-	@list='$(aux_DATA)'; test -n "$(auxdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(auxdir)'; $(am__uninstall_files_from_dir)
+	@list=''; test -n "$(man7dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.7[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^7][0-9a-z]*$$,7,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man7dir)'; $(am__uninstall_files_from_dir)
 tags: TAGS
 TAGS:
 
@@ -378,7 +400,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(auxdir)"; do \
+	for dir in "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(man7dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -431,7 +453,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-auxDATA install-man
+install-data-am: install-man
 
 install-dvi: install-dvi-am
 
@@ -447,7 +469,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man: install-man3
+install-man: install-man3 install-man7
 
 install-pdf: install-pdf-am
 
@@ -475,33 +497,34 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-auxDATA uninstall-man
+uninstall-am: uninstall-man
 
-uninstall-man: uninstall-man3
+uninstall-man: uninstall-man3 uninstall-man7
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-auxDATA install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-man3 install-pdf install-pdf-am install-ps \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man3 \
+	install-man7 install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am uninstall uninstall-am uninstall-auxDATA \
-	uninstall-man uninstall-man3
+	ps ps-am uninstall uninstall-am uninstall-man uninstall-man3 \
+	uninstall-man7
 
 
-lmfit.3 lmmin.3 lmcurve_fit.3 : lmfit.pod
-	pod2man -s 3 -c "lmfit manual" lmfit.pod > lmfit.3
-	pod2man -s 3 -c "lmfit manual" -n "lmmin" lmfit.pod > lmmin.3
-	pod2man -s 3 -c "lmfit manual" -n "lmcurve_fit" lmfit.pod > lmcurve_fit.3
+lmfit.7 : lmfit.pod
+	pod2man -s 7 -c "lmfit manual"              lmfit.pod   > lmfit.7
+
+%.3 : %.pod
+	pod2man -s 3 -c "lmfit manual" -n "$*"      $< > $@
 
 lmfit.html : lmfit.pod
-	pod2html --title="Levenberg-Marquardt least-squares minimization and curve fitting in C/C++" --noindex lmfit.pod > lmfit.html
+	pod2html --title="C library for Levenberg-Marquardt least-squares minimization and curve fitting" --noindex lmfit.pod > lmfit.html
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
