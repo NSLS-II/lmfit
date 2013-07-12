@@ -2,7 +2,7 @@
 
 =begin html
 
-<link rel="stylesheet" href="../podstyle.css" type="text/css" />
+<link rel="stylesheet" href="podstyle.css" type="text/css" />
 
 =end html
 
@@ -157,22 +157,22 @@ The first public release was 2.0 (December 2004). The API has changed with versi
 
 =head1 COPYING
 
-Copyright (C) 2009-2013 Joachim Wuttke, Forschungszentrum Juelich GmbH.
+Copyright (C) 2009-2013 Joachim Wuttke, Forschungszentrum Juelich GmbH
 
 Software: FreeBSD License
 
-Documentation: Creative Commons Attribution Share Alike.
+Documentation: Creative Commons Attribution Share Alike
 
 
 =head1 SEE ALSO
 
 B<lmfit(7)>, B<lmmin(3)>.
 
-Main web site: http://apps.jcns.fz-juelich.de/lmfit.
+Main web site: http://apps.jcns.fz-juelich.de/lmfit
 
-Fallback web link: http://joachimwuttke.de/lmfit.
+Fallback web link: http://joachimwuttke.de/lmfit
 
-Please report bugs to the author <j.wuttke@fz-juelich.de>.
+Please report bugs to the author <j.wuttke@fz-juelich.de>
 
 
 =begin html

@@ -8,4 +8,4 @@ lmfit.7 : lmfit.pod
 	pod2man -s 3 -c "lmfit manual" -n "$*"      $< > $@
 
 %.html : %.pod
-	pod2html --title="Levenberg-Marquardt least-squares minimization and curve fitting: a C library" --noindex $< > $@
+	pod2html --title="lmfit: a self-contained C library for Levenberg-Marquardt least-squares minimization and curve fitting" --noindex $< > $@
