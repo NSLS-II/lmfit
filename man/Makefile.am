@@ -9,4 +9,3 @@ lmfit.7 : lmfit.pod
 
 %.html : %.pod
 	pod2html --title="Levenberg-Marquardt least-squares minimization and curve fitting: a C library" --noindex $< > $@
-
