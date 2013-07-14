@@ -1,6 +1,6 @@
 Changes in lmfit-4.0
 
-- now building library lmfit instead of lmmin
+- binary library renamed: lmmin -> lmfit
 - API changes:
   - lmcurve.h no longer depends on lmmin.h, but only on new lmstruct.h
   - low-level API lmdif is removed (code integrated in lmmin)
@@ -19,7 +19,7 @@ Changes in lmfit-4.0
 - Documentation:
   - new web location: apps.jcns.fz-juelich.de/lmfit.
   - new entry page (dokuwiki) instead of man page
-  - differentiated man pages lmfit(7), lmcurve(3), lmmin(3)
+  - man page split and largely rewritten: lmcurve(3), lmmin(3)
 
 Changes in lmfit-3.5, released 3feb13
 
@@ -96,10 +96,10 @@ Changes in lmfit-2.4, released 27jul08:
 
 Changes in lmfit-2.3, released 5apr08:
 
-- fixed bug 1817631: replaced confusing variable names in lmmin.c:lm_qrsolv()
+- fixed bug sf#1817631: replaced confusing variable names in lmmin.c:lm_qrsolv()
 - accepted feature request 1814970: inclusion protection in headers
 - accepted feature request 1814976: cplusplus wrapper in headers
-- fixed bug 1868399: typos in debug messages
+- fixed bug sf#1868399: typos in debug messages
 - accepted proposal from M. Bydder:
      improved calculation of differences in lmmin, lines 415-417
 - reverted comments in lmmin.c to pure C style

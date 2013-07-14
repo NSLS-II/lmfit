@@ -70,7 +70,7 @@ const lm_control_struct lm_control_double = {
 const lm_control_struct lm_control_float = {
     1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 0, 1 };
 const lm_princon_struct lm_princon_std = {
-    0, 0, -1, -1 };
+    &stdout, 0, 0, -1, -1 };
 
 
 /*****************************************************************************/
@@ -154,39 +154,39 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
 
     if        ( P->form == 0 ) { /** standard verbose form **/
 
-        printf("lmmin monitor (nfev=%d, iter=%d)\n", nfev, iter );
-        printf( "  %s\n", lm_action_msg[iflag] );
+        fprintf( *(P->stream), "lmmin monitor (nfev=%d, iter=%d)\n", nfev, iter );
+        fprintf( *(P->stream),  "  %s\n", lm_action_msg[iflag] );
 
         if( P->flags & 2 ){
-            printf("  pars ");
+            fprintf( *(P->stream), "  pars ");
             for (i = 0; i < nout; ++i)
-                printf(" %18.11g", par[i]);
-            printf(" => norm %18.11g\n", lm_enorm(m_dat, fvec));
+                fprintf( *(P->stream), " %18.11g", par[i]);
+            fprintf( *(P->stream), " => norm %18.11g\n", lm_enorm(m_dat, fvec));
         }
 
         if ( (P->flags & 8) || ((P->flags & 4) && iflag == 3) ) {
-            printf("  residuals (i, fvec[i]):\n");
+            fprintf( *(P->stream), "  residuals (i, fvec[i]):\n");
             for (i = 0; i < mout; ++i)
-                printf("    %3i %18.11g\n", i, fvec[i] );
-            printf("\n");
+                fprintf( *(P->stream), "    %3i %18.11g\n", i, fvec[i] );
+            fprintf( *(P->stream), "\n");
 
         }
 
     } else if ( P->form == 1 ) { /** compact form for us experts **/
 
-        printf("lmmin:: %3d %2d %c", nfev, iter, lm_action_code[iflag] );
+        fprintf( *(P->stream), "lmmin:: %3d %2d %c", nfev, iter, lm_action_code[iflag] );
 
         if( P->flags & 2 ){
             for (i = 0; i < nout; ++i)
-                printf(" %16.9g", par[i]);
-            printf(" => %18.11g\n", lm_enorm(m_dat, fvec));
+                fprintf( *(P->stream), " %16.9g", par[i]);
+            fprintf( *(P->stream), " => %18.11g\n", lm_enorm(m_dat, fvec));
         }
 
         if ( (P->flags & 8) || ((P->flags & 4) && iflag == -1) ) {
-            printf("  residuals");
+            fprintf( *(P->stream), "  residuals");
             for (i = 0; i < mout; ++i)
-                printf(" %10g", fvec[i] );
-            printf("\n");
+                fprintf( *(P->stream), " %10g", fvec[i] );
+            fprintf( *(P->stream), "\n");
         }
     }
 }

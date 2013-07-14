@@ -19,6 +19,8 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+
 /* Collection of input parameters for fit control. */
 typedef struct {
     double ftol;      /* Relative error desired in the sum of squares.
@@ -51,7 +53,8 @@ typedef struct {
 
 /* Collection of input parameters for print control. */
 typedef struct {
-    int form;         /* to select one out of several forms. */
+    FILE** stream;     /* Pointer to output stream to write to. */
+    int form;         /* To select one out of several forms. */
     int flags;        /* OR'ed switches that decide which info gets printed. */
     int n_maxpri;     /* -1, or max number of parameters to print. */
     int m_maxpri;     /* -1, or max number of residuals to print. */

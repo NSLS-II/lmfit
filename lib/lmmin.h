@@ -15,7 +15,7 @@
 #ifndef LMMIN_H
 #define LMMIN_H
 
-#include<lmstruct.h>
+#include "lmstruct.h"
 
 #ifdef __cplusplus
 extern "C" {

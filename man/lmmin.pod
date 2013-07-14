@@ -138,6 +138,10 @@ The record has the following members:
 
 =over
 
+=item B<FILE**> I<princon.stream>
+
+Pointer to the stream the output shall be writen to. Typically &I<stdout> or &I<stderr>.
+
 =item B<int> I<princon.form>
 
 To select one out of several forms. In I<lm_princon_def>, form=0 yields verbose output, form=1 yields one compact line per call.
