@@ -83,7 +83,7 @@ const char *lm_infmsg[] = {
     "success (the relative error between x and the solution is at most tol)",
     "success (both errors are at most tol)",
     "trapped by degeneracy (increasing epsilon might help)",
-    "timeout (number of calls to fcn has reached maxcall*(n+1))",
+    "timeout (number of calls to fcn has reached maxsteps*(n+1))",
     "failure (ftol<tol: cannot reduce sum of squares any further)",
     "failure (xtol<tol: cannot improve approximate solution any further)",
     "failure (gtol<tol: cannot improve approximate solution any further)",
@@ -215,7 +215,7 @@ void lmmin( int n, double *x, int m, const void *data,
     static double p1 = 0.1;
     static double p0001 = 1.0e-4;
 
-    int maxfev = C->maxcall * (n+1);
+    int maxfev = C->patience * (n+1);
 
     int    iter = 0;      /* outer loop counter */
     double par = 0;       /* Levenberg-Marquardt parameter */

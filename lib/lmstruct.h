@@ -35,14 +35,14 @@ typedef struct {
     double epsilon;   /* Step used to calculate the Jacobian, should be
                          slightly larger than the relative error in the
                          user-supplied functions. */
-    double stepbound; /* Uused in determining the initial step bound. This
+    double stepbound; /* Used in determining the initial step bound. This
                          bound is set to the product of stepbound and the
                          Euclidean norm of diag*x if nonzero, or else to
                          stepbound itself. In most cases stepbound should lie
                          in the interval (0.1,100.0). Generally, the value
                          100.0 is recommended. */
-    int maxcall;      /* Maximum number of minimization steps. Each step
-                         requires at least n+1 function evaluations. */
+    int patience;     /* Used to set the maximum number of function evaluations
+                         to patience*(number_of_parameters+1). */
     int scale_diag;   /* If 1, the variables will be rescaled internally.
                          Recommended value is 1. */
     int pivot;        /* If 1, use pivoting in QR factorization.

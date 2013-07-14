@@ -115,9 +115,9 @@ Step used to calculate the Jacobian; recommended setting: as I<ftol>, but defini
 
 Initial bound to steps in the outer loop, generally between 0.01 and 100; recommended value is 100.
 
-=item B<int> I<control.maxcall>
+=item B<int> I<control.patience>
 
-Maximum number of minimization steps.
+Used to set the maximum number of function evaluations to patience*n_par.
 
 =item B<int> I<control.scale_diag>
 

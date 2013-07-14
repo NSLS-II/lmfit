@@ -70,7 +70,7 @@ int main()
         lm_status_struct status;
         lm_control_struct control = lm_control_double;
         lm_princon_struct princon = lm_princon_std;
-        control.maxcall = 8000;
+        control.patience = 8000;
         princon.flags = 0;
 
         /* perform the fit */
