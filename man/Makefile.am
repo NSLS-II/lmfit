@@ -1,5 +1,5 @@
 man_MANS = lmmin.3 lmcurve.3
-noinst_DATA = lmfit.html lmmin.html lmcurve.html
+noinst_DATA = lmmin.html lmcurve.html
 
 %.3 : %.pod
 	pod2man -s 3 -c "lmfit manual" -n "$*"      $< > $@
