@@ -84,14 +84,15 @@ Pointer to a user-supplied function that computes I<m_dat> elements of vector I<
 
 A function that prints messages about the fit progress. Legitimate values of this pointer argument are NULL (to indicate that no messages are wanted), &I<lm_printout_std> (pointer to a default implementation), or a pointer to a user-supplied function.
 
-=item I<control>
+=item *I<control>
 
-A record holding auxiliary parameters that control the fit procedure.
+Parameter collection for tuning the fit procedure.
 In most cases, the default &I<lm_control_double> is adequate.
 If I<f> is only computed with single-precision accuracy,
 I<&lm_control_float> should be used.
+See also below, NOTES on initializing parameter records.
 
-The record has the following members (for more details, see the source file I<lmstruct.h>):
+I<control> has the following members (for more details, see the source file I<lmstruct.h>):
 
 =over
 
@@ -129,12 +130,15 @@ Logical switch (0 or 1). If 1, then use pivots in matrix operations. This is the
 
 =back
 
-=item I<princon>
+=item *I<princon>
 
-A record holding auxiliary parameters to control verbosity of the fit.
-For values NULL or &I<lm_princon_def>, the fit is silent.
+Parameter collection for tuning the default printout function
+&I<lm_printout_std>
+(user-supplied printout functions are free to use this record or not).
+For values NULL or &I<lm_princon_def>, the fit is silent. 
+See also below, NOTES on initializing parameter records.
 
-The record has the following members:
+I<princon> has the following members:
 
 =over
 
@@ -185,6 +189,26 @@ for a short code, print I<lm_shortmsg>B<[>I<status.info>B<]>.
 =back
 
 
+=head1 NOTES
+
+=head2 Initializing parameter records.
+
+The parameter records I<control> and I<princon> should always be initialized
+from supplied default records:
+
+    lm_control_struct control = lm_control_double; /* or _float */
+    lm_princon_struct princon = lm_princon_std;
+
+After this, parameters may be overwritten:
+
+    control.patience = 500; /* allow more iterations */
+    princon.flags    =  15; /* require most verbose monitoring */
+
+An application written this way is guaranteed to work even if new parameters
+are added to I<control> or I<princon>.
+
+Conversely, addition of parameters is not considered an API change; it may happen without increment of the major version number.
+
 =head1 EXAMPLES
 
 See directory I<demo/> in the source distribution.
@@ -218,7 +242,9 @@ The first public release was 2.0 (December 2004). The API has changed with versi
 
 =head1 COPYING
 
-Copyright (C) 2009-2013 Joachim Wuttke, Forschungszentrum Juelich GmbH
+Copyright (C):
+   1980-1999 University of Chicago
+   2004-2013 Joachim Wuttke, Forschungszentrum Juelich GmbH
 
 Software: FreeBSD License
 

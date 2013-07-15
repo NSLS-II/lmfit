@@ -1,20 +1,16 @@
 /*
- * Library:  lmfit (Levenberg-Marquardt least squares fitting)
+ * Library:   lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:     lmcurve.c
+ * File:      lmmin.c
  *
- * Contents: Simplified wrapper for one-dimensional curve fitting,
- *           using Levenberg-Marquardt least-squares minimization.
+ * Contents:  Levenberg-Marquardt curve-fitting
  *
- * Usage:    see application sample demo/curve1.c
+ * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
  *
- * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
+ * License:   see ../COPYING (FreeBSD)
  * 
- * Licence:  see ../COPYING (FreeBSD)
- * 
- * Homepage: apps.jcns.fz-juelich.de/lmfit
+ * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
- 
 
 #include "lmmin.h"
 

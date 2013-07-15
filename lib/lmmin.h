@@ -1,17 +1,17 @@
 /*
- * Library:  lmfit (Levenberg-Marquardt least squares fitting)
+ * Library:   lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:     lmmin.h
+ * File:      lmmin.h
  *
- * Contents: Public interface to the Levenberg-Marquardt core implementation.
+ * Contents:  Declarations for Levenberg-Marquardt minimization.
  *
- * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
+ * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
  *
- * Licence:  see ../COPYING (FreeBSD)
+ * License:   see ../COPYING (FreeBSD)
  * 
- * Homepage: apps.jcns.fz-juelich.de/lmfit
+ * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
- 
+
 #ifndef LMMIN_H
 #define LMMIN_H
 

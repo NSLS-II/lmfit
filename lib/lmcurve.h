@@ -1,15 +1,15 @@
 /*
- * Library:  lmfit (Levenberg-Marquardt least squares fitting)
+ * Library:   lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:     lmcurve.h
+ * File:      lmcurve.h
  *
- * Contents: Simplified interface for one-dimensional curve fitting
+ * Contents:  Declarations for Levenberg-Marquardt curve fitting.
  *
- * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
+ * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
+ *
+ * License:   see ../COPYING (FreeBSD)
  * 
- * Licence:  see ../COPYING (FreeBSD)
- * 
- * Homepage: apps.jcns.fz-juelich.de/lmfit
+ * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
  
 #ifndef LMCURVE_H

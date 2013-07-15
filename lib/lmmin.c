@@ -1,20 +1,16 @@
 /*
- * Library:  lmfit (Levenberg-Marquardt least squares fitting)
+ * Library:   lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:     lmmin.c
+ * File:      lmmin.c
  *
- * Contents: Levenberg-Marquardt core implementation.
+ * Contents:  Levenberg-Marquardt minimization.
  *
- * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
+ * Copyright: The University of Chikago (1980-1999)
+ *            Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
  *
- * Acknowledgments:
- *           Burton S. Garbow, Kenneth E. Hillstrom, Jorge J. Moré (MINPACK);
- *           Steve Moshier (initial C translation); LAPACK authors;
- *           see ../CHANGELOG for contributors of corrections and refinements.
- *
- * Licence:  see ../COPYING (FreeBSD)
+ * License:   see ../COPYING (FreeBSD)
  * 
- * Homepage: apps.jcns.fz-juelich.de/lmfit
+ * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
 
 #include <stdlib.h>

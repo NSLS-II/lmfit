@@ -73,17 +73,17 @@ A user-supplied parametric function I<f>(ti;I<par>).
 
 =item I<control>
 
-A record holding auxiliary parameters that control the fit procedure.
+Parameter collection for tuning the fit procedure.
 In most cases, the default &I<lm_control_double> is adequate.
 If I<f> is only computed with single-precision accuracy,
 I<&lm_control_float> should be used.
-For fine tuning, see B<lmmin(3)>.
+Parameters are explained in B<lmmin(3)>.
 
 =item I<princon>
 
-A record holding auxiliary parameters to control verbosity of the fit.
+Parameter collection for tuning monitoring messages.
 For values NULL or &I<lm_princon_def>, the fit is silent.
-To obtain progress messages, see B<lmmin(3)>.
+Parameters are explained in B<lmmin(3)>.
 
 =item I<status>
 
