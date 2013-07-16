@@ -44,6 +44,7 @@ int main()
     princon.flags = 3; /* decent level of progress info */
 
     printf( "Fitting ...\n" );
+    /* now the call to lmfit */
     lmcurve( n, par, m, t, y, f, &control, &princon, &status );
         
     printf( "Results:\n" );
