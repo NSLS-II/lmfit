@@ -84,7 +84,7 @@ Pointer to a user-supplied function that computes I<m_dat> elements of vector I<
 
 A function that prints messages about the fit progress. Legitimate values of this pointer argument are NULL (to indicate that no messages are wanted), &I<lm_printout_std> (pointer to a default implementation), or a pointer to a user-supplied function.
 
-=item *I<control>
+=item I<control>
 
 Parameter collection for tuning the fit procedure.
 In most cases, the default &I<lm_control_double> is adequate.
@@ -130,7 +130,7 @@ Logical switch (0 or 1). If 1, then use pivots in matrix operations. This is the
 
 =back
 
-=item *I<princon>
+=item I<princon>
 
 Parameter collection for tuning the default printout function
 &I<lm_printout_std>
