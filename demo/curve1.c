@@ -6,6 +6,9 @@
  * Contents: Example for one-dimensional curve fitting,
  *           using the simplified interface from lmcurve.h.
  *
+ * Note:     Any modification of this example should be copied to
+ *           the manual page lmcurve(3) and to the wiki.
+ *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
  * 
  * Licence:  see ../COPYING (FreeBSD)
