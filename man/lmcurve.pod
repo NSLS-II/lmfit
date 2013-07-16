@@ -166,6 +166,6 @@ Documentation: Creative Commons Attribution Share Alike
 
 =end man
 
-Main web site: http://apps.jcns.fz-juelich.de/lmfit
+Homepage: http://apps.jcns.fz-juelich.de/lmfit
 
 Please report bugs to the author <j.wuttke@fz-juelich.de>
