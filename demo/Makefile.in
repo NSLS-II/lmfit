@@ -78,7 +78,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = curve1$(EXEEXT) surface1$(EXEEXT) \
+noinst_PROGRAMS = curve1$(EXEEXT) nonlin1$(EXEEXT) surface1$(EXEEXT) \
 	morobropro$(EXEEXT) powell$(EXEEXT) hat$(EXEEXT) \
 	fourexp$(EXEEXT)
 subdir = demo
@@ -112,6 +112,9 @@ hat_LDADD = $(LDADD)
 am_morobropro_OBJECTS = morobropro.$(OBJEXT)
 morobropro_OBJECTS = $(am_morobropro_OBJECTS)
 morobropro_LDADD = $(LDADD)
+am_nonlin1_OBJECTS = nonlin1.$(OBJEXT)
+nonlin1_OBJECTS = $(am_nonlin1_OBJECTS)
+nonlin1_LDADD = $(LDADD)
 am_powell_OBJECTS = powell.$(OBJEXT)
 powell_OBJECTS = $(am_powell_OBJECTS)
 powell_LDADD = $(LDADD)
@@ -153,9 +156,11 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(curve1_SOURCES) $(fourexp_SOURCES) $(hat_SOURCES) \
-	$(morobropro_SOURCES) $(powell_SOURCES) $(surface1_SOURCES)
+	$(morobropro_SOURCES) $(nonlin1_SOURCES) $(powell_SOURCES) \
+	$(surface1_SOURCES)
 DIST_SOURCES = $(curve1_SOURCES) $(fourexp_SOURCES) $(hat_SOURCES) \
-	$(morobropro_SOURCES) $(powell_SOURCES) $(surface1_SOURCES)
+	$(morobropro_SOURCES) $(nonlin1_SOURCES) $(powell_SOURCES) \
+	$(surface1_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -297,6 +302,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 curve1_SOURCES = curve1.c
+nonlin1_SOURCES = nonlin1.c
 surface1_SOURCES = surface1.c
 morobropro_SOURCES = morobropro.c
 powell_SOURCES = powell.c
@@ -363,6 +369,10 @@ morobropro$(EXEEXT): $(morobropro_OBJECTS) $(morobropro_DEPENDENCIES) $(EXTRA_mo
 	@rm -f morobropro$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(morobropro_OBJECTS) $(morobropro_LDADD) $(LIBS)
 
+nonlin1$(EXEEXT): $(nonlin1_OBJECTS) $(nonlin1_DEPENDENCIES) $(EXTRA_nonlin1_DEPENDENCIES) 
+	@rm -f nonlin1$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(nonlin1_OBJECTS) $(nonlin1_LDADD) $(LIBS)
+
 powell$(EXEEXT): $(powell_OBJECTS) $(powell_DEPENDENCIES) $(EXTRA_powell_DEPENDENCIES) 
 	@rm -f powell$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(powell_OBJECTS) $(powell_LDADD) $(LIBS)
@@ -381,6 +391,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fourexp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/morobropro.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nonlin1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/powell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surface1.Po@am__quote@
 
