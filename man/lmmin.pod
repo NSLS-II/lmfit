@@ -253,11 +253,19 @@ Documentation: Creative Commons Attribution Share Alike
 
 =head1 SEE ALSO
 
-B<lmcurve(3)>.
+=begin html
+
+<a href="http://apps.jcns.fz-juelich.de/man/lmcurve.html"><b>lmcurve</b>(3)</a>
+
+=end html
+
+=begin man
+
+\fBlmcurve\fR(3)
+.PP
+
+=end man
 
 Main web site: http://apps.jcns.fz-juelich.de/lmfit
 
-Fallback web link: http://joachimwuttke.de/lmfit
-
 Please report bugs to the author <j.wuttke@fz-juelich.de>
-
