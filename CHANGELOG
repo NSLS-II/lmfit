@@ -1,5 +1,8 @@
 Changes in lmfit-4.1
 
+- Examples:
+  - new example nonlin1: solution of 2 nonlinear equations in 2 variables.
+
 Changes in lmfit-4.0, released 16jul13
 
 - binary library renamed: lmmin -> lmfit
