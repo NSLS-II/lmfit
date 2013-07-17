@@ -8,7 +8,8 @@ TODO
 
 Changes in lmfit-4.1
 
-- Examples:
+- now supporting pkg-config
+- examples:
   - new example nonlin1: solution of 2 nonlinear equations in 2 variables
 
 Changes in lmfit-4.0, released 16jul13
@@ -29,7 +30,7 @@ Changes in lmfit-4.0, released 16jul13
 - build scripts cleanup:
   - demo programs are no longer installed to $bindir
   - configure.ac: cleaned up, and inserted comments
-- Documentation:
+- documentation:
   - new web location: apps.jcns.fz-juelich.de/lmfit
   - new entry page (dokuwiki) instead of man page
   - man page split and largely rewritten: lmcurve(3), lmmin(3)

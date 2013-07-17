@@ -1,3 +1,18 @@
+# Library lmfit:
+#   Levenberg-Marquardt least squares fitting
+# 
+# File configure.ac:
+#   Input for the build process using GNU autotools.
+# 
+# Copyright:
+#   (C) 2013 Joachim Wuttke, Forschungszentrum Jülich GmbH
+# 
+# Licence:
+#   FreeBSD. See ../COPYING.
+# 
+# Website:
+#   http://apps.jcns.fz-juelich.de/lmfit
+
 AC_INIT([lmfit], [4:1], [http://apps.jcns.fz-juelich.de/lmfit])
 
 # standard configuration for shared libraries
@@ -16,5 +31,5 @@ AC_HEADER_STDC
 AC_CONFIG_SRCDIR([lib/lmmin.c], [demo/curve1.c])
 
 # make these Makefiles
-AC_CONFIG_FILES([Makefile lib/Makefile demo/Makefile man/Makefile])
+AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile demo/Makefile lmfit.pc])
 AC_OUTPUT
