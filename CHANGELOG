@@ -1,7 +1,15 @@
+TODO
+- In demo/ only tutorial examples are retained; other tests moved to test/
+- Tests as in literature
+- "Success" does not always mean success for nonlin eqs systems
+- Estimate parameter errors (via COV ?)
+- Better infos on G and I steps
+- Improve core algorithm as described in some literature?
+
 Changes in lmfit-4.1
 
 - Examples:
-  - new example nonlin1: solution of 2 nonlinear equations in 2 variables.
+  - new example nonlin1: solution of 2 nonlinear equations in 2 variables
 
 Changes in lmfit-4.0, released 16jul13
 
@@ -22,7 +30,7 @@ Changes in lmfit-4.0, released 16jul13
   - demo programs are no longer installed to $bindir
   - configure.ac: cleaned up, and inserted comments
 - Documentation:
-  - new web location: apps.jcns.fz-juelich.de/lmfit.
+  - new web location: apps.jcns.fz-juelich.de/lmfit
   - new entry page (dokuwiki) instead of man page
   - man page split and largely rewritten: lmcurve(3), lmmin(3)
 
