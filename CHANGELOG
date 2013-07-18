@@ -8,10 +8,11 @@ TODO
 Changes in lmfit-4.1
 
 - now supporting pkg-config
-- examples:
+- reworked examples:
   - new example nonlin1: solution of 2 nonlinear equations in 2 variables
   - example surface1 improved and included in man page lmmin(3)
   - examples without tutorial use moved to test/
+- corrected text messages ("success" -> "converged", we should not say more)
 
 Changes in lmfit-4.0, released 16jul13
 
