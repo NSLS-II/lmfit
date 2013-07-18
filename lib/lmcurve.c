@@ -1,7 +1,7 @@
 /*
  * Library:   lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:      lmmin.c
+ * File:      lmcurve.c
  *
  * Contents:  Levenberg-Marquardt curve-fitting
  *
