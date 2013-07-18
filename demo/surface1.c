@@ -19,13 +19,13 @@
 #include "lmmin.h"
 #include <stdio.h>
 
-/* model function: a plane p0 + p1*tx + p2*tz */
+/* fit model: a plane p0 + p1*tx + p2*tz */
 double f( double tx, double tz, const double *p )
 {
     return p[0] + p[1]*tx + p[2]*tz;
 }
 
-/* data structure to transmit data and fit model */
+/* data structure to transmit arrays and fit model */
 typedef struct {
     double *tx, *tz;
     double *y;
