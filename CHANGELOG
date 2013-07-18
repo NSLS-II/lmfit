@@ -1,6 +1,5 @@
 TODO
-- In demo/ only tutorial examples are retained; other tests moved to test/
-- Tests as in literature
+- Automatically run difficult tests
 - "Success" does not always mean success for nonlin eqs systems
 - Estimate parameter errors (via COV ?)
 - Better infos on G and I steps
@@ -11,6 +10,8 @@ Changes in lmfit-4.1
 - now supporting pkg-config
 - examples:
   - new example nonlin1: solution of 2 nonlinear equations in 2 variables
+  - example surface1 improved and included in man page lmmin(3)
+  - examples without tutorial use moved to test/
 
 Changes in lmfit-4.0, released 16jul13
 

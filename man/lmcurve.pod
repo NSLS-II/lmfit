@@ -94,6 +94,8 @@ For details, see B<lmmin(3)>.
 
 =head1 EXAMPLE
 
+Fit a data set y(x) by a curve f(x;p):
+
     #include "lmcurve.h"
     #include <stdio.h>
 

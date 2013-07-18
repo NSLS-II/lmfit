@@ -3,11 +3,11 @@
  *
  * File:     demo/curve1.c
  *
- * Contents: Example for one-dimensional curve fitting,
- *           using the simplified interface from lmcurve.h.
+ * Contents: Example for curve fitting with lmcurve():
+ *           fit a data set y(x) by a curve f(x;p).
  *
  * Note:     Any modification of this example should be copied to
- *           the manual page lmcurve(3) and to the wiki.
+ *           the manual page source lmcurve.pod and to the wiki.
  *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
  * 

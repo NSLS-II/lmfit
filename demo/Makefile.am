@@ -1,10 +1,6 @@
 AM_CFLAGS = -I$(srcdir)/../lib
-noinst_PROGRAMS = curve1 nonlin1 surface1 morobropro powell hat fourexp
+noinst_PROGRAMS = curve1 nonlin1 surface1
 curve1_SOURCES = curve1.c
 nonlin1_SOURCES = nonlin1.c
 surface1_SOURCES = surface1.c
-morobropro_SOURCES = morobropro.c
-powell_SOURCES = powell.c
-hat_SOURCES = hat.c
-fourexp_SOURCES = fourexp.c
 AM_LDFLAGS = -lm -L../lib -llmfit

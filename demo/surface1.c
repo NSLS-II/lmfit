@@ -1,31 +1,31 @@
 /*
- * Project:  LevenbergMarquardtLeastSquaresFitting
+ * Library:  lmfit (Levenberg-Marquardt least squares fitting)
  *
  * File:     surface1.c
  *
- * Contents: Example for fitting data y_i(t_i) by a function f(t;p),
- *           where each t_i is a vector of dimension k=2.
+ * Contents: Example for generic minimization with lmmin():
+             fit data y(t) by a function f(t;p), where t is a 2-vector.
+ *
+ * Note:     Any modification of this example should be copied to
+ *           the manual page source lmmin.pod and to the wiki.
  *
  * Author:   Joachim Wuttke 2010, following a suggestion by Mario Rudolphi
  * 
- * Homepage: joachimwuttke.de/lmfit
- *
  * Licence:  see ../COPYING (FreeBSD)
+ * 
+ * Homepage: apps.jcns.fz-juelich.de/lmfit
  */
  
 #include "lmmin.h"
 #include <stdio.h>
 
-
 /* model function: a plane p0 + p1*tx + p2*tz */
-
 double f( double tx, double tz, const double *p )
 {
     return p[0] + p[1]*tx + p[2]*tz;
 }
 
-/* data structure to transmit model data to function evalution */
-
+/* data structure to transmit data and fit model */
 typedef struct {
     double *tx, *tz;
     double *y;
@@ -33,29 +33,25 @@ typedef struct {
 } data_struct;
 
 /* function evaluation, determination of residues */
-
 void evaluate_surface( const double *par, int m_dat, const void *data,
                        double *fvec, int *info )
 {
-    /* for readability, perform explicit type conversion */
-    data_struct *mydata;
-    mydata = (data_struct*)data;
+    /* for readability, explicit type conversion */
+    data_struct *D;
+    D = (data_struct*)data;
 
     int i;
     for ( i = 0; i < m_dat; i++ )
-	fvec[i] = mydata->y[i] - mydata->f( mydata->tx[i], mydata->tz[i], par );
+	fvec[i] = D->y[i] - D->f( D->tx[i], D->tz[i], par );
 }
-
 
 int main()
 {
     /* parameter vector */
-
-    int n_par = 3; // number of parameters in model function f
-    double par[3] = { -1, 0, 1 }; // arbitrary starting value
+    int n_par = 3;                /* number of parameters in model function f */
+    double par[3] = { -1, 0, 1 }; /* arbitrary starting value */
 
     /* data points */
-
     int m_dat = 4;
     double tx[4] = { -1, -1,  1,  1 };
     double tz[4] = { -1,  1, -1,  1 };
@@ -64,20 +60,17 @@ int main()
     data_struct data = { tx, tz, y, f };
 
     /* auxiliary parameters */
-
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
     lm_princon_struct princon = lm_princon_std;
-    princon.flags = 3; // monitor status (+1) and parameters (+2)
+    princon.flags = 3;
 
     /* perform the fit */
-
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, (const void*) &data,
            evaluate_surface, lm_printout_std, &control, &princon, &status );
 
     /* print results */
-
     printf( "\nResults:\n" );
     printf( "status after %d function evaluations:\n  %s\n",
             status.nfev, lm_infmsg[status.info] );

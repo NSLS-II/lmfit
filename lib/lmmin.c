@@ -74,25 +74,25 @@ const lm_princon_struct lm_princon_std = {
 /*****************************************************************************/
 
 const char *lm_infmsg[] = {
-    "success (sum of squares below underflow limit)",
-    "success (the relative error in the sum of squares is at most tol)",
-    "success (the relative error between x and the solution is at most tol)",
-    "success (both errors are at most tol)",
-    "trapped by degeneracy (increasing epsilon might help)",
-    "timeout (number of calls to fcn has reached maxsteps*(n+1))",
-    "failure (ftol<tol: cannot reduce sum of squares any further)",
-    "failure (xtol<tol: cannot improve approximate solution any further)",
-    "failure (gtol<tol: cannot improve approximate solution any further)",
-    "exception (not enough memory)",
-    "fatal coding error (improper input parameters)",
-    "exception (break requested within function evaluation)"
+    "converged (sum of squares below underflow limit)",
+    "converged (the relative error in the sum of squares is at most tol)",
+    "converged (the relative error between x and the solution is at most tol)",
+    "converged (both errors are at most tol)",
+    "trapped   (by degeneracy; increasing epsilon might help)",
+    "exhausted (number of function calls exceeding preset patience)",
+    "failed    (ftol<tol: cannot reduce sum of squares any further)",
+    "failed    (xtol<tol: cannot improve approximate solution any further)",
+    "failed    (gtol<tol: cannot improve approximate solution any further)",
+    "crashed   (not enough memory)",
+    "exploded  (fatal coding error: improper input parameters)",
+    "stopped   (break requested within function evaluation)"
 };
 
 const char *lm_shortmsg[] = {
-    "success (0)",
-    "success (f)",
-    "success (p)",
-    "success (f,p)",
+    "converged (0)",
+    "converged (f)",
+    "converged (p)",
+    "converged (f,p)",
     "degenerate",
     "call limit",
     "failed (f)",
