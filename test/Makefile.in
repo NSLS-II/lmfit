@@ -78,10 +78,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = curve1$(EXEEXT) nonlin1$(EXEEXT) surface1$(EXEEXT)
-subdir = demo
+noinst_PROGRAMS = MoGH81-04$(EXEEXT)
+subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/build-aux/depcomp
+	$(top_srcdir)/build-aux/depcomp README
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
@@ -94,19 +94,13 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_curve1_OBJECTS = curve1.$(OBJEXT)
-curve1_OBJECTS = $(am_curve1_OBJECTS)
-curve1_LDADD = $(LDADD)
+am_MoGH81_04_OBJECTS = framework.$(OBJEXT) MoGH81-04.$(OBJEXT)
+MoGH81_04_OBJECTS = $(am_MoGH81_04_OBJECTS)
+MoGH81_04_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-am_nonlin1_OBJECTS = nonlin1.$(OBJEXT)
-nonlin1_OBJECTS = $(am_nonlin1_OBJECTS)
-nonlin1_LDADD = $(LDADD)
-am_surface1_OBJECTS = surface1.$(OBJEXT)
-surface1_OBJECTS = $(am_surface1_OBJECTS)
-surface1_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -141,9 +135,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(curve1_SOURCES) $(nonlin1_SOURCES) $(surface1_SOURCES)
-DIST_SOURCES = $(curve1_SOURCES) $(nonlin1_SOURCES) \
-	$(surface1_SOURCES)
+SOURCES = $(MoGH81_04_SOURCES)
+DIST_SOURCES = $(MoGH81_04_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -284,9 +277,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-curve1_SOURCES = curve1.c
-nonlin1_SOURCES = nonlin1.c
-surface1_SOURCES = surface1.c
+MoGH81_04_SOURCES = framework.h framework.c MoGH81-04.c
 AM_LDFLAGS = -lm -L../lib -llmfit
 all: all-am
 
@@ -301,9 +292,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign demo/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign test/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign demo/Makefile
+	  $(AUTOMAKE) --foreign test/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -332,17 +323,9 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-curve1$(EXEEXT): $(curve1_OBJECTS) $(curve1_DEPENDENCIES) $(EXTRA_curve1_DEPENDENCIES) 
-	@rm -f curve1$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(curve1_OBJECTS) $(curve1_LDADD) $(LIBS)
-
-nonlin1$(EXEEXT): $(nonlin1_OBJECTS) $(nonlin1_DEPENDENCIES) $(EXTRA_nonlin1_DEPENDENCIES) 
-	@rm -f nonlin1$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(nonlin1_OBJECTS) $(nonlin1_LDADD) $(LIBS)
-
-surface1$(EXEEXT): $(surface1_OBJECTS) $(surface1_DEPENDENCIES) $(EXTRA_surface1_DEPENDENCIES) 
-	@rm -f surface1$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(surface1_OBJECTS) $(surface1_LDADD) $(LIBS)
+MoGH81-04$(EXEEXT): $(MoGH81_04_OBJECTS) $(MoGH81_04_DEPENDENCIES) $(EXTRA_MoGH81_04_DEPENDENCIES) 
+	@rm -f MoGH81-04$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(MoGH81_04_OBJECTS) $(MoGH81_04_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -350,9 +333,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve1.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nonlin1.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surface1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MoGH81-04.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/framework.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
