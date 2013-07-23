@@ -15,15 +15,8 @@ void evaluate ( const double *x, int m, const void *data,
 int main()
 {
     const int n=2, m=3;
-    double x[2] = { 1., 1. };
-    double X[2] = { 1e6, 2e-6 };
-    double v[3];
-    int ret;
-    if( ret = run_mini( n, m, evaluate, x, v ) )
-        return ret;
-    if( check_x( n, x, X, std_tol() ) )
-        return 20;
-    if( check_s( m, v, 0., std_tol() ) )
-        return 30;
-    return 0;
+    double xinit[2] = { 1., 1. };
+    double xpect[2] = { 1e6, 2e-6 };
+    double spect    = 0;
+    return run_mini( n, m, evaluate, xinit, xpect, spect, std_tol() );
 }
