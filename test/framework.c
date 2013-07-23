@@ -30,13 +30,10 @@ int run_mini( int n_par, int m_dat,
     lm_control_struct control = lm_control_double;
     lm_princon_struct princon = lm_princon_std;
     princon.form  = 1;
-    princon.flags = 3;
+    princon.flags = 0;
 
-    printf( "Fitting:\n" );
     lmmin( n_par, x, m_dat, NULL,
-           evaluate, lm_printout_std, &control, &princon, &status );
-
-    printf( "\nResults:\n" );
+           evaluate, NULL /*lm_printout_std*/, &control, &princon, &status );
     printf( "status after %d function evaluations:\n  %s\n",
             status.nfev, lm_infmsg[status.info] );
     if ( status.info >= 4 )
