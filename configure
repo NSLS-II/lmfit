@@ -11430,7 +11430,7 @@ if test "x$ac_cv_prog_cc_c99" != xno; then :
 fi
 
 
-AM_CFLAGS="-pedantic -Wall -Werror"
+AM_CFLAGS="-g -pedantic -Wall -Werror"
 
 ac_config_headers="$ac_config_headers config.h"
  # to avoid endless -D options

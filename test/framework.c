@@ -7,7 +7,7 @@
  *
  * Author:   Joachim Wuttke 2013
  * 
- * Homepage: const double *x )apps.jcns.fz-juelich.de/lmfit
+ * Homepage: apps.jcns.fz-juelich.de/lmfit
  *
  * Licence:  see ../COPYING (FreeBSD)
  */
@@ -16,70 +16,115 @@
 #include "framework.h"
 
 #include <math.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #define SQR(x) ((x)*(x))
+
+typedef struct {
+    const char* name;
+    functyp_mini t;
+    int nTP;
+    double* TP;
+} mini_typ;
+
+#define MTEST 1000
+
+mini_typ Tests[MTEST];
+int nTests = 0;
+
+void register_mini( const char* name, functyp_mini t, int nTP, ... )
+{
+    if( nTests+1 >= MTEST ) {
+        fprintf( stderr, "Too many tests: increment MTEST\n" );
+        exit(1);
+    }
+    Tests[nTests].name = name;
+    Tests[nTests].t = t;
+    Tests[nTests].nTP = nTP;
+    if ( !( Tests[nTests].TP = (double *) malloc(nTP * sizeof(double)) ) ) {
+        fprintf( stderr, "allocation of TP failed\n" );
+        exit( -1 );
+    }
+    va_list args;
+    int nargs = 0;
+    va_start ( args, nTP );
+    for ( int iTP = 0; iTP < nTP; ++iTP )
+        Tests[nTests].TP[iTP] = va_arg ( args, double );
+    va_end ( args );
+    ++nTests;
+}
+
+void run_test( int m )
+{
+    printf( "TEST %3i", m );
+    mini_typ *T;
+    T = Tests+m;
+    printf( " ""%-12s""", T->name );
+    T->t( T->nTP, T->TP );
+}
+
+void run_all()
+{
+     for ( int m=0; m<nTests; ++m )
+         run_test( m );
+}
+
 
 int run_mini( int n_par, int m_dat,
               void (*evaluate)( const double *x, int m, const void *data,
                                 double *v, int *info ),
-              double *x, double* xpect, double spect, double tol )
+              void* TP, double *x, double* xpect, double spect, double tol )
 {
-    int i, ret = 0;
-    int j;
+    int i, j, failed = 0, badx = 0, bads = 0;
     double s;
     double *v;
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
     lm_princon_struct princon = lm_princon_std;
+    struct timespec tim = { (time_t)0, (long)0 };
     princon.form  = 1;
     princon.flags = 0;
 
-    if ( ( v = (double *) malloc(m_dat * sizeof(double))) == NULL ) {
+    if ( !( v = (double *) malloc(m_dat * sizeof(double)) ) ) {
         fprintf( stderr, "allocation of v failed\n" );
         exit( -1 );
     }
-    lmmin( n_par, x, m_dat, NULL,
+
+    clock_settime( CLOCK_PROCESS_CPUTIME_ID, &tim );
+    lmmin( n_par, x, m_dat, TP,
            evaluate, NULL /*lm_printout_std*/, &control, &princon, &status );
-    printf( "status after %d function evaluations:\n  %s\n",
-            status.nfev, lm_infmsg[status.info] );
+    clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &tim );
+    printf( " %3i %8.4f", status.nfev, tim.tv_sec + tim.tv_nsec*1e-9 );
     if ( status.info >= 4 )
-        return status.info;
+        failed = 1;
 
     // check fitted parameters
     for ( i=0; i<n_par; ++i ) {
-        if ( xpect[i]==0 ) {
-            if ( fabs(x[i]) > 1e-100 ) {
-                printf("  x[%i] = %16.9e, xpect = 0", i, x[i] );
-                ++ret;
-            }
-        } else {
-            if ( fabs(x[i]-xpect[i]) > tol*fabs(xpect[i]) ) {
-                printf("  x[%i] = %16.9e, xpect = %16.9e, relerr = %16.9e\n",
-                       i, x[i], xpect[i], fabs((x[i]-xpect[i])/xpect[i]));
-                ++ret;
-            }
-        }
+        if ( xpect[i]==0 ?
+             fabs(x[i]) > 1e-100 :
+             fabs(x[i]-xpect[i]) > tol*fabs(xpect[i]) )
+            ++badx;
     }
-    if ( ret )
-        return ret;
+    if ( badx )
+        failed = 1;
 
     // check obtained minimum
     for ( j=0; j<m_dat; ++j )
         s += v[j];
-    if ( spect==0 ) {
-        if ( fabs(s) > 1e-100 )
-            goto failed;
-    } else {
-        if ( fabs(s-spect) > tol*fabs(spect) )
-            goto failed;
+    if ( spect==0 ?
+         fabs(s) > 1e-100 :
+         fabs(s-spect) > tol*fabs(spect) ) {
+        bads = 1;
+        failed = 1;
     }
-    return 0; // ok
-failed:
-    printf("norms deviates from expectation:\n");
-    printf("           found %19.11f, expect %19.11f\n", s, spect );
-    return 1;
+
+    printf ( " %s %2i %i %i\n",
+             failed ? "failed" : "passed", status.info, badx, bads );
+
+    return failed;
 }
 
 double std_tol()

@@ -23,7 +23,7 @@ AM_INIT_AUTOMAKE([foreign]) # don't insert GNU standard text files
 LT_INIT([disable-static])
 
 AC_PROG_CC_C99
-AC_SUBST(AM_CFLAGS,"-pedantic -Wall -Werror")
+AC_SUBST(AM_CFLAGS,"-g -pedantic -Wall -Werror")
 AC_CONFIG_HEADERS([config.h]) # to avoid endless -D options
 AC_HEADER_STDC
 

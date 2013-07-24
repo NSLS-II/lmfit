@@ -78,7 +78,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = MoGH81-04$(EXEEXT)
+noinst_PROGRAMS = runtests$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/build-aux/depcomp README
@@ -94,9 +94,10 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_MoGH81_04_OBJECTS = framework.$(OBJEXT) MoGH81-04.$(OBJEXT)
-MoGH81_04_OBJECTS = $(am_MoGH81_04_OBJECTS)
-MoGH81_04_LDADD = $(LDADD)
+am_runtests_OBJECTS = framework.$(OBJEXT) runtests.$(OBJEXT) \
+	testsuite1.$(OBJEXT)
+runtests_OBJECTS = $(am_runtests_OBJECTS)
+runtests_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -135,8 +136,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(MoGH81_04_SOURCES)
-DIST_SOURCES = $(MoGH81_04_SOURCES)
+SOURCES = $(runtests_SOURCES)
+DIST_SOURCES = $(runtests_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -277,7 +278,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-MoGH81_04_SOURCES = framework.h framework.c MoGH81-04.c
+runtests_SOURCES = framework.h framework.c runtests.c testsuite1.c
 AM_LDFLAGS = -lm -L../lib -llmfit
 all: all-am
 
@@ -323,9 +324,9 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-MoGH81-04$(EXEEXT): $(MoGH81_04_OBJECTS) $(MoGH81_04_DEPENDENCIES) $(EXTRA_MoGH81_04_DEPENDENCIES) 
-	@rm -f MoGH81-04$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(MoGH81_04_OBJECTS) $(MoGH81_04_LDADD) $(LIBS)
+runtests$(EXEEXT): $(runtests_OBJECTS) $(runtests_DEPENDENCIES) $(EXTRA_runtests_DEPENDENCIES) 
+	@rm -f runtests$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(runtests_OBJECTS) $(runtests_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -333,8 +334,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MoGH81-04.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/framework.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runtests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testsuite1.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
