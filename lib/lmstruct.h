@@ -49,6 +49,7 @@ typedef struct {
                          Recommended value is 1. */
     int pivot;        /* If 1, use pivoting in QR factorization.
                          Recommended value is 1. */
+    int verbosity;    /* OR'ed: 1: print some messages; 2: print Jacobian. */
 } lm_control_struct;
 
 /* Collection of input parameters for print control. */

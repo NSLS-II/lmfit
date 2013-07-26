@@ -128,6 +128,11 @@ Logical switch (0 or 1). If 1, then scale parameters to their initial value. Thi
 
 Logical switch (0 or 1). If 1, then use pivots in matrix operations. This is the recommended setting.
 
+=item B<int> I<control.verbosity>
+
+If nonzero, some progress information from within the LM algorithm
+is written to stdout. Which output, is not yet fixed. Try bit values 1 and 2.
+
 =back
 
 =item I<princon>

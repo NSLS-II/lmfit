@@ -23,9 +23,6 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-/* #define LMFIT_DEBUG_MESSAGES 1 */
-/* #define LMFIT_DEBUG_MATRIX 1 */
-
 /* function declarations (implemented below). */
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
                double *qtb, double delta, double *par, double *x,
@@ -62,9 +59,9 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 */
 
 const lm_control_struct lm_control_double = {
-    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 0, 1 };
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 0, 1, 0 };
 const lm_control_struct lm_control_float = {
-    1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 0, 1 };
+    1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 0, 1, 0 };
 const lm_princon_struct lm_princon_std = {
     &stdout, 0, 0, -1, -1 };
 
@@ -211,7 +208,7 @@ void lmmin( int n, double *x, int m, const void *data,
             const lm_princon_struct *princon,
             lm_status_struct *S )
 {
-    double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wa4;
+    double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *fvec4;
     int *ipvt;
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
@@ -283,7 +280,7 @@ void lmmin( int n, double *x, int m, const void *data,
          (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
          (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
          (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa4  = (double *) malloc(m * sizeof(double))) == NULL ||
+         (fvec4  = (double *) malloc(m * sizeof(double))) == NULL ||
          (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
         S->info = 9;
         return;
@@ -308,18 +305,16 @@ void lmmin( int n, double *x, int m, const void *data,
         goto terminate;
     fnorm = lm_enorm(m, fvec);
     if( fnorm <= LM_DWARF ){
-        S->info = 0;
+        S->info = 0; /* sum of squares almost zero, nothing to do */
         goto terminate;
     }
 
 /***  The outer loop: compute gradient, then descend.  ***/
 
     do {
-#ifdef LMFIT_DEBUG_MESSAGES
-        printf("\n");
-        printf("debug lmmin outer loop %d:%d fnorm=%.10e\n",
-               iter, S->nfev, fnorm);
-#endif
+        if ( C->verbosity & 1 )
+            printf("\nlmmin outer loop %d:%d fnorm=%.10e\n",
+                   iter, S->nfev, fnorm);
 
 /***  [outer]  Calculate the Jacobian.  ***/
 
@@ -328,24 +323,26 @@ void lmmin( int n, double *x, int m, const void *data,
             step = MAX(eps*eps, eps * fabs(temp));
             x[j] += step; /* replace temporarily */
             S->info = 0;
-            (*evaluate) (x, m, data, wa4, &(S->info));
+            (*evaluate) (x, m, data, fvec4, &(S->info));
             ++(S->nfev);
             if( printout ) /* case 1 = gradient */
-                (*printout) (n, x, m, data, wa4, princon, 1, iter, S->nfev);
+                (*printout) (n, x, m, data, fvec4, princon, 1, iter, S->nfev);
             if (S->info < 0)
                 goto terminate; /* user requested break */
             for (i = 0; i < m; i++)
-                fjac[j*m+i] = (wa4[i] - fvec[i]) / step;
+                fjac[j*m+i] = (fvec4[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
         }
-#ifdef LMFIT_DEBUG_MATRIX
-        /* print the entire matrix */
-        for (i = 0; i < m; i++) {
-            for (j = 0; j < n; j++)
-                printf("%.5e ", fjac[j*m+i]);
-            printf("\n");
+        if ( C->verbosity & 2 ) {
+            /* print the entire matrix */
+            printf("\nlmmin Jacobian\n");
+            for (i = 0; i < m; i++) {
+                printf("  ");
+                for (j = 0; j < n; j++)
+                    printf("%.5e ", fjac[j*m+i]);
+                printf("\n");
+            }
         }
-#endif
 
 /***  [outer]  Compute the QR factorization of the Jacobian.  ***/
 
@@ -400,20 +397,20 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [outer]  Form q^T * fvec and store first n components in qtf.  ***/
 
         for (i = 0; i < m; i++)
-            wa4[i] = fvec[i];
+            fvec4[i] = fvec[i];
 
         for (j = 0; j < n; j++) {
             temp3 = fjac[j*m+j];
             if (temp3 != 0.) {
                 sum = 0;
                 for (i = j; i < m; i++)
-                    sum += fjac[j*m+i] * wa4[i];
+                    sum += fjac[j*m+i] * fvec4[i];
                 temp = -sum / temp3;
                 for (i = j; i < m; i++)
-                    wa4[i] += fjac[j*m+i] * temp;
+                    fvec4[i] += fjac[j*m+i] * temp;
             }
             fjac[j*m+j] = wa1[j];
-            qtf[j] = wa4[j];
+            qtf[j] = fvec4[j];
         }
 
 /***  [outer]  Compute norm of scaled gradient and test for convergence.  ***/
@@ -435,15 +432,13 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  The inner loop. ***/
         do {
-#ifdef LMFIT_DEBUG_MESSAGES
-            printf("\n");
-            printf("debug lmmin inner loop %d:%d\n", iter, S->nfev);
-#endif
+            if ( C->verbosity & 1 ) 
+                printf("lmmin inner loop %d:%d\n", iter, S->nfev);
 
 /***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
 
             lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &par,
-                      wa1, wa2, wa4, wa3 );
+                      wa1, wa2, fvec4, wa3 );
             /* used return values are fjac (partly), par, wa1=x, wa3=diag*x */
 
             for (j = 0; j < n; j++)
@@ -458,19 +453,18 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  Evaluate the function at x + p and calculate its norm.  ***/
 
             S->info = 0;
-            (*evaluate) (wa2, m, data, wa4, &(S->info));
+            (*evaluate) (wa2, m, data, fvec4, &(S->info));
             ++(S->nfev);
             if( printout ) /* case 2 = descent */
-                (*printout) (n, wa2, m, data, wa4, princon, 2, iter, S->nfev);
+                (*printout) (n, wa2, m, data, fvec4, princon, 2, iter, S->nfev);
             if (S->info < 0)
                 goto terminate; /* user requested break. */
 
-            fnorm1 = lm_enorm(m, wa4);
-#ifdef LMFIT_DEBUG_MESSAGES
-            printf("debug lmmin pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
-                   " delta=%.10e par=%.10e\n",
-                   pnorm, fnorm1, fnorm, delta, par);
-#endif
+            fnorm1 = lm_enorm(m, fvec4);
+            if ( C->verbosity )
+                printf("lmmin pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
+                       " delta=%.10e par=%.10e\n",
+                       pnorm, fnorm1, fnorm, delta, par);
 
 /***  [inner]  Compute the scaled actual reduction.  ***/
 
@@ -495,12 +489,11 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  Compute the ratio of the actual to the predicted reduction.  ***/
 
             ratio = prered != 0 ? actred / prered : 0;
-#ifdef LMFIT_DEBUG_MESSAGES
-            printf("debug lmmin actred %.4e prered %.4e ratio %.4e"
-                   " sq1 %.4e sq2 %.4e dd %.4e\n",
-                   actred, prered, prered != 0 ? ratio : 0.,
-                   SQR(temp1), SQR(temp2), dirder);
-#endif
+            if( C->verbosity & 1 ) 
+                printf("lmmin actred %.4e prered %.4e ratio %.4e"
+                       " sq1 %.4e sq2 %.4e dd %.4e\n",
+                       actred, prered, prered != 0 ? ratio : 0.,
+                       SQR(temp1), SQR(temp2), dirder);
 
 /***  [inner]  Update the step bound.  ***/
 
@@ -527,16 +520,14 @@ void lmmin( int n, double *x, int m, const void *data,
                     wa2[j] = diag[j] * x[j];
                 }
                 for (i = 0; i < m; i++)
-                    fvec[i] = wa4[i];
+                    fvec[i] = fvec4[i];
                 xnorm = lm_enorm(n, wa2);
                 fnorm = fnorm1;
                 iter++;
+            } else {
+                if ( C->verbosity & 1 )
+                    printf("lmmin iteration considered unsuccessful\n");
             }
-#ifdef LMFIT_DEBUG_MESSAGES
-            else {
-                printf("debug lmmin iteration considered unsuccessful\n");
-            }
-#endif
 
 /***  [inner]  Test for convergence.  ***/
 
@@ -552,12 +543,11 @@ void lmmin( int n, double *x, int m, const void *data,
             if (delta <= C->xtol * xnorm)
                 S->info += 2; /* success: sum of squares is almost stable */
             if (S->info != 0) {
-#ifdef LMFIT_DEBUG_MESSAGES
-                printf("debug lmmin success (%i) actred %g prered %g ratio %g "
-                       "delta %g xnorm %g ftol %g xtol %g\n",
-                       S->info, actred, prered, ratio, delta, xnorm,
-                       C->ftol, C->xtol );
-#endif
+                if ( C->verbosity & 1 )
+                    printf("lmmin success (%i) actred %g prered %g ratio %g "
+                           "delta %g xnorm %g ftol %g xtol %g\n",
+                           S->info, actred, prered, ratio, delta, xnorm,
+                           C->ftol, C->xtol );
                 goto terminate;
             }
 

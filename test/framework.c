@@ -150,6 +150,7 @@ void run_test( int kTest, int verbose )
     if ( verbose ) {
         princon.form  = 1;
         princon.flags = 3;
+        control.verbosity = 1;
     } else {
         princon.form  = 1;
         princon.flags = 0;
