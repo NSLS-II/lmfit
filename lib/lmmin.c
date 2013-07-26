@@ -230,7 +230,7 @@ void lmmin( int n, double *x, int m, const void *data,
     S->info = 0;   /* status code */
     S->nfev = 0;   /* function evaluation counter */
 
-/*** check input parameters for errors. ***/
+/***  Check input parameters for errors.  ***/
 
     if ( n <= 0 ) {
         fprintf( stderr, "lmmin: invalid number of parameters %i\n", n );
@@ -274,7 +274,7 @@ void lmmin( int n, double *x, int m, const void *data,
         return;
     }
 
-/*** allocate work space. ***/
+/***  Allocate work space.  ***/
 
     if ( (fvec = (double *) malloc(m * sizeof(double))) == NULL ||
          (diag = (double *) malloc(n * sizeof(double))) == NULL ||
@@ -298,11 +298,11 @@ void lmmin( int n, double *x, int m, const void *data,
             ipvt[j] = j;
     }
 
-/*** evaluate function at starting point and calculate norm. ***/
+/***  Evaluate function at starting point and calculate norm.  ***/
 
     (*evaluate) (x, m, data, fvec, &(S->info));
     ++(S->nfev);
-    if( printout )
+    if( printout ) /* case 0 = initial */
         (*printout) (n, x, m, data, fvec, princon, 0, 0, S->nfev);
     if (S->info < 0)
         goto terminate;
@@ -312,7 +312,7 @@ void lmmin( int n, double *x, int m, const void *data,
         goto terminate;
     }
 
-/*** the outer loop. ***/
+/***  The outer loop: compute gradient, then descend.  ***/
 
     do {
 #ifdef LMFIT_DEBUG_MESSAGES
@@ -321,7 +321,7 @@ void lmmin( int n, double *x, int m, const void *data,
                iter, S->nfev, fnorm);
 #endif
 
-/*** outer: calculate the Jacobian. ***/
+/***  [outer]  Calculate the Jacobian.  ***/
 
         for (j = 0; j < n; j++) {
             temp = x[j];
@@ -330,7 +330,7 @@ void lmmin( int n, double *x, int m, const void *data,
             S->info = 0;
             (*evaluate) (x, m, data, wa4, &(S->info));
             ++(S->nfev);
-            if( printout )
+            if( printout ) /* case 1 = gradient */
                 (*printout) (n, x, m, data, wa4, princon, 1, iter, S->nfev);
             if (S->info < 0)
                 goto terminate; /* user requested break */
@@ -347,15 +347,15 @@ void lmmin( int n, double *x, int m, const void *data,
         }
 #endif
 
-/*** outer: compute the qr factorization of the Jacobian. ***/
+/***  [outer]  Compute the QR factorization of the Jacobian.  ***/
 
 /*      fjac is an m by n array. The upper n by n submatrix of fjac 
  *        is made to contain an upper triangular matrix r with diagonal
  *        elements of nonincreasing magnitude such that
  *
- *              pT*(jacT*jac)*p = rT*r
+ *              p^T*(jac^T*jac)*p = r^T*r
  *
- *              (NOTE: T stands for matrix transposition),
+ *              (NOTE: ^T stands for matrix transposition),
  *
  *        where p is a permutation matrix and jac is the final calculated
  *        Jacobian. Column j of p is column ipvt(j) of the identity matrix.
@@ -397,7 +397,7 @@ void lmmin( int n, double *x, int m, const void *data,
             }
         }
 
-/*** outer: form (q transpose)*fvec and store first n components in qtf. ***/
+/***  [outer]  Form q^T * fvec and store first n components in qtf.  ***/
 
         for (i = 0; i < m; i++)
             wa4[i] = fvec[i];
@@ -416,7 +416,7 @@ void lmmin( int n, double *x, int m, const void *data,
             qtf[j] = wa4[j];
         }
 
-/*** outer: compute norm of scaled gradient and test for convergence. ***/
+/***  [outer]  Compute norm of scaled gradient and test for convergence.  ***/
 
         gnorm = 0;
         for (j = 0; j < n; j++) {
@@ -433,14 +433,14 @@ void lmmin( int n, double *x, int m, const void *data,
             goto terminate;
         }
 
-/*** the inner loop. ***/
+/***  The inner loop. ***/
         do {
 #ifdef LMFIT_DEBUG_MESSAGES
             printf("\n");
             printf("debug lmmin inner loop %d:%d\n", iter, S->nfev);
 #endif
 
-/*** inner: determine the levenberg-marquardt parameter. ***/
+/***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
 
             lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &par,
                       wa1, wa2, wa4, wa3 );
@@ -452,16 +452,15 @@ void lmmin( int n, double *x, int m, const void *data,
             pnorm = lm_enorm(n, wa3);
 
             /* at first call, adjust the initial step bound. */
-
             if (S->nfev <= 1+n)
                 delta = MIN(delta, pnorm);
 
-/*** inner: evaluate the function at x + p and calculate its norm. ***/
+/***  [inner]  Evaluate the function at x + p and calculate its norm.  ***/
 
             S->info = 0;
             (*evaluate) (wa2, m, data, wa4, &(S->info));
             ++(S->nfev);
-            if( printout )
+            if( printout ) /* case 2 = descent */
                 (*printout) (n, wa2, m, data, wa4, princon, 2, iter, S->nfev);
             if (S->info < 0)
                 goto terminate; /* user requested break. */
@@ -473,15 +472,15 @@ void lmmin( int n, double *x, int m, const void *data,
                    pnorm, fnorm1, fnorm, delta, par);
 #endif
 
-/*** inner: compute the scaled actual reduction. ***/
+/***  [inner]  Compute the scaled actual reduction.  ***/
 
             if (p1 * fnorm1 < fnorm)
                 actred = 1 - SQR(fnorm1 / fnorm);
             else
                 actred = -1;
 
-/*** inner: compute the scaled predicted reduction and 
-     the scaled directional derivative. ***/
+/***  [inner]  Compute the scaled predicted reduction and 
+               the scaled directional derivative. ***/
 
             for (j = 0; j < n; j++) {
                 wa3[j] = 0;
@@ -493,7 +492,7 @@ void lmmin( int n, double *x, int m, const void *data,
             prered = SQR(temp1) + 2 * SQR(temp2);
             dirder = -(SQR(temp1) + SQR(temp2));
 
-/*** inner: compute the ratio of the actual to the predicted reduction. ***/
+/***  [inner]  Compute the ratio of the actual to the predicted reduction.  ***/
 
             ratio = prered != 0 ? actred / prered : 0;
 #ifdef LMFIT_DEBUG_MESSAGES
@@ -503,7 +502,7 @@ void lmmin( int n, double *x, int m, const void *data,
                    SQR(temp1), SQR(temp2), dirder);
 #endif
 
-/*** inner: update the step bound. ***/
+/***  [inner]  Update the step bound.  ***/
 
             if (ratio <= 0.25) {
                 if (actred >= 0.)
@@ -519,7 +518,7 @@ void lmmin( int n, double *x, int m, const void *data,
                 par *= 0.5;
             }
 
-/*** inner: test for successful iteration. ***/
+/***  [inner]  Test for successful iteration.  ***/
 
             if (ratio >= p0001) {
                 /* yes, success: update x, fvec, and their norms. */
@@ -539,7 +538,7 @@ void lmmin( int n, double *x, int m, const void *data,
             }
 #endif
 
-/*** inner: test for convergence. ***/
+/***  [inner]  Test for convergence.  ***/
 
             if( fnorm<=LM_DWARF ){
                 S->info = 0; /* success: sum of squares is almost zero */
@@ -562,7 +561,7 @@ void lmmin( int n, double *x, int m, const void *data,
                 goto terminate;
             }
 
-/*** inner: tests for termination and stringent tolerances. ***/
+/***  [inner]  Tests for termination and stringent tolerances.  ***/
 
             if (S->nfev >= maxfev){
                 S->info = 5;
@@ -582,22 +581,22 @@ void lmmin( int n, double *x, int m, const void *data,
                 goto terminate;
             }
 
-/*** inner: end of the loop. repeat if iteration unsuccessful. ***/
+/***  [inner]  End of the loop. Repeat if iteration unsuccessful.  ***/
 
         } while (ratio < p0001);
 
-/*** outer: end of the loop. ***/
+/***  [outer]  End of the loop. ***/
 
     } while (1);
 
 terminate:
-    if ( printout )
+    if ( printout ) /* case 3 = final */
         (*printout)( n, x, m, data, fvec, princon, 3, 0, S->nfev );
     S->fnorm = lm_enorm(m, fvec);
     if ( S->info < 0 )
         S->info = 11;
 
-/*** clean up. ***/
+/***  Clean up.  ***/
     free(fvec);
 
 } /*** lmmin. ***/
@@ -632,7 +631,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *     and the first n components of qT*b. On output
  *     lmpar also provides an upper triangular matrix s such that
  *
- *          pT*(aT*a + par*d*d)*p = sT*s.
+ *          p^T*(a^T*a + par*d*d)*p = s^T*s.
  *
  *     s is employed within lmpar and may be of separate interest.
  *
@@ -1004,13 +1003,13 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
  *     and the first n components of (q transpose)*b. The system
  *     a*x = b, d*x = 0, is then equivalent to
  *
- *          r*z = qT*b,  pT*d*p*z = 0,
+ *          r*z = q^T*b,  p^T*d*p*z = 0,
  *
  *     where x = p*z. If this system does not have full rank,
  *     then a least squares solution is obtained. On output qrsolv
  *     also provides an upper triangular matrix s such that
  *
- *          pT *(aT *a + d*d)*p = sT *s.
+ *          p^T *(a^T *a + d*d)*p = s^T *s.
  *
  *     s is computed within qrsolv and may be of separate interest.
  *
@@ -1050,7 +1049,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
     double qtbpj, sum, temp;
     double _sin, _cos, _tan, _cot; /* local variables, not functions */
 
-/*** qrsolv: copy r and (q transpose)*b to preserve input and initialize s.
+/*** qrsolv: copy r and q^T*b to preserve input and initialize s.
      in particular, save the diagonal elements of r in x. ***/
 
     for (j = 0; j < n; j++) {
@@ -1095,7 +1094,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
             }
 
             /** compute the modified diagonal element of r and
-                the modified element of ((q transpose)*b,0). **/
+                the modified element of ((q^T)*b,0). **/
 
             r[kk] = _cos * r[kk] + _sin * sdiag[k];
             temp = _cos * wa[k] + _sin * qtbpj;
