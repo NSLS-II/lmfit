@@ -15,15 +15,19 @@ lmmin - Levenberg-Marquardt least-squares minimization
 
 B<#include <lmmin.h>>
 
+B<typedef void (*>I<lm_eval_ftyp>)B<(
+            constS< >double *>I<par>B<, int >I<m_dat>B<,
+            constS< >void *>I<data>B<, double *>I<fvec>B<, int *>I<info>B< );
+
+B<typedef void (*>I<lm_prin_ftyp>)B<(
+            int> I<n_par>B<, constS< >double *>I<par>B<, int >I<m_dat>B<,
+            constS< >void *>I<data>B<, double *>I<fvec>B<, 
+            constS< >lm_princon_struct *>I<princon>B<,
+            int >I<iflag>B<, int >I<iter>B<, int >I<nfev>B< );
+
 B<void lmmin( int> I<n_par>B<, double *>I<par>B<, int> I<m_dat>B<, constS< >void *>I<data>B<,
-            void (*>I<evaluate>B<)(
-                constS< >double *>I<par>B<, int >I<m_dat>B<, constS< >void *>I<data>B<,
-                double *>I<fvec>B<, int *>I<info>B< ),
-            void (*>I<printout>B<)(
-                int> I<n_par>B<, constS< >double *>I<par>B<, int >I<m_dat>B<,
-                constS< >void *>I<data>B<, double *>I<fvec>B<, 
-                constS< >lm_princon_struct *>I<princon>B<,
-                int >I<iflag>B<, int >I<iter>B<, int >I<nfev>B< ),
+            lm_eval_ftyp >I<evaluate>B<,
+            lm_prin_ftyp >I<printout>B<,
             constS< >lm_control_struct *>I<control>B<,
             constS< >lm_princon_struct *>I<princon>B<,
             lm_status_struct *>I<status>B< );>

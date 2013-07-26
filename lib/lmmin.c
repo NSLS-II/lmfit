@@ -575,7 +575,7 @@ terminate:
     if ( S->info < 0 ) /* user-requested break */
         S->info = 11;
 
-/***  Clean up.  ***/
+/***  Deallocate the workspace.  ***/
     free(fvec);
     free(diag);
     free(qtf);

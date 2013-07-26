@@ -1,5 +1,6 @@
 Changes in lmfit-4.1
 
+- correct memory leak introduced by reversal of mallock trick
 - debug messages become available through 'verbose'
 - improved text messages ("success" -> "converged", we should not say more)
 - configure now supports pkg-config
