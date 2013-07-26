@@ -20,13 +20,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #define SQR(x) ((x)*(x))
 
-void set_dim( setup_typ* setup, int n_par, int m_dat )
+//***************************************************************************//
+//  Auxiliaries
+//***************************************************************************//
+
+double std_tol()
+{
+    return sqrt( SQR(lm_control_double.ftol) +
+                 SQR(lm_control_double.gtol) +
+                 SQR(lm_control_double.xtol) );
+}
+
+//***************************************************************************//
+//  Setup test cases (called by test setup functions t001, ...)
+//***************************************************************************//
+
+//! Set name of the problem (may include %-directives for parameter values).
+
+void set_name( setup_typ* setup, const char *fmt, ... )
+{
+    memset( setup->name, 0, NAMELEN );
+    va_list ap;
+    va_start( ap, fmt );
+    vsnprintf( setup->name, NAMELEN, fmt, ap );
+    va_end( ap );
+}
+
+//! Set dimension of the problem; allocate parameter arrays.
+
+void set_task( setup_typ* setup, int n_par, int m_dat, ffunc_typ f )
 {
     setup->n = n_par;
     setup->m = m_dat;
+    setup->f = f;
     if ( !( setup->x     = (double *) malloc( n_par * sizeof(double)) ) ||
          !( setup->xpect = (double *) malloc( n_par * sizeof(double)) ) ) {
         fprintf( stderr, "allocation of x failed\n" );
@@ -34,18 +64,33 @@ void set_dim( setup_typ* setup, int n_par, int m_dat )
     }
 }
 
-void set_vec( double *x, int n, ... )
+//! Set initial parameter values.
+
+void set_init( setup_typ* setup, ... )
 {
     va_list args;
-    va_start ( args, n );
-    for ( int i = 0; i < n; ++i )
-        x[i] = va_arg ( args, double );
+    va_start ( args, setup );
+    for ( int i = 0; i < setup->n; ++i )
+        setup->x[i] = va_arg ( args, double );
     va_end ( args );
 }
 
+//! Set expected parameter values.
+
+void set_xpec( setup_typ* setup, ... )
+{
+    va_list args;
+    va_start ( args, setup );
+    for ( int i = 0; i < setup->n; ++i )
+        setup->xpect[i] = va_arg ( args, double );
+    va_end ( args );
+}
+
+//***************************************************************************//
+//  Register tests
+//***************************************************************************//
 
 typedef struct {
-    const char* name;
     tfunc_typ t;
     int nTP;
     double* TP;
@@ -56,13 +101,12 @@ typedef struct {
 mini_typ Tests[MTEST];
 int nTests = 0;
 
-void register_mini( const char* name, tfunc_typ t, int nTP, ... )
+void register_mini( tfunc_typ t, int nTP, ... )
 {
     if( nTests+1 >= MTEST ) {
         fprintf( stderr, "Too many tests: increment MTEST\n" );
         exit(1);
     }
-    Tests[nTests].name = name;
     Tests[nTests].t = t;
     Tests[nTests].nTP = nTP;
     if ( !( Tests[nTests].TP = (double *) malloc(nTP * sizeof(double)) ) ) {
@@ -78,14 +122,20 @@ void register_mini( const char* name, tfunc_typ t, int nTP, ... )
     ++nTests;
 }
 
+//***************************************************************************//
+//  Run registered test(s)
+//***************************************************************************//
+
+//! Private low-level implementation.
+
 void run_test( int kTest, int verbose )
 {
     printf( "%3i", kTest );
     mini_typ *T;
     T = Tests+kTest;
-    printf( " ""%-12s""", T->name );
     setup_typ S;
     T->t( &S, T->nTP, T->TP );
+    printf( " ""%-20s """, S.name );
 
     int n_par = S.n, m_dat = S.m;
     double spect = S.spect;
@@ -160,11 +210,15 @@ void run_test( int kTest, int verbose )
              errx0, errx1, errs0, errs1 );
 }
 
+//! High-level API to run all tests.
+
 void run_all()
 {
      for ( int k=0; k<nTests; ++k )
          run_test( k, 0 );
 }
+
+//! High-level API to run one test.
 
 void run_one( int kTest )
 {
@@ -173,11 +227,4 @@ void run_one( int kTest )
         exit(-1);
     }
     run_test( kTest, 1 );
-}
-
-double std_tol()
-{
-    return sqrt( SQR(lm_control_double.ftol) +
-                 SQR(lm_control_double.gtol) +
-                 SQR(lm_control_double.xtol) );
 }
