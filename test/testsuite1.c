@@ -49,7 +49,7 @@ void f005( const double *x, int m, const void *TP, double *v, int *info )
     assert( m== 3 );
     v[0] = 1.5   - x[0]*(1-x[1]);
     v[1] = 2.25  - x[0]*(1-SQR(x[1]));
-    v[2] = 2.625 - x[0]*(1-pow(x[1],2));
+    v[2] = 2.625 - x[0]*(1-pow(x[1],3));
 }
 
 void t005( setup_typ *S, int nTP, const double* TP )
@@ -70,8 +70,8 @@ int testsuite1()
 {
     register_mini( t004, 1, 1.e3 );
     register_mini( t004, 1, 1.e6 );
-    register_mini( t004, 1, 1.e12 );
-    register_mini( t004, 1, 1.e18 );
+    register_mini( t004, 1, 1.e7 );
+    register_mini( t004, 1, 1.e8 );
 
     register_mini( t005, 0 );
 }
