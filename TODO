@@ -1,0 +1,6 @@
+TODO
+- Automatically run difficult tests
+- "Success" does not always mean success for nonlin eqs systems
+- Estimate parameter errors (via COV ?)
+- Better infos on G and I steps
+- Improve core algorithm as described in some literature?
