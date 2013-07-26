@@ -150,9 +150,11 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
 
     if        ( P->form == 0 ) { /** standard verbose form **/
 
-        fprintf( *(P->stream), "lmmin monitor (nfev=%d, iter=%d)\n",
-                 nfev, iter );
-        fprintf( *(P->stream),  "  %s\n", lm_action_msg[iflag] );
+        if( P->flags & 1 ){
+            fprintf( *(P->stream), "lmmin monitor (nfev=%d, iter=%d)\n",
+                     nfev, iter );
+            fprintf( *(P->stream),  "  %s\n", lm_action_msg[iflag] );
+        }
 
         if( P->flags & 2 ){
             fprintf( *(P->stream), "  pars ");
@@ -171,15 +173,18 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
 
     } else if ( P->form == 1 ) { /** compact form for us experts **/
 
-        fprintf( *(P->stream), "lmmin:: %3d %2d %c",
-                 nfev, iter, lm_action_code[iflag] );
+        if( P->flags & 1 ){
+            fprintf( *(P->stream), "lmmin:: %3d %2d %c",
+                     nfev, iter, lm_action_code[iflag] );
+        }
 
         if( P->flags & 2 ){
             for (i = 0; i < nout; ++i)
                 fprintf( *(P->stream), " %16.9g", par[i]);
             fprintf( *(P->stream), " => %18.11g", lm_enorm(m_dat, fvec));
         }
-        fprintf( *(P->stream), "\n" );
+        if( P->flags & 3 )
+            fprintf( *(P->stream), "\n" );
 
         if ( (P->flags & 8) || ((P->flags & 4) && iflag == -1) ) {
             fprintf( *(P->stream), "  residuals");

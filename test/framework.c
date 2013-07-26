@@ -148,8 +148,13 @@ void run_test( int kTest, int verbose )
     lm_control_struct control = lm_control_double;
     lm_princon_struct princon = lm_princon_std;
     struct timespec tim = { (time_t)0, (long)0 };
-    princon.form  = 1;
-    princon.flags = 0;
+    if ( verbose ) {
+        princon.form  = 1;
+        princon.flags = 3;
+    } else {
+        princon.form  = 1;
+        princon.flags = 0;
+    }
 
     if ( !( v = (double *) realloc( v, m_dat * sizeof(double)) ) ) {
         fprintf( stderr, "allocation of v failed\n" );
@@ -160,7 +165,7 @@ void run_test( int kTest, int verbose )
 
     clock_settime( CLOCK_PROCESS_CPUTIME_ID, &tim );
     lmmin( n_par, S.x, m_dat, T->TP,
-           S.f, NULL /*lm_printout_std*/, &control, &princon, &status );
+           S.f, lm_printout_std, &control, &princon, &status );
     clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &tim );
     printf( " %3i %8.4f", status.nfev, tim.tv_sec + tim.tv_nsec*1e-9 );
     if ( status.info >= 4 )

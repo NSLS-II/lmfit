@@ -27,7 +27,7 @@ void f004( const double *x, int m, const void *TP, double *v, int *info )
 {
     assert( m== 3 );
     v[0] = x[0] - ((double*)TP)[0];
-    v[1] = x[1] - 2*((double*)TP)[0];
+    v[1] = x[1] - 2/((double*)TP)[0];
     v[2] = x[0]*x[1] - 2;
 }
 
@@ -36,8 +36,8 @@ void t004( setup_typ *S, int nTP, const double* TP )
     assert( nTP==1 );
     set_name( S, "MoGH81#04[%6.1e]", TP[0] );
     set_task( S, 2, 3, f004 );
-    set_init( S, 1., 1. );
-    set_xpec( S, TP[0], 2*TP[0] );
+    set_init( S, 1., 1. ); // 0.9*TP[0], 1.9*TP[0] );
+    set_xpec( S, TP[0], 2/TP[0] );
     S->spect = 0;
 }
 
