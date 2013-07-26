@@ -140,8 +140,8 @@ void run_test( int kTest, int verbose )
     int n_par = S.n, m_dat = S.m;
     double tol = std_tol();
 
-    int i, j, failed=0, badx0=0, badx1=0, bads0=0, bads1=0;
-    double s, rel, errx0=0, errx1=0, errs0=0, errs1=0;
+    int i, j, failed=0, badx0=0, badx1=0;
+    double rel, errx0=0, errx1=0;
     static double *v;
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
@@ -190,10 +190,9 @@ void run_test( int kTest, int verbose )
     if ( badx0 || badx1 )
         failed = 1;
 
-    printf ( " %s %2i  %i %i  %i %i  %8.2e %8.2e  %8.2e %8.2e\n",
+    printf ( " %s %2i  %i %i  %8.2e %8.2e\n",
              (failed ? "failed" : "passed"), status.info,
-             badx0, badx1, bads0, bads1,
-             errx0, errx1, errs0, errs1 );
+             badx0, badx1, errx0, errx1 );
 }
 
 //! High-level API to run all tests.
