@@ -74,25 +74,25 @@ const lm_princon_struct lm_princon_std = {
 /*****************************************************************************/
 
 const char *lm_infmsg[] = {
-    "converged (sum of squares below underflow limit)",
-    "converged (the relative error in the sum of squares is at most tol)",
-    "converged (the relative error between x and the solution is at most tol)",
-    "converged (both errors are at most tol)",
-    "trapped   (by degeneracy; increasing epsilon might help)",
-    "exhausted (number of function calls exceeding preset patience)",
-    "failed    (ftol<tol: cannot reduce sum of squares any further)",
-    "failed    (xtol<tol: cannot improve approximate solution any further)",
-    "failed    (gtol<tol: cannot improve approximate solution any further)",
-    "crashed   (not enough memory)",
-    "exploded  (fatal coding error: improper input parameters)",
-    "stopped   (break requested within function evaluation)"
+    "found zero (sum of squares below underflow limit)",
+    "converged  (the relative error in the sum of squares is at most tol)",
+    "converged  (the relative error of the parameter vector is at most tol)",
+    "converged  (both errors are at most tol)",
+    "trapped    (by degeneracy; increasing epsilon might help)",
+    "exhausted  (number of function calls exceeding preset patience)",
+    "failed     (ftol<tol: cannot reduce sum of squares any further)",
+    "failed     (xtol<tol: cannot improve approximate solution any further)",
+    "failed     (gtol<tol: cannot improve approximate solution any further)",
+    "crashed    (not enough memory)",
+    "exploded   (fatal coding error: improper input parameters)",
+    "stopped    (break requested within function evaluation)"
 };
 
 const char *lm_shortmsg[] = {
-    "converged (0)",
+    "found zero",
     "converged (f)",
     "converged (p)",
-    "converged (f,p)",
+    "converged (2)",
     "degenerate",
     "call limit",
     "failed (f)",
@@ -542,15 +542,16 @@ void lmmin( int n, double *x, int m, const void *data,
 /*** inner: test for convergence. ***/
 
             if( fnorm<=LM_DWARF ){
-                S->info = 0;
+                S->info = 0; /* success: sum of squares is almost zero */
                 goto terminate;
             }
 
             S->info = 0;
+            /* test two criteria (both may be fulfilled) */
             if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
-                S->info = 1;
+                S->info  = 1; /* success: parameter vector is almost stable */
             if (delta <= C->xtol * xnorm)
-                S->info += 2;
+                S->info += 2; /* success: sum of squares is almost stable */
             if (S->info != 0) {
 #ifdef LMFIT_DEBUG_MESSAGES
                 printf("debug lmmin success (%i) actred %g prered %g ratio %g "

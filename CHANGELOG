@@ -1,18 +1,11 @@
-TODO
-- Automatically run difficult tests
-- "Success" does not always mean success for nonlin eqs systems
-- Estimate parameter errors (via COV ?)
-- Better infos on G and I steps
-- Improve core algorithm as described in some literature?
-
 Changes in lmfit-4.1
 
-- now supporting pkg-config
+- improved text messages ("success" -> "converged", we should not say more)
+- configure now supports pkg-config
 - reworked examples:
   - new example nonlin1: solution of 2 nonlinear equations in 2 variables
   - example surface1 improved and included in man page lmmin(3)
-  - examples without tutorial use moved to test/
-- corrected text messages ("success" -> "converged", we should not say more)
+- directory test now contains functional testsuite
 
 Changes in lmfit-4.0, released 16jul13
 
