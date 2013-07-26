@@ -21,14 +21,17 @@
 extern "C" {
 #endif
 
-/* Levenberg-Marquardt minimization. */
-void lmmin( int n_par, double *par, int m_dat, const void *data, 
-            void (*evaluate) (const double *par, int m_dat, const void *data,
-                              double *fvec, int *info),
-            void (*printout) (int n_par, const double *par, int m_dat,
+typedef void (*lm_eval_ftyp) (const double *par, int m_dat, const void *data,
+                              double *fvec, int *info);
+typedef void (*lm_prin_ftyp) (int n_par, const double *par, int m_dat,
                               const void *data, const double *fvec,
                               const lm_princon_struct *princon,
-                              int iflag, int iter, int nfev),
+                              int iflag, int iter, int nfev);
+
+/* Levenberg-Marquardt minimization. */
+void lmmin( int n_par, double *par, int m_dat, const void *data, 
+            lm_eval_ftyp evaluate,
+            lm_prin_ftyp printout,
             const lm_control_struct *control,
             const lm_princon_struct *princon,
             lm_status_struct *status );

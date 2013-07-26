@@ -24,6 +24,12 @@
 #define SQR(x)   (x)*(x)
 
 /* function declarations (implemented below). */
+int lm_evaluate( int n, double *x, int m, double* fvec, const void *data, 
+                 lm_eval_ftyp evaluate,
+                 lm_prin_ftyp printout,
+                 const lm_princon_struct *princon,
+                 lm_status_struct *S,
+                 int context, int iter );
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
                double *qtb, double delta, double *par, double *x,
                double *sdiag, double *aux, double *xdi );
@@ -190,20 +196,16 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
             fprintf( *(P->stream), "\n");
         }
     }
-}
+} /*** lm_printout_std. ***/
 
 
 /*****************************************************************************/
 /*  lmmin (main minimization routine)                                        */
 /*****************************************************************************/
 
-void lmmin( int n, double *x, int m, const void *data, 
-            void (*evaluate) (const double *x, int m, const void *data,
-                              double *fvec, int *info),
-            void (*printout) (int n, const double *x, int m,
-                              const void *data, const double *fvec,
-                              const lm_princon_struct *princon,
-                              int iflag, int iter, int nfev),
+void lmmin( int n, double *x, int m, const void *data,
+            lm_eval_ftyp evaluate,
+            lm_prin_ftyp printout,
             const lm_control_struct *C,
             const lm_princon_struct *princon,
             lm_status_struct *S )
@@ -297,11 +299,8 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  Evaluate function at starting point and calculate norm.  ***/
 
-    (*evaluate) (x, m, data, fvec, &(S->info));
-    ++(S->nfev);
-    if( printout ) /* case 0 = initial */
-        (*printout) (n, x, m, data, fvec, princon, 0, 0, S->nfev);
-    if (S->info < 0)
+    if ( lm_evaluate( n, x, m, fvec, data,
+                      evaluate, printout, princon, S, 0, 0 ) )
         goto terminate;
     fnorm = lm_enorm(m, fvec);
     if( fnorm <= LM_DWARF ){
@@ -322,13 +321,9 @@ void lmmin( int n, double *x, int m, const void *data,
             temp = x[j];
             step = MAX(eps*eps, eps * fabs(temp));
             x[j] += step; /* replace temporarily */
-            S->info = 0;
-            (*evaluate) (x, m, data, wf, &(S->info));
-            ++(S->nfev);
-            if( printout ) /* case 1 = gradient */
-                (*printout) (n, x, m, data, wf, princon, 1, iter, S->nfev);
-            if (S->info < 0)
-                goto terminate; /* user requested break */
+            if ( lm_evaluate( n, x, m, wf, data,
+                              evaluate, printout, princon, S, 1, iter ) )
+                goto terminate;
             for (i = 0; i < m; i++)
                 fjac[j*m+i] = (wf[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
@@ -413,7 +408,7 @@ void lmmin( int n, double *x, int m, const void *data,
             qtf[j] = wf[j];
         }
 
-/***  [outer]  Compute norm of scaled gradient and test for convergence.  ***/
+/***  [outer]  Compute norm of scaled gradient and detect degeneracy.  ***/
 
         gnorm = 0;
         for (j = 0; j < n; j++) {
@@ -452,13 +447,9 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [inner]  Evaluate the function at x + p and calculate its norm.  ***/
 
-            S->info = 0;
-            (*evaluate) (wa2, m, data, wf, &(S->info));
-            ++(S->nfev);
-            if( printout ) /* case 2 = descent */
-                (*printout) (n, wa2, m, data, wf, princon, 2, iter, S->nfev);
-            if (S->info < 0)
-                goto terminate; /* user requested break. */
+            if ( lm_evaluate( n, wa2, m, wf, data,
+                              evaluate, printout, princon, S, 2, iter ) )
+                goto terminate;
 
             fnorm1 = lm_enorm(m, wf);
             if ( C->verbosity )
@@ -580,16 +571,35 @@ void lmmin( int n, double *x, int m, const void *data,
     } while (1);
 
 terminate:
-    if ( printout ) /* case 3 = final */
+    if ( printout )
         (*printout)( n, x, m, data, fvec, princon, 3, 0, S->nfev );
     S->fnorm = lm_enorm(m, fvec);
-    if ( S->info < 0 )
+    if ( S->info < 0 ) /* user-requested break */
         S->info = 11;
 
 /***  Clean up.  ***/
     free(fvec);
 
 } /*** lmmin. ***/
+
+
+/*****************************************************************************/
+/*  lm_evaluate (function evaluation and printout)                           */
+/*****************************************************************************/
+
+int lm_evaluate( int n, double *x, int m, double* fvec, const void *data, 
+                 lm_eval_ftyp evaluate,
+                 lm_prin_ftyp printout,
+                 const lm_princon_struct *princon,
+                 lm_status_struct *S,
+                 int context, int iter )
+{
+    (*evaluate) (x, m, data, fvec, &(S->info));
+    ++(S->nfev);
+    if( printout )
+        (*printout) (n, x, m, data, fvec, princon, context, iter, S->nfev);
+    return S->info < 0;
+} /*** lm_evaluate. ***/
 
 
 /*****************************************************************************/
@@ -664,8 +674,8 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *        squares solution of the system a*x = b, sqrt(par)*d*x = 0,
  *        for the output par.
  *
- *      sdiag is an array of length n which contains the
- *        diagonal elements of the upper triangular matrix s.
+ *      sdiag is an array of length n needed as workspace; on OUTPUT
+ *        it contains the diagonal elements of the upper triangular matrix s.
  *
  *      aux is a multi-purpose work array of length n.
  *
@@ -819,7 +829,6 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 
 } /*** lm_lmpar. ***/
 
-
 /*****************************************************************************/
 /*  lm_qrfac (QR factorization, from lapack)                                 */
 /*****************************************************************************/
@@ -964,7 +973,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 
         rdiag[j] = -ajnorm;
     }
-}
+} /*** lm_qrfac. ***/
 
 
 /*****************************************************************************/
