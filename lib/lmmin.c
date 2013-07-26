@@ -282,7 +282,7 @@ void lmmin( int n, double *x, int m, const void *data,
          (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
          (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
          (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wf  = (double *) malloc(m * sizeof(double))) == NULL ||
+         (wf  = (double *)  malloc(m * sizeof(double))) == NULL ||
          (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
         S->info = 9;
         return;
@@ -450,23 +450,19 @@ void lmmin( int n, double *x, int m, const void *data,
             if ( lm_evaluate( n, wa2, m, wf, data,
                               evaluate, printout, princon, S, 2, iter ) )
                 goto terminate;
-
             fnorm1 = lm_enorm(m, wf);
+
             if ( C->verbosity )
                 printf("lmmin pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
                        " delta=%.10e par=%.10e\n",
                        pnorm, fnorm1, fnorm, delta, par);
 
-/***  [inner]  Compute the scaled actual reduction.  ***/
+/***  [inner]  Evaluate the scaled reduction.  ***/
 
-            if (p1 * fnorm1 < fnorm)
-                actred = 1 - SQR(fnorm1 / fnorm);
-            else
-                actred = -1;
+            /* actual scaled reduction */
+            actred = (p1 * fnorm1 < fnorm) ? 1 - SQR(fnorm1 / fnorm) : -1;
 
-/***  [inner]  Compute the scaled predicted reduction and 
-               the scaled directional derivative. ***/
-
+            /* predicted scaled reduction */
             for (j = 0; j < n; j++) {
                 wa3[j] = 0;
                 for (i = 0; i <= j; i++)
@@ -475,11 +471,13 @@ void lmmin( int n, double *x, int m, const void *data,
             temp1 = lm_enorm(n, wa3) / fnorm;
             temp2 = sqrt(par) * pnorm / fnorm;
             prered = SQR(temp1) + 2 * SQR(temp2);
+
+            /* scaled directional derivative */
             dirder = -(SQR(temp1) + SQR(temp2));
 
-/***  [inner]  Compute the ratio of the actual to the predicted reduction.  ***/
-
+            /* ratio of actual to predicted reduction */
             ratio = prered != 0 ? actred / prered : 0;
+
             if( C->verbosity & 1 ) 
                 printf("lmmin actred %.4e prered %.4e ratio %.4e"
                        " sq1 %.4e sq2 %.4e dd %.4e\n",
@@ -579,6 +577,14 @@ terminate:
 
 /***  Clean up.  ***/
     free(fvec);
+    free(diag);
+    free(qtf);
+    free(fjac);
+    free(wa1);
+    free(wa2);
+    free(wa3);
+    free(wf);
+    free(ipvt);
 
 } /*** lmmin. ***/
 
