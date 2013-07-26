@@ -208,7 +208,7 @@ void lmmin( int n, double *x, int m, const void *data,
             const lm_princon_struct *princon,
             lm_status_struct *S )
 {
-    double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *fvec4;
+    double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wf;
     int *ipvt;
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
@@ -280,7 +280,7 @@ void lmmin( int n, double *x, int m, const void *data,
          (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
          (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
          (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (fvec4  = (double *) malloc(m * sizeof(double))) == NULL ||
+         (wf  = (double *) malloc(m * sizeof(double))) == NULL ||
          (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
         S->info = 9;
         return;
@@ -323,14 +323,14 @@ void lmmin( int n, double *x, int m, const void *data,
             step = MAX(eps*eps, eps * fabs(temp));
             x[j] += step; /* replace temporarily */
             S->info = 0;
-            (*evaluate) (x, m, data, fvec4, &(S->info));
+            (*evaluate) (x, m, data, wf, &(S->info));
             ++(S->nfev);
             if( printout ) /* case 1 = gradient */
-                (*printout) (n, x, m, data, fvec4, princon, 1, iter, S->nfev);
+                (*printout) (n, x, m, data, wf, princon, 1, iter, S->nfev);
             if (S->info < 0)
                 goto terminate; /* user requested break */
             for (i = 0; i < m; i++)
-                fjac[j*m+i] = (fvec4[i] - fvec[i]) / step;
+                fjac[j*m+i] = (wf[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
         }
         if ( C->verbosity & 2 ) {
@@ -397,20 +397,20 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [outer]  Form q^T * fvec and store first n components in qtf.  ***/
 
         for (i = 0; i < m; i++)
-            fvec4[i] = fvec[i];
+            wf[i] = fvec[i];
 
         for (j = 0; j < n; j++) {
             temp3 = fjac[j*m+j];
             if (temp3 != 0.) {
                 sum = 0;
                 for (i = j; i < m; i++)
-                    sum += fjac[j*m+i] * fvec4[i];
+                    sum += fjac[j*m+i] * wf[i];
                 temp = -sum / temp3;
                 for (i = j; i < m; i++)
-                    fvec4[i] += fjac[j*m+i] * temp;
+                    wf[i] += fjac[j*m+i] * temp;
             }
             fjac[j*m+j] = wa1[j];
-            qtf[j] = fvec4[j];
+            qtf[j] = wf[j];
         }
 
 /***  [outer]  Compute norm of scaled gradient and test for convergence.  ***/
@@ -438,7 +438,7 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
 
             lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &par,
-                      wa1, wa2, fvec4, wa3 );
+                      wa1, wa2, wf, wa3 );
             /* used return values are fjac (partly), par, wa1=x, wa3=diag*x */
 
             for (j = 0; j < n; j++)
@@ -453,14 +453,14 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  Evaluate the function at x + p and calculate its norm.  ***/
 
             S->info = 0;
-            (*evaluate) (wa2, m, data, fvec4, &(S->info));
+            (*evaluate) (wa2, m, data, wf, &(S->info));
             ++(S->nfev);
             if( printout ) /* case 2 = descent */
-                (*printout) (n, wa2, m, data, fvec4, princon, 2, iter, S->nfev);
+                (*printout) (n, wa2, m, data, wf, princon, 2, iter, S->nfev);
             if (S->info < 0)
                 goto terminate; /* user requested break. */
 
-            fnorm1 = lm_enorm(m, fvec4);
+            fnorm1 = lm_enorm(m, wf);
             if ( C->verbosity )
                 printf("lmmin pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
                        " delta=%.10e par=%.10e\n",
@@ -520,7 +520,7 @@ void lmmin( int n, double *x, int m, const void *data,
                     wa2[j] = diag[j] * x[j];
                 }
                 for (i = 0; i < m; i++)
-                    fvec[i] = fvec4[i];
+                    fvec[i] = wf[i];
                 xnorm = lm_enorm(n, wa2);
                 fnorm = fnorm1;
                 iter++;
