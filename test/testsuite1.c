@@ -1,3 +1,19 @@
+/*
+ * Library:    lmfit (Levenberg-Marquardt least squares fitting)
+ *
+ * File:       testsuite1.c
+ *
+ * Contents:   Standard tests for minimization software.
+ *
+ * References: [MoGH81] JJ Moré, BS Garbow, KE Hillstrom: ACM TOMS 7, 17 (1981)
+ *
+ * Copyright:  Joachim Wuttke, Forschungszentrum Juelich GmbH (2013)
+ *
+ * License:    see ../COPYING (FreeBSD)
+ * 
+ * Homepage:   apps.jcns.fz-juelich.de/lmfit
+ */
+ 
 #include <math.h>
 #include <assert.h>
 #include "framework.h"
@@ -16,14 +32,14 @@ void f004( const double *x, int m, const void *TP, double *v, int *info )
 }
 
 
-int t004( int nTP, const double* TP )
+void t004( setup_typ *S, int nTP, const double* TP )
 {
     assert( nTP==1 );
-    const int n=2, m=3;
-    double xinit[2] = { 1., 1. };
-    double xpect[2] = { TP[0], 2*TP[0] };
-    double spect    = 0;
-    return run_mini( n, m, f004, (void*)TP, xinit, xpect, spect, std_tol() );
+    S->f = f004;
+    set_dim( S, 2, 3 );
+    set_vec( S->x,     S->n, 1., 1. );
+    set_vec( S->xpect, S->n, TP[0], 2*TP[0] );
+    S->spect = 0;
 }
 
 //  ==========================================================================
@@ -38,14 +54,14 @@ void f005( const double *x, int m, const void *TP, double *v, int *info )
 }
 
 
-int t005( int nTP, const double* TP )
+void t005( setup_typ *S, int nTP, const double* TP )
 {
     assert( nTP==0 );
-    const int n=2, m=3;
-    double xinit[2] = { 1., 1. };
-    double xpect[2] = { 3., 0.5 };
-    double spect    = 0;
-    return run_mini( n, m, f005, (void*)TP, xinit, xpect, spect, std_tol() );
+    S->f = f005;
+    set_dim( S, 2, 3 );
+    set_vec( S->x,     S->n, 1., 1. );
+    set_vec( S->xpect, S->n, 3., 0.5 );
+    S->spect = 0;
 }
 
 //  ==========================================================================

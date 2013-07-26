@@ -1,15 +1,15 @@
 /*
- * Project:  LevenbergMarquardtLeastSquaresFitting
+ * Library:    lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:     framework.c
+ * File:       framework.c
  *
- * Contents: Framework for functional tests.
+ * Contents:   Framework for functional tests
  *
- * Author:   Joachim Wuttke 2013
+ * Copyright:  Joachim Wuttke, Forschungszentrum Juelich GmbH (2013)
+ *
+ * License:    see ../COPYING (FreeBSD)
  * 
- * Homepage: apps.jcns.fz-juelich.de/lmfit
- *
- * Licence:  see ../COPYING (FreeBSD)
+ * Homepage:   apps.jcns.fz-juelich.de/lmfit
  */
  
 #include "lmmin.h"
@@ -23,9 +23,30 @@
 
 #define SQR(x) ((x)*(x))
 
+void set_dim( setup_typ* setup, int n_par, int m_dat )
+{
+    setup->n = n_par;
+    setup->m = m_dat;
+    if ( !( setup->x     = (double *) malloc( n_par * sizeof(double)) ) ||
+         !( setup->xpect = (double *) malloc( n_par * sizeof(double)) ) ) {
+        fprintf( stderr, "allocation of x failed\n" );
+        exit( -1 );
+    }
+}
+
+void set_vec( double *x, int n, ... )
+{
+    va_list args;
+    va_start ( args, n );
+    for ( int i = 0; i < n; ++i )
+        x[i] = va_arg ( args, double );
+    va_end ( args );
+}
+
+
 typedef struct {
     const char* name;
-    functyp_mini t;
+    tfunc_typ t;
     int nTP;
     double* TP;
 } mini_typ;
@@ -35,7 +56,7 @@ typedef struct {
 mini_typ Tests[MTEST];
 int nTests = 0;
 
-void register_mini( const char* name, functyp_mini t, int nTP, ... )
+void register_mini( const char* name, tfunc_typ t, int nTP, ... )
 {
     if( nTests+1 >= MTEST ) {
         fprintf( stderr, "Too many tests: increment MTEST\n" );
@@ -63,15 +84,13 @@ void run_test( int kTest, int verbose )
     mini_typ *T;
     T = Tests+kTest;
     printf( " ""%-12s""", T->name );
-    T->t( T->nTP, T->TP );
-}
+    setup_typ S;
+    T->t( &S, T->nTP, T->TP );
 
+    int n_par = S.n, m_dat = S.m;
+    double spect = S.spect;
+    double tol = std_tol();
 
-int run_mini( int n_par, int m_dat,
-              void (*evaluate)( const double *x, int m, const void *data,
-                                double *v, int *info ),
-              void* TP, double *x, double* xpect, double spect, double tol )
-{
     int i, j, failed=0, badx0=0, badx1=0, bads0=0, bads1=0;
     double s, rel, errx0=0, errx1=0, errs0=0, errs1=0;
     static double *v;
@@ -90,8 +109,8 @@ int run_mini( int n_par, int m_dat,
     printf( "%2i %3i", n_par, m_dat );
 
     clock_settime( CLOCK_PROCESS_CPUTIME_ID, &tim );
-    lmmin( n_par, x, m_dat, TP,
-           evaluate, NULL /*lm_printout_std*/, &control, &princon, &status );
+    lmmin( n_par, S.x, m_dat, T->TP,
+           S.f, NULL /*lm_printout_std*/, &control, &princon, &status );
     clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &tim );
     printf( " %3i %8.4f", status.nfev, tim.tv_sec + tim.tv_nsec*1e-9 );
     if ( status.info >= 4 )
@@ -99,14 +118,14 @@ int run_mini( int n_par, int m_dat,
 
     // check fitted parameters
     for ( i=0; i<n_par; ++i ) {
-        if ( xpect[i]==0 ) {
-            if( fabs(x[i]) > 1e-100 ) {
+        if ( S.xpect[i]==0 ) {
+            if( fabs(S.x[i]) > 1e-100 ) {
                 ++badx0;
-                if ( fabs(x[i]) > errx0 )
-                    errx0 = fabs(x[i]);
+                if ( fabs(S.x[i]) > errx0 )
+                    errx0 = fabs(S.x[i]);
             }
         } else {
-            rel = fabs((x[i]-xpect[i])/xpect[i]);
+            rel = fabs((S.x[i]-S.xpect[i])/S.xpect[i]);
             if( rel > tol ) {
                 ++badx1;
                 if( rel > errx1 )
@@ -139,8 +158,6 @@ int run_mini( int n_par, int m_dat,
              (failed ? "failed" : "passed"), status.info,
              badx0, badx1, bads0, bads1,
              errx0, errx1, errs0, errs1 );
-
-    return failed;
 }
 
 void run_all()
