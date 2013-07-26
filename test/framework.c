@@ -138,7 +138,6 @@ void run_test( int kTest, int verbose )
     printf( " ""%-20s """, S.name );
 
     int n_par = S.n, m_dat = S.m;
-    double spect = S.spect;
     double tol = std_tol();
 
     int i, j, failed=0, badx0=0, badx1=0, bads0=0, bads1=0;
@@ -189,24 +188,6 @@ void run_test( int kTest, int verbose )
         }
     }
     if ( badx0 || badx1 )
-        failed = 1;
-
-    // check obtained minimum
-    for ( j=0; j<m_dat; ++j )
-        s += v[j];
-    if ( spect==0 ) {
-        if( fabs(s) > 1e-100 ) {
-            ++bads0;
-            errs0 = fabs(s);
-        }
-    } else {
-        rel = fabs((s-spect)/spect);
-        if( rel > tol ) {
-            ++bads1;
-            errs1 = rel;
-        }
-    }
-    if ( bads0 || bads1 )
         failed = 1;
 
     printf ( " %s %2i  %i %i  %i %i  %8.2e %8.2e  %8.2e %8.2e\n",

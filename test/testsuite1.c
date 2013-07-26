@@ -38,7 +38,6 @@ void t004( setup_typ *S, int nTP, const double* TP )
     set_task( S, 2, 3, f004 );
     set_init( S, 1., 1. ); // 0.9*TP[0], 1.9*TP[0] );
     set_xpec( S, TP[0], 2/TP[0] );
-    S->spect = 0;
 }
 
 //  ==========================================================================
@@ -59,7 +58,6 @@ void t005( setup_typ *S, int nTP, const double* TP )
     set_task( S, 2, 3, f005 );
     set_init( S, 1., 1. );
     set_xpec( S, 3., 0.5 );
-    S->spect = 0;
 }
 
 
