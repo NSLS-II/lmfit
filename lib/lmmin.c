@@ -305,8 +305,9 @@ void lmmin( int n, double *x, int m, const void *data,
                 xnorm = lm_enorm(n, x);
             }
             /* initialize the step bound delta. */
-            delta = C->stepbound * xnorm;
-            if (delta == 0.)
+            if ( xnorm )
+                delta = C->stepbound * xnorm;
+            else
                 delta = C->stepbound;
         } else {
             if (C->scale_diag) {
