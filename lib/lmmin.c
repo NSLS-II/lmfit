@@ -293,14 +293,16 @@ void lmmin( int n, double *x, int m, const void *data,
                     if (wa2[j] == 0.)
                         diag[j] = 1.;
                 }
-            }
-            /* use diag to scale x, then calculate the norm */
-            for (j = 0; j < n; j++)
-                wa3[j] = diag[j] * x[j];
-            xnorm = lm_enorm(n, wa3);
-            if( C->verbosity >= 2 && C->scale_diag ) {
-                fprintf( *(C->stream), "lmmin diag  " );
-                lm_print_pars( n, x, fnorm, C );
+                /* use diag to scale x */
+                for (j = 0; j < n; j++)
+                    wa3[j] = diag[j] * x[j];
+                xnorm = lm_enorm(n, wa3);
+                if( C->verbosity >= 2 ) {
+                    fprintf( *(C->stream), "lmmin diag  " );
+                    lm_print_pars( n, x, xnorm, C );
+                }
+            } else {
+                xnorm = lm_enorm(n, x);
             }
             /* initialize the step bound delta. */
             delta = C->stepbound * xnorm;
@@ -429,9 +431,14 @@ void lmmin( int n, double *x, int m, const void *data,
 
             if (ratio >= p0001) {
                 /* yes, success: update x, fvec, and their norms. */
-                for (j = 0; j < n; j++) {
-                    x[j] = wa2[j];
-                    wa2[j] = diag[j] * x[j];
+                if (C->scale_diag) {
+                    for (j = 0; j < n; j++) {
+                        x[j] = wa2[j];
+                        wa2[j] = diag[j] * x[j];
+                    }
+                } else {
+                    for (j = 0; j < n; j++)
+                        x[j] = wa2[j];
                 }
                 for (i = 0; i < m; i++)
                     fvec[i] = wf[i];
