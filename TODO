@@ -1,6 +1,12 @@
 TODO
-- Automatically run difficult tests
-- "Success" does not always mean success for nonlin eqs systems
-- Estimate parameter errors (via COV ?)
-- Better infos on G and I steps
-- Improve core algorithm as described in some literature?
+- writeup
+- code cleanup
+  - compute nfev from outer*n+inner
+- monitoring
+  - tabular form, all in one line
+  - also print currect direction and change angle
+       (requires understanding of diag-scaling)
+- long-term aims
+  - full test suite
+  - improve core algorithm as described in some literature?
+  - estimate parameter errors via smallest-gradient ascent
