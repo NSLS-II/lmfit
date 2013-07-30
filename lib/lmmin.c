@@ -129,8 +129,8 @@ void lmmin( int n, double *x, int m, const void *data,
     double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wf;
     int *ipvt;
     int j, i;
-    double actred=0, dirder, fnorm, fnorm1, gnorm, pnorm,
-        prered=0, ratio=0, step, sum, temp, temp1, temp2, temp3;
+    double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
+        prered, ratio, step, sum, temp, temp1, temp2, temp3;
     static double p1 = 0.1;
     static double p0001 = 1.0e-4;
 
