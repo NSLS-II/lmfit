@@ -118,17 +118,15 @@ Fit a data set y(x) by a curve f(x;p):
         double y[9] = { 16.6, 9.9, 4.4, 1.1, 0., 1.1, 4.2, 9.3, 16.4 };
 
         lm_control_struct control = lm_control_double;
-        lm_princon_struct princon = lm_princon_std;
         lm_status_struct status;
-        princon.form  = 0; /* 1 would give more compact output */
-        princon.flags = 3; /* decent level of progress info */
+        control.verbosity = 7;
 
         printf( "Fitting ...\n" );
-        lmcurve( n, par, m, t, y, f, &control, &princon, &status );
+        lmcurve( n, par, m, t, y, f, &control, &status );
 
         printf( "Results:\n" );
         printf( "status after %d function evaluations:\n  %s\n",
-                status.nfev, lm_infmsg[status.info] );
+                status.nfev, lm_infmsg[status.outcome] );
 
         printf("obtained parameters:\n");
         for ( i = 0; i < n; ++i)
@@ -142,11 +140,6 @@ Fit a data set y(x) by a curve f(x;p):
 
         return 0;
     }
-
-=head1 VERSIONS
-
-The first public release was 2.0 (December 2004). The API has changed with version 3.0 (March 2010), and again with version 4.0 (July 2013).
-
 
 =head1 COPYING
 

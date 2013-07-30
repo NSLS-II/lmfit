@@ -24,12 +24,6 @@
 #define SQR(x)   (x)*(x)
 
 /* function declarations (implemented below). */
-int lm_evaluate( int n, double *x, int m, double* fvec, const void *data, 
-                 lm_eval_ftyp evaluate,
-                 lm_prin_ftyp printout,
-                 const lm_princon_struct *princon,
-                 lm_status_struct *S,
-                 int context, int iter );
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
                double *qtb, double delta, double *par, double *x,
                double *sdiag, double *aux, double *xdi );
@@ -65,11 +59,11 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 */
 
 const lm_control_struct lm_control_double = {
-    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 0, 1, 0 };
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 0, 1, 
+    &stdout, 0, -1, -1 };
 const lm_control_struct lm_control_float = {
-    1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 0, 1, 0 };
-const lm_princon_struct lm_princon_std = {
-    &stdout, 0, 0, -1, -1 };
+    1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 0, 1,
+    &stdout, 0, -1, -1 };
 
 
 /*****************************************************************************/
@@ -120,83 +114,40 @@ const char *lm_action_msg[] = {
 
 const char lm_action_code[] = { 'S', 'G', 'I', 'F' };
 
-void lm_printout_std( int n_par, const double *par, int m_dat,
+/*
+void TO_DELETE_lm_printout_std( int n_par, const double *par, int m_dat,
                       const void *data, const double *fvec,
                       const lm_princon_struct *P,
                       int iflag, int iter, int nfev)
-/*
- *    This is the default monitoring routine.
- *
- *    It can also be used as a template for other ways of monitoring the fit:
- *    Copy this code to your application; rename the routine; modify it;
- *    and call lmmin with parameter printout = <your modified routine>.
- *
- *    Input parameters:
- *       data  : for soft control of printout behaviour, add control
- *                 variables to the data struct
- *       iflag : 0 (init) 1 (outer loop) 2(inner loop) 3(terminated)
- *       iter  : outer loop counter
- *       nfev  : number of calls to *evaluate
- */
 {
     int i, mout, nout;
 
     if( !P )
         return;
 
-    /* preset limits for printing params and residuals */
-
     mout = P->m_maxpri==-1 ? m_dat : MIN( P->m_maxpri, m_dat );
     nout = P->n_maxpri==-1 ? n_par : MIN( P->n_maxpri, n_par );
 
-    /* now print according to chosen form */
-
-    if        ( P->form == 0 ) { /** standard verbose form **/
-
-        if( P->flags & 1 ){
-            fprintf( *(P->stream), "lmmin monitor (nfev=%d, iter=%d)\n",
-                     nfev, iter );
-            fprintf( *(P->stream),  "  %s\n", lm_action_msg[iflag] );
-        }
-
-        if( P->flags & 2 ){
-            fprintf( *(P->stream), "  pars ");
-            for (i = 0; i < nout; ++i)
-                fprintf( *(P->stream), " %18.11g", par[i]);
-            fprintf( *(P->stream), " => norm %18.11g\n", lm_enorm(m_dat, fvec));
-        }
-
-        if ( (P->flags & 8) || ((P->flags & 4) && iflag == 3) ) {
-            fprintf( *(P->stream), "  residuals (i, fvec[i]):\n");
-            for (i = 0; i < mout; ++i)
-                fprintf( *(P->stream), "    %3i %18.11g\n", i, fvec[i] );
-            fprintf( *(P->stream), "\n");
-
-        }
-
-    } else if ( P->form == 1 ) { /** compact form for us experts **/
-
-        if( P->flags & 1 ){
-            fprintf( *(P->stream), "lmmin:: %3d %2d %c",
-                     nfev, iter, lm_action_code[iflag] );
-        }
-
-        if( P->flags & 2 ){
-            for (i = 0; i < nout; ++i)
-                fprintf( *(P->stream), " %16.9g", par[i]);
-            fprintf( *(P->stream), " => %18.11g", lm_enorm(m_dat, fvec));
-        }
-        if( P->flags & 3 )
-            fprintf( *(P->stream), "\n" );
-
-        if ( (P->flags & 8) || ((P->flags & 4) && iflag == -1) ) {
-            fprintf( *(P->stream), "  residuals");
-            for (i = 0; i < mout; ++i)
-                fprintf( *(P->stream), " %10g", fvec[i] );
-            fprintf( *(P->stream), "\n");
-        }
+    if( P->flags & 1 ){
+        fprintf( *(P->stream), "lmmin:: %3d %2d %c",
+                 nfev, iter, lm_action_code[iflag] );
     }
-} /*** lm_printout_std. ***/
+
+    if( P->flags & 2 ){
+        for (i = 0; i < nout; ++i)
+            fprintf( *(P->stream), " %16.9g", par[i]);
+        fprintf( *(P->stream), " => %18.11g", lm_enorm(m_dat, fvec));
+    }
+    if( P->flags & 3 )
+        fprintf( *(P->stream), "\n" );
+
+    if ( (P->flags & 8) || ((P->flags & 4) && iflag == -1) ) {
+        fprintf( *(P->stream), "  residuals");
+        for (i = 0; i < mout; ++i)
+            fprintf( *(P->stream), " %10g", fvec[i] );
+        fprintf( *(P->stream), "\n");
+    }
+} */
 
 
 /*****************************************************************************/
@@ -204,11 +155,9 @@ void lm_printout_std( int n_par, const double *par, int m_dat,
 /*****************************************************************************/
 
 void lmmin( int n, double *x, int m, const void *data,
-            lm_eval_ftyp evaluate,
-            lm_prin_ftyp printout,
-            const lm_control_struct *C,
-            const lm_princon_struct *princon,
-            lm_status_struct *S )
+            void (*evaluate) (const double *par, int m_dat, const void *data,
+                              double *fvec, int *userbreak),
+            const lm_control_struct *C, lm_status_struct *S )
 {
     double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wf;
     int *ipvt;
@@ -226,50 +175,51 @@ void lmmin( int n, double *x, int m, const void *data,
     double xnorm = 0;
     double eps = sqrt(MAX(C->epsilon, LM_MACHEP)); /* for forward differences */
 
-    S->info = 0;   /* status code */
-    S->nfev = 0;   /* function evaluation counter */
+    S->outcome = 0;      /* status code */
+    S->userbreak = 0;
+    S->nfev = 0;      /* function evaluation counter */
 
 /***  Check input parameters for errors.  ***/
 
     if ( n <= 0 ) {
         fprintf( stderr, "lmmin: invalid number of parameters %i\n", n );
-        S->info = 10; /* invalid parameter */
+        S->outcome = 10; /* invalid parameter */
         return;
     }
     if (m < n) {
         fprintf( stderr, "lmmin: number of data points (%i) "
                  "smaller than number of parameters (%i)\n", m, n );
-        S->info = 10;
+        S->outcome = 10;
         return;
     }
     if (C->ftol < 0. || C->xtol < 0. || C->gtol < 0.) {
         fprintf( stderr,
                  "lmmin: negative tolerance (at least one of %g %g %g)\n",
                  C->ftol, C->xtol, C->gtol );
-        S->info = 10;
+        S->outcome = 10;
         return;
     }
     if (maxfev <= 0) {
         fprintf( stderr, "lmmin: nonpositive function evaluations limit %i\n",
                  maxfev );
-        S->info = 10;
+        S->outcome = 10;
         return;
     }
     if (C->stepbound <= 0.) {
         fprintf( stderr, "lmmin: nonpositive stepbound %g\n", C->stepbound );
-        S->info = 10;
+        S->outcome = 10;
         return;
     }
     if (C->scale_diag != 0 && C->scale_diag != 1) {
         fprintf( stderr, "lmmin: logical variable scale_diag=%i, "
                  "should be 0 or 1\n", C->scale_diag );
-        S->info = 10;
+        S->outcome = 10;
         return;
     }
     if (C->pivot != 0 && C->pivot != 1) {
         fprintf( stderr, "lmmin: logical variable pivot=%i, "
                  "should be 0 or 1\n", C->pivot );
-        S->info = 10;
+        S->outcome = 10;
         return;
     }
 
@@ -284,7 +234,7 @@ void lmmin( int n, double *x, int m, const void *data,
          (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
          (wf  = (double *)  malloc(m * sizeof(double))) == NULL ||
          (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
-        S->info = 9;
+        S->outcome = 9;
         return;
     }
 
@@ -299,12 +249,13 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  Evaluate function at starting point and calculate norm.  ***/
 
-    if ( lm_evaluate( n, x, m, fvec, data,
-                      evaluate, printout, princon, S, 0, 0 ) )
+    (*evaluate)( x, m, data, fvec, &(S->userbreak) );
+    S->nfev = 1;
+    if ( S->userbreak )
         goto terminate;
     fnorm = lm_enorm(m, fvec);
     if( fnorm <= LM_DWARF ){
-        S->info = 0; /* sum of squares almost zero, nothing to do */
+        S->outcome = 0; /* sum of squares almost zero, nothing to do */
         goto terminate;
     }
 
@@ -318,8 +269,9 @@ void lmmin( int n, double *x, int m, const void *data,
             temp = x[j];
             step = MAX(eps*eps, eps * fabs(temp));
             x[j] += step; /* replace temporarily */
-            if ( lm_evaluate( n, x, m, wf, data,
-                              evaluate, printout, princon, S, 1, iter ) )
+            (*evaluate)( x, m, data, wf, &(S->userbreak) );
+            ++(S->nfev);
+            if ( S->userbreak )
                 goto terminate;
             for (i = 0; i < m; i++)
                 fjac[j*m+i] = (wf[i] - fvec[i]) / step;
@@ -418,7 +370,7 @@ void lmmin( int n, double *x, int m, const void *data,
         }
 
         if (gnorm <= C->gtol) {
-            S->info = 4;
+            S->outcome = 4;
             goto terminate;
         }
 
@@ -442,8 +394,9 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [inner]  Evaluate the function at x + p and calculate its norm.  ***/
 
-            if ( lm_evaluate( n, wa2, m, wf, data,
-                              evaluate, printout, princon, S, 2, iter ) )
+            (*evaluate)( wa2, m, data, wf, &(S->userbreak) );
+            ++(S->nfev);
+            if ( S->userbreak )
                 goto terminate;
             fnorm1 = lm_enorm(m, wf);
 
@@ -512,21 +465,21 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  Test for convergence.  ***/
 
             if( fnorm<=LM_DWARF ){
-                S->info = 0; /* success: sum of squares is almost zero */
+                S->outcome = 0; /* success: sum of squares is almost zero */
                 goto terminate;
             }
 
-            S->info = 0;
+            S->outcome = 0;
             /* test two criteria (both may be fulfilled) */
             if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
-                S->info  = 1; /* success: parameter vector is almost stable */
+                S->outcome  = 1; /* success: parameter vector is almost stable */
             if (delta <= C->xtol * xnorm)
-                S->info += 2; /* success: sum of squares is almost stable */
-            if (S->info != 0) {
+                S->outcome += 2; /* success: sum of squares is almost stable */
+            if (S->outcome != 0) {
                 if ( C->verbosity & 1 )
                     printf("lmmin success (%i) actred %g prered %g ratio %g "
                            "delta %g xnorm %g ftol %g xtol %g\n",
-                           S->info, actred, prered, ratio, delta, xnorm,
+                           S->outcome, actred, prered, ratio, delta, xnorm,
                            C->ftol, C->xtol );
                 goto terminate;
             }
@@ -534,20 +487,20 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  Tests for termination and stringent tolerances.  ***/
 
             if (S->nfev >= maxfev){
-                S->info = 5;
+                S->outcome = 5;
                 goto terminate;
             }
             if (fabs(actred) <= LM_MACHEP &&
                 prered <= LM_MACHEP && 0.5 * ratio <= 1){
-                S->info = 6;
+                S->outcome = 6;
                 goto terminate;
             }
             if (delta <= LM_MACHEP * xnorm){
-                S->info = 7;
+                S->outcome = 7;
                 goto terminate;
             }
             if (gnorm <= LM_MACHEP){
-                S->info = 8;
+                S->outcome = 8;
                 goto terminate;
             }
 
@@ -560,11 +513,11 @@ void lmmin( int n, double *x, int m, const void *data,
     } while (1);
 
 terminate:
-    if ( printout )
-        (*printout)( n, x, m, data, fvec, princon, 3, 0, S->nfev );
+//    if ( printout )
+//        (*printout)( n, x, m, data, fvec, princon, 3, 0, S->nfev );
     S->fnorm = lm_enorm(m, fvec);
-    if ( S->info < 0 ) /* user-requested break */
-        S->info = 11;
+    if ( S->userbreak ) /* user-requested break */
+        S->outcome = 11;
 
 /***  Deallocate the workspace.  ***/
     free(fvec);
@@ -578,25 +531,6 @@ terminate:
     free(ipvt);
 
 } /*** lmmin. ***/
-
-
-/*****************************************************************************/
-/*  lm_evaluate (function evaluation and printout)                           */
-/*****************************************************************************/
-
-int lm_evaluate( int n, double *x, int m, double* fvec, const void *data, 
-                 lm_eval_ftyp evaluate,
-                 lm_prin_ftyp printout,
-                 const lm_princon_struct *princon,
-                 lm_status_struct *S,
-                 int context, int iter )
-{
-    (*evaluate) (x, m, data, fvec, &(S->info));
-    ++(S->nfev);
-    if( printout )
-        (*printout) (n, x, m, data, fvec, princon, context, iter, S->nfev);
-    return S->info < 0;
-} /*** lm_evaluate. ***/
 
 
 /*****************************************************************************/

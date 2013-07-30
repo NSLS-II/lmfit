@@ -117,7 +117,7 @@ void register_mini( tfunc_typ t, int nTP, ... )
 
 //! Private low-level implementation.
 
-void run_test( int kTest, int verbose )
+void run_test( int kTest, int verbosity )
 {
     // Call Tests[kTest].t() to obtain test setup S for given parameters TP.
     mini_typ *T;
@@ -129,25 +129,16 @@ void run_test( int kTest, int verbose )
     // Prepare for the minimization.
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    lm_princon_struct princon = lm_princon_std;
-    if ( verbose ) {
-        princon.form  = 1;
-        princon.flags = 3;
-        control.verbosity = 1;
-    } else {
-        princon.form  = 1;
-        princon.flags = 0;
-    }
+    control.verbosity = verbosity;
     struct timespec tim = { (time_t)0, (long)0 };
 
     // Run the minization.
-    if (verbose )
+    if (verbosity )
         printf( ":\n" );
     clock_settime( CLOCK_PROCESS_CPUTIME_ID, &tim );
-    lmmin( S.n, S.x, S.m, T->TP,
-           S.f, lm_printout_std, &control, &princon, &status );
+    lmmin( S.n, S.x, S.m, T->TP, S.f, &control, &status );
     clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &tim );
-    if (verbose )
+    if (verbosity )
         printf( "------------------------------------> " );
 
     // Check fitted parameters.
@@ -163,7 +154,7 @@ void run_test( int kTest, int verbose )
         }
     }
     const char *result;
-    if      ( status.info >= 4 )
+    if      ( status.outcome >= 4 )
         result = "failed";
     else if ( badx )
         result = "doubt";
@@ -172,7 +163,7 @@ void run_test( int kTest, int verbose )
         
     // Print outcome.
     printf( " %8.4f %1i %3i %6s %2i %8.2e\n", tim.tv_sec + tim.tv_nsec*1e-9,
-            status.info, status.nfev, result, badx, errx );
+            status.outcome, status.nfev, result, badx, errx );
 }
 
 //! High-level API to run all tests.
@@ -191,5 +182,5 @@ void run_one( int kTest )
         fprintf( stderr, "invalid test number\n" );
         exit(-1);
     }
-    run_test( kTest, 1 );
+    run_test( kTest, 31 );
 }

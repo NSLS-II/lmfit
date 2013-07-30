@@ -34,11 +34,8 @@ int main( int argc, char **argv )
 
     /* auxiliary parameters */
     lm_control_struct control = lm_control_double;
-    lm_princon_struct princon = lm_princon_std;
     lm_status_struct  status;
-
-    princon.form  =  1;
-    princon.flags = 15;
+    control.verbosity  = 31;
 
     /* get start values from command line */
     if( argc!=3 ){
@@ -50,13 +47,12 @@ int main( int argc, char **argv )
 
     /* the minimization */
     printf( "Minimization:\n" );
-    lmmin( n, p, n, NULL, evaluate_nonlin1,
-           lm_printout_std, &control, &princon, &status );
+    lmmin( n, p, n, NULL, evaluate_nonlin1, &control, &status );
 
     /* print results */
     printf( "\n" );
     printf( "lmmin status after %d function evaluations:\n  %s\n",
-            status.nfev, lm_infmsg[status.info] );
+            status.nfev, lm_infmsg[status.outcome] );
 
     printf( "\n" );
     printf("Solution:\n");

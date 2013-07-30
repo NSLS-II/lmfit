@@ -62,18 +62,17 @@ int main()
     /* auxiliary parameters */
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    lm_princon_struct princon = lm_princon_std;
-    princon.flags = 3;
+    control.verbosity = 31;
 
     /* perform the fit */
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, (const void*) &data,
-           evaluate_surface, lm_printout_std, &control, &princon, &status );
+           evaluate_surface, &control, &status );
 
     /* print results */
     printf( "\nResults:\n" );
     printf( "status after %d function evaluations:\n  %s\n",
-            status.nfev, lm_infmsg[status.info] );
+            status.nfev, lm_infmsg[status.outcome] );
 
     printf("obtained parameters:\n");
     int i;

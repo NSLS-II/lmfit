@@ -15,34 +15,16 @@ lmmin - Levenberg-Marquardt least-squares minimization
 
 B<#include <lmmin.h>>
 
-B<typedef void (*>I<lm_eval_ftyp>)B<(
-            constS< >double *>I<par>B<, int >I<m_dat>B<,
-            constS< >void *>I<data>B<, double *>I<fvec>B<, int *>I<info>B< );
-
-B<typedef void (*>I<lm_prin_ftyp>)B<(
-            int> I<n_par>B<, constS< >double *>I<par>B<, int >I<m_dat>B<,
-            constS< >void *>I<data>B<, double *>I<fvec>B<, 
-            constS< >lm_princon_struct *>I<princon>B<,
-            int >I<iflag>B<, int >I<iter>B<, int >I<nfev>B< );
-
 B<void lmmin( int> I<n_par>B<, double *>I<par>B<, int> I<m_dat>B<, constS< >void *>I<data>B<,
-            lm_eval_ftyp >I<evaluate>B<,
-            lm_prin_ftyp >I<printout>B<,
+            void *>I<evaluate>B<(
+                 constS< >double *>I<par>B<, int >I<m_dat>B<,
+                 constS< >void *>I<data>B<, double *>I<fvec>B<, int *>I<userbreak>B<),
             constS< >lm_control_struct *>I<control>B<,
-            constS< >lm_princon_struct *>I<princon>B<,
             lm_status_struct *>I<status>B< );>
-
-B<void lm_printout_std(
-            int >I<n_par>B<, constS< >double *>I<par>B<, int >I<m_dat>B<,
-            constS< >void *>I<data>B<, double *>I<fvec>B<, 
-            constS< >lm_princon_struct *>I<princon>B<,
-            int >I<iflag>B<, int >I<iter>B<, int >I<nfev>B< );>
 
 B<extern const lm_control_struct lm_control_double;>
 
 B<extern const lm_control_struct lm_control_float;>
-
-B<extern const lm_princon_struct lm_princon_std;>
 
 B<extern const char *lm_infmsg[];>
 
@@ -82,7 +64,7 @@ routines I<evaluate> and I<printout>.
 
 =item I<evaluate>
 
-Pointer to a user-supplied function that computes I<m_dat> elements of vector I<fvec> for a given parameter vector I<par>. If I<evaluate> return with *I<info> set to a negative value, B<lmmin()> will interrupt the fitting and terminate.
+Pointer to a user-supplied function that computes I<m_dat> elements of vector I<fvec> for a given parameter vector I<par>. If I<evaluate> return with *I<userbreak> set to a negative value, B<lmmin()> will interrupt the fitting and terminate.
 
 =item I<printout>
 
@@ -132,42 +114,20 @@ Logical switch (0 or 1). If 1, then scale parameters to their initial value. Thi
 
 Logical switch (0 or 1). If 1, then use pivots in matrix operations. This is the recommended setting.
 
-=item B<int> I<control.verbosity>
-
-If nonzero, some progress information from within the LM algorithm
-is written to stdout. Which output, is not yet fixed. Try bit values 1 and 2.
-
-=back
-
-=item I<princon>
-
-Parameter collection for tuning the default printout function
-&I<lm_printout_std>
-(user-supplied printout functions are free to use this record or not).
-For values NULL or &I<lm_princon_def>, the fit is silent. 
-See also below, NOTES on initializing parameter records.
-
-I<princon> has the following members:
-
-=over
-
-=item B<FILE**> I<princon.stream>
+=item B<FILE**> I<control.stream>
 
 Pointer to the stream the output shall be writen to. Typically &I<stdout> or &I<stderr>.
 
-=item B<int> I<princon.form>
+=item B<int> I<control.verbosity>
 
-To select one out of several forms. In I<lm_princon_def>, form=0 yields verbose output, form=1 yields one compact line per call.
+If nonzero, some progress information from within the LM algorithm
+is written to control.stream. Which output, is not yet fixed. Try OR'ed bit values.
 
-=item B<int> I<princon.flags>
-
-OR'ed bit values to print (1) status, (2) parameters and norm, (4) residues at end of fit, (8) residues at every step;
-
-=item B<int> I<princon.n_maxpri>
+=item B<int> I<control.n_maxpri>
 
 -1, or maximum number of parameters to print.
 
-=item B<int> I<princon.m_maxpri>
+=item B<int> I<control.m_maxpri>
 
 -1, or maximum number of residuals to print.
 
@@ -187,11 +147,15 @@ Norm of the vector I<fvec>;
 
 Actual number of iterations;
 
-=item B<int> I<status.info>
+=item B<int> I<status.outcome>
 
 Status of minimization;
-for the corresponding text message, print I<lm_infmsg>B<[>I<status.info>B<]>;
-for a short code, print I<lm_shortmsg>B<[>I<status.info>B<]>.
+for the corresponding text message, print I<lm_infmsg>B<[>I<status.outcome>B<]>;
+for a short code, print I<lm_shortmsg>B<[>I<status.outcome>B<]>.
+
+=item B<int> I<status.userbreak>
+
+Set when termination has been forded by the user supplied routine I<evaluate>.
 
 =back
 
@@ -202,19 +166,18 @@ for a short code, print I<lm_shortmsg>B<[>I<status.info>B<]>.
 
 =head2 Initializing parameter records.
 
-The parameter records I<control> and I<princon> should always be initialized
+The parameter record I<control> should always be initialized
 from supplied default records:
 
     lm_control_struct control = lm_control_double; /* or _float */
-    lm_princon_struct princon = lm_princon_std;
 
 After this, parameters may be overwritten:
 
     control.patience = 500; /* allow more iterations */
-    princon.flags    =  15; /* require most verbose monitoring */
+    control.verbosity = 15; /* for verbose monitoring */
 
 An application written this way is guaranteed to work even if new parameters
-are added to I<control> or I<princon>.
+are added to I<lm_control_struct>.
 
 Conversely, addition of parameters is not considered an API change; it may happen without increment of the major version number.
 
@@ -242,7 +205,7 @@ Fit a data set y(t) by a function f(t;p) where t is a two-dimensional vector:
 
     /* function evaluation, determination of residues */
     void evaluate_surface( const double *par, int m_dat,
-        const void *data, double *fvec, int *info )
+        const void *data, double *fvec, int *userbreak )
     {
         /* for readability, explicit type conversion */
         data_struct *D;
@@ -270,18 +233,17 @@ Fit a data set y(t) by a function f(t;p) where t is a two-dimensional vector:
         /* auxiliary parameters */
         lm_status_struct status;
         lm_control_struct control = lm_control_double;
-        lm_princon_struct princon = lm_princon_std;
-        princon.flags = 3;
+        control.verbosity = 3;
 
         /* perform the fit */
         printf( "Fitting:\n" );
         lmmin( n_par, par, m_dat, (const void*) &data, evaluate_surface,
-               lm_printout_std, &control, &princon, &status );
+               &control, &status );
 
         /* print results */
         printf( "\nResults:\n" );
         printf( "status after %d function evaluations:\n  %s\n",
-                status.nfev, lm_infmsg[status.info] );
+                status.nfev, lm_infmsg[status.outcome] );
 
         printf("obtained parameters:\n");
         int i;
@@ -303,12 +265,6 @@ Fit a data set y(t) by a function f(t;p) where t is a two-dimensional vector:
 =head2 More examples
 
 For more examples, see the homepage and directories demo/ and test/ in the source distribution.
-
-
-=head1 VERSIONS
-
-The first public release was 2.0 (December 2004). The API has changed with version 3.0 (March 2010), and again with version 4.0 (July 2013).
-
 
 =head1 COPYING
 

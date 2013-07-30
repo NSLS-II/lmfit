@@ -1,13 +1,18 @@
-Changes in lmfit-4.1
+Changes in lmfit-5.0
 
-- correct memory leak introduced by reversal of mallock trick
-- debug messages become available through 'verbose'
-- improved text messages ("success" -> "converged", we should not say more)
-- configure now supports pkg-config
-- reworked examples:
+- API changes:
+  - removed callback function for printout
+  - removed control structure for printout; some par's go to lm_control_struct
+  - from now on, addition of par's to lm_control_struct is not an API change
+- bug fix:
+  - correct memory leak introduced by reversal of mallock trick
+- monitoring:
+  - improved text messages ("success" -> "converged", we should not say more)
+- demo: reworked examples
   - new example nonlin1: solution of 2 nonlinear equations in 2 variables
   - example surface1 improved and included in man page lmmin(3)
-- directory test now contains functional testsuite
+- test: now contains functional testsuite
+- packaging: configure now supports pkg-config
 
 Changes in lmfit-4.0, released 16jul13
 

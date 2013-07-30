@@ -49,37 +49,29 @@ typedef struct {
                          Recommended value is 1. */
     int pivot;        /* If 1, use pivoting in QR factorization.
                          Recommended value is 1. */
+    FILE** stream;    /* Pointer to output stream to write to. */
     int verbosity;    /* OR'ed: 1: print some messages; 2: print Jacobian. */
-} lm_control_struct;
-
-/* Collection of input parameters for print control. */
-typedef struct {
-    FILE** stream;     /* Pointer to output stream to write to. */
-    int form;         /* To select one out of several forms. */
-    int flags;        /* OR'ed switches that decide which info gets printed. */
     int n_maxpri;     /* -1, or max number of parameters to print. */
     int m_maxpri;     /* -1, or max number of residuals to print. */
-} lm_princon_struct;
+} lm_control_struct;
 
 /* Collection of output parameters for status info. */
 typedef struct {
     double fnorm;     /* norm of the residue vector fvec. */
     int nfev;         /* actual number of iterations. */
-    int info;         /* Status indicator. Nonnegative values are used as index
+    int outcome;      /* Status indicator. Nonnegative values are used as index
                          for the message text lm_infmsg, set in lmmin.c. */
+    int userbreak;    /* Set when function evaluation requests termination. */
 } lm_status_struct;
 
 /* Preset (and recommended) control parameter settings. */
 extern const lm_control_struct lm_control_double;
 extern const lm_control_struct lm_control_float;
 
-extern const lm_princon_struct lm_princon_std;
-
 /* Preset message texts. */
 
 extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];
-
 
 #ifdef __cplusplus
 }

@@ -21,20 +21,11 @@
 extern "C" {
 #endif
 
-typedef void (*lm_eval_ftyp) (const double *par, int m_dat, const void *data,
-                              double *fvec, int *info);
-typedef void (*lm_prin_ftyp) (int n_par, const double *par, int m_dat,
-                              const void *data, const double *fvec,
-                              const lm_princon_struct *princon,
-                              int iflag, int iter, int nfev);
-
 /* Levenberg-Marquardt minimization. */
 void lmmin( int n_par, double *par, int m_dat, const void *data, 
-            lm_eval_ftyp evaluate,
-            lm_prin_ftyp printout,
-            const lm_control_struct *control,
-            const lm_princon_struct *princon,
-            lm_status_struct *status );
+            void (*evaluate) (const double *par, int m_dat, const void *data,
+                              double *fvec, int *userbreak),
+            const lm_control_struct *control, lm_status_struct *status );
 /*
  *   This routine contains the core algorithm of our library.
  *
@@ -63,28 +54,15 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
  *          n, x, m, data as above.
  *          fvec is an array of length m; on OUTPUT, it must contain the
  *            m function values for the parameter vector x.
- *          info is an integer pointer. When *info is set to a negative value,
- *            lmmin will terminate.
- *
- *      printout is a user-supplied function that informs about fit progress.
- *        Call with printout=NULL if no printout is desired.
- *        Call with printout=lm_printout_std to use the default implementation.
+ *          userbreak is an integer pointer. When *userbreak is set to a 
+ *            nonzero value, lmmin will terminate.
  *
  *      control contains INPUT variables that control the fit algorithm,
- *        as declared and explained in lmstruct.h
- *
- *      princon contains INPUT variables that control the monitoring,
  *        as declared and explained in lmstruct.h
  *
  *      status contains OUTPUT variables that inform about the fit result,
  *        as declared and explained in lmstruct.h
  */
-
-/* Standard monitoring routine. */
-void lm_printout_std( int n_par, const double *par, int m_dat,
-                      const void *data, const double *fvec,
-                      const lm_princon_struct *princon,
-                      int iflag, int iter, int nfev );
 
 /* Refined calculation of Eucledian norm. */
 double lm_enorm( int, const double * );
