@@ -394,12 +394,12 @@ void lmmin( int n, double *x, int m, const void *data,
                 for (i = 0; i <= j; i++)
                     wa3[i] -= fjac[j*m+i] * wa1[ipvt[j]];
             }
-            temp1 = lm_enorm(n, wa3) / fnorm;
-            temp2 = sqrt(par) * pnorm / fnorm;
-            prered = SQR(temp1) + 2 * SQR(temp2);
+            temp1 = SQR( lm_enorm(n, wa3) / fnorm );
+            temp2 = par * SQR( pnorm / fnorm );
+            prered = temp1 + 2 * temp2;
 
             /* scaled directional derivative */
-            dirder = -(SQR(temp1) + SQR(temp2));
+            dirder = -temp1 + temp2;
 
             /* ratio of actual to predicted reduction */
             ratio = prered != 0 ? actred / prered : 0;
@@ -410,7 +410,7 @@ void lmmin( int n, double *x, int m, const void *data,
                        " sq1 %.3e sq2 %.3e dd %.3e\n",
                        pnorm, delta, par,
                        actred, prered, prered != 0 ? ratio : 0.,
-                       SQR(temp1), SQR(temp2), dirder);
+                       temp1, temp2, dirder);
 
 /***  [inner]  Update the step bound.  ***/
 
