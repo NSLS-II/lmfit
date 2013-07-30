@@ -137,7 +137,7 @@ void lmmin( int n, double *x, int m, const void *data,
     int maxfev = C->patience * (n+1);
 
     int    outer, inner;  /* loop counters, for monitoring */
-    double par = 0;       /* Levenberg-Marquardt parameter */
+    double lmpar = 0;       /* Levenberg-Marquardt parameter */
     double delta = 0;
     double xnorm = 0;
     double eps = sqrt(MAX(C->epsilon, LM_MACHEP)); /* for forward differences */
@@ -358,13 +358,13 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
 
-            lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &par,
+            lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &lmpar,
                       wa1, wa2, wf, wa3 );
-            /* used return values are fjac (partly), par, wa1=x, wa3=diag*x */
+            /* used return values are fjac (partly), lmpar, wa1=x, wa3=diag*x */
 
             /* predict scaled reduction */
             pnorm = lm_enorm(n, wa3);
-            temp2 = par * SQR( pnorm / fnorm );
+            temp2 = lmpar * SQR( pnorm / fnorm );
             for (j = 0; j < n; j++) {
                 wa3[j] = 0;
                 for (i = 0; i <= j; i++)
@@ -405,7 +405,7 @@ void lmmin( int n, double *x, int m, const void *data,
                 printf("lmmin pnorm %.3e delta=%.3e lmpar=%.3e"
                        " actred %.3e prered %.3e ratio %.3e"
                        " sq1 %.3e sq2 %.3e dd %.3e\n",
-                       pnorm, delta, par,
+                       pnorm, delta, lmpar,
                        actred, prered, prered != 0 ? ratio : 0.,
                        temp1, temp2, dirder);
 
@@ -418,10 +418,10 @@ void lmmin( int n, double *x, int m, const void *data,
                 if (p1 * fnorm1 >= fnorm || temp < p1)
                     temp = p1;
                 delta = temp * MIN(delta, pnorm / p1);
-                par /= temp;
-            } else if (par == 0. || ratio >= 0.75) {
+                lmpar /= temp;
+            } else if (lmpar == 0. || ratio >= 0.75) {
                 delta = pnorm / 0.5;
-                par *= 0.5;
+                lmpar *= 0.5;
             }
 
 /***  [inner]  Test for successful iteration.  ***/
