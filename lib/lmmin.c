@@ -362,16 +362,26 @@ void lmmin( int n, double *x, int m, const void *data,
                       wa1, wa2, wf, wa3 );
             /* used return values are fjac (partly), par, wa1=x, wa3=diag*x */
 
-            for (j = 0; j < n; j++)
-                wa2[j] = x[j] - wa1[j]; /* new parameter vector ? */
-
+            /* predict scaled reduction */
             pnorm = lm_enorm(n, wa3);
+            temp2 = par * SQR( pnorm / fnorm );
+            for (j = 0; j < n; j++) {
+                wa3[j] = 0;
+                for (i = 0; i <= j; i++)
+                    wa3[i] -= fjac[j*m+i] * wa1[ipvt[j]];
+            }
+            temp1 = SQR( lm_enorm(n, wa3) / fnorm );
+            prered = temp1 + 2 * temp2;
+            dirder = -temp1 + temp2; /* scaled directional derivative */
 
             /* at first call, adjust the initial step bound. */
-            if ( !outer )
-                delta = MIN(delta, pnorm);
+            if ( !outer && pnorm < delta )
+                delta = pnorm;
 
 /***  [inner]  Evaluate the function at x + p and calculate its norm.  ***/
+
+            for (j = 0; j < n; j++)
+                wa2[j] = x[j] - wa1[j];
 
             (*evaluate)( wa2, m, data, wf, &(S->userbreak) );
             ++(S->nfev);
@@ -387,19 +397,6 @@ void lmmin( int n, double *x, int m, const void *data,
 
             /* actual scaled reduction */
             actred = (p1*fnorm1 < fnorm) ? 1 - SQR(fnorm1/fnorm) : -1;
-
-            /* predicted scaled reduction */
-            for (j = 0; j < n; j++) {
-                wa3[j] = 0;
-                for (i = 0; i <= j; i++)
-                    wa3[i] -= fjac[j*m+i] * wa1[ipvt[j]];
-            }
-            temp1 = SQR( lm_enorm(n, wa3) / fnorm );
-            temp2 = par * SQR( pnorm / fnorm );
-            prered = temp1 + 2 * temp2;
-
-            /* scaled directional derivative */
-            dirder = -temp1 + temp2;
 
             /* ratio of actual to predicted reduction */
             ratio = prered != 0 ? actred / prered : 0;
