@@ -311,9 +311,6 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  The outer loop: compute gradient, then descend.  ***/
 
     do {
-        if ( C->verbosity & 1 )
-            printf("\nlmmin outer loop %d:%d fnorm=%.10e\n",
-                   iter, S->nfev, fnorm);
 
 /***  [outer]  Calculate the Jacobian.  ***/
 
@@ -427,8 +424,6 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  The inner loop. ***/
         do {
-            if ( C->verbosity & 1 ) 
-                printf("lmmin inner loop %d:%d\n", iter, S->nfev);
 
 /***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
 
@@ -453,9 +448,8 @@ void lmmin( int n, double *x, int m, const void *data,
             fnorm1 = lm_enorm(m, wf);
 
             if ( C->verbosity )
-                printf("lmmin pnorm %.10e  fnorm1 %.10e  fnorm %.10e"
-                       " delta=%.10e par=%.10e\n",
-                       pnorm, fnorm1, fnorm, delta, par);
+                printf("lmmin pnorm %.10e delta=%.10e par=%.10e\n",
+                       pnorm, delta, par);
 
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
@@ -513,9 +507,6 @@ void lmmin( int n, double *x, int m, const void *data,
                 xnorm = lm_enorm(n, wa2);
                 fnorm = fnorm1;
                 iter++;
-            } else {
-                if ( C->verbosity & 1 )
-                    printf("lmmin iteration considered unsuccessful\n");
             }
 
 /***  [inner]  Test for convergence.  ***/
