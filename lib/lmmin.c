@@ -131,13 +131,13 @@ void lmmin( int n, double *x, int m, const void *data,
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
         prered, ratio, step, sum, temp, temp1, temp2, temp3;
-    static double p1 = 0.1;
     static double p0001 = 1.0e-4;
 
     int maxfev = C->patience * (n+1);
 
     int    outer, inner;  /* loop counters, for monitoring */
-    double lmpar = 0;       /* Levenberg-Marquardt parameter */
+    int    inner_success; /* flag for loop control */
+    double lmpar = 0;     /* Levenberg-Marquardt parameter */
     double delta = 0;
     double xnorm = 0;
     double eps = sqrt(MAX(C->epsilon, LM_MACHEP)); /* for forward differences */
@@ -284,38 +284,6 @@ void lmmin( int n, double *x, int m, const void *data,
         lm_qrfac(m, n, fjac, C->pivot, ipvt, wa1, wa2, wa3);
         /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
-        if ( !outer ) { 
-            /* first iteration only */
-            if (C->scale_diag) {
-                /* diag := norms of the columns of the initial Jacobian */
-                for (j = 0; j < n; j++) {
-                    diag[j] = wa2[j];
-                    if (wa2[j] == 0.)
-                        diag[j] = 1.;
-                }
-                /* use diag to scale x */
-                for (j = 0; j < n; j++)
-                    wa3[j] = diag[j] * x[j];
-                xnorm = lm_enorm(n, wa3);
-                if( C->verbosity >= 2 ) {
-                    fprintf( *(C->stream), "lmmin diag  " );
-                    lm_print_pars( n, x, xnorm, C );
-                }
-            } else {
-                xnorm = lm_enorm(n, x);
-            }
-            /* initialize the step bound delta. */
-            if ( xnorm )
-                delta = C->stepbound * xnorm;
-            else
-                delta = C->stepbound;
-        } else {
-            if (C->scale_diag) {
-                for (j = 0; j < n; j++)
-                    diag[j] = MAX( diag[j], wa2[j] );
-            }
-        }
-
 /***  [outer]  Form q^T * fvec and store first n components in qtf.  ***/
 
         for (i = 0; i < m; i++)
@@ -350,6 +318,40 @@ void lmmin( int n, double *x, int m, const void *data,
         if (gnorm <= C->gtol) {
             S->outcome = 4;
             goto terminate;
+        }
+
+/***  [outer]  Initialize / update diag and delta. ***/
+
+        if ( !outer ) { 
+            /* first iteration only */
+            if (C->scale_diag) {
+                /* diag := norms of the columns of the initial Jacobian */
+                for (j = 0; j < n; j++) {
+                    diag[j] = wa2[j];
+                    if (wa2[j] == 0.)
+                        diag[j] = 1.;
+                }
+                /* use diag to scale x */
+                for (j = 0; j < n; j++)
+                    wa3[j] = diag[j] * x[j];
+                xnorm = lm_enorm(n, wa3);
+                if( C->verbosity >= 2 ) {
+                    fprintf( *(C->stream), "lmmin diag  " );
+                    lm_print_pars( n, x, xnorm, C );
+                }
+            } else {
+                xnorm = lm_enorm(n, x);
+            }
+            /* initialize the step bound delta. */
+            if ( xnorm )
+                delta = C->stepbound * xnorm;
+            else
+                delta = C->stepbound;
+        } else {
+            if (C->scale_diag) {
+                for (j = 0; j < n; j++)
+                    diag[j] = MAX( diag[j], wa2[j] );
+            }
         }
 
 /***  The inner loop. ***/
@@ -396,38 +398,41 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
             /* actual scaled reduction */
-            actred = (p1*fnorm1 < fnorm) ? 1 - SQR(fnorm1/fnorm) : -1;
+            actred = 1 - SQR(fnorm1/fnorm);
 
             /* ratio of actual to predicted reduction */
-            ratio = prered != 0 ? actred / prered : 0;
+            ratio = prered ? actred/prered : 0;
 
             if( C->verbosity >= 3 ) 
                 printf("lmmin pnorm %.3e delta=%.3e lmpar=%.3e"
                        " actred %.3e prered %.3e ratio %.3e"
                        " sq1 %.3e sq2 %.3e dd %.3e\n",
-                       pnorm, delta, lmpar,
-                       actred, prered, prered != 0 ? ratio : 0.,
+                       pnorm, delta, lmpar, actred, prered, ratio,
                        temp1, temp2, dirder);
 
             /* update the step bound */
-            if (ratio <= 0.25) {
-                if (actred >= 0.)
+            if        ( ratio <= 0.25 ) {
+                if      ( actred >= 0 )
                     temp = 0.5;
+                else if ( actred > -99 ) /* -99 = 1-1/0.1^2 */
+                    temp = MAX( dirder / (2*dirder + actred), 0.1 );
                 else
-                    temp = dirder / ( 2*dirder + actred);
-                if (p1 * fnorm1 >= fnorm || temp < p1)
-                    temp = p1;
-                delta = temp * MIN(delta, pnorm / p1);
+                    temp = 0.1;
+                delta = temp * MIN(delta, pnorm / 0.1);
                 lmpar /= temp;
-            } else if (lmpar == 0. || ratio >= 0.75) {
-                delta = pnorm / 0.5;
+            } else if ( ratio >= 0.75 ) {
+                delta = 2*pnorm;
                 lmpar *= 0.5;
+            } else if ( !lmpar ) {
+                delta = 2*pnorm;
             }
 
-/***  [inner]  Test for successful iteration.  ***/
+/***  [inner]  On success, update solution, and test for convergence.  ***/
 
-            if (ratio >= p0001) {
-                /* yes, success: update x, fvec, and their norms. */
+            inner_success = ratio >= p0001;
+            if ( inner_success ) {
+
+                /* update x, fvec, and their norms */
                 if (C->scale_diag) {
                     for (j = 0; j < n; j++) {
                         x[j] = wa2[j];
@@ -441,23 +446,19 @@ void lmmin( int n, double *x, int m, const void *data,
                     fvec[i] = wf[i];
                 xnorm = lm_enorm(n, wa2);
                 fnorm = fnorm1;
-            }
 
-/***  [inner]  Test for convergence.  ***/
-
-            if( fnorm<=LM_DWARF ){
-                S->outcome = 0; /* success: sum of squares is almost zero */
-                goto terminate;
-            }
-
-            S->outcome = 0;
-            /* test two criteria (both may be fulfilled) */
-            if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
-                S->outcome = 1;  /* success: x is almost stable */
-            if (delta <= C->xtol * xnorm)
-                S->outcome += 2; /* success: sum of squares is almost stable */
-            if (S->outcome != 0) {
-                goto terminate;
+                /* convergence tests */
+                S->outcome = 0;
+                if( fnorm<=LM_DWARF )
+                    goto terminate; /* success: sum of squares almost zero */
+                /* test two criteria (both may be fulfilled) */
+                if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
+                    S->outcome = 1;  /* success: x almost stable */
+                if (delta <= C->xtol * xnorm)
+                    S->outcome += 2; /* success: sum of squares almost stable */
+                if (S->outcome != 0) {
+                    goto terminate;
+                }
             }
 
 /***  [inner]  Tests for termination and stringent tolerances.  ***/
@@ -483,7 +484,7 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [inner]  End of the loop. Repeat if iteration unsuccessful.  ***/
 
             ++inner;
-        } while (ratio < p0001);
+        } while ( !inner_success );
 
 /***  [outer]  End of the loop. ***/
 
