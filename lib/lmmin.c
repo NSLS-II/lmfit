@@ -378,7 +378,7 @@ void lmmin( int n, double *x, int m, const void *data,
             if ( !outer && pnorm < delta )
                 delta = pnorm;
 
-/***  [inner]  Evaluate the function at x + p and calculate its norm.  ***/
+/***  [inner]  Evaluate the function at x + p.  ***/
 
             for (j = 0; j < n; j++)
                 wa2[j] = x[j] - wa1[j];
@@ -409,13 +409,12 @@ void lmmin( int n, double *x, int m, const void *data,
                        actred, prered, prered != 0 ? ratio : 0.,
                        temp1, temp2, dirder);
 
-/***  [inner]  Update the step bound.  ***/
-
+            /* update the step bound */
             if (ratio <= 0.25) {
                 if (actred >= 0.)
                     temp = 0.5;
                 else
-                    temp = 0.5 * dirder / (dirder + 0.5 * actred);
+                    temp = dirder / ( 2*dirder + actred);
                 if (p1 * fnorm1 >= fnorm || temp < p1)
                     temp = p1;
                 delta = temp * MIN(delta, pnorm / p1);
@@ -454,7 +453,7 @@ void lmmin( int n, double *x, int m, const void *data,
             S->outcome = 0;
             /* test two criteria (both may be fulfilled) */
             if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
-                S->outcome  = 1; /* success: parameter vector is almost stable */
+                S->outcome = 1;  /* success: x is almost stable */
             if (delta <= C->xtol * xnorm)
                 S->outcome += 2; /* success: sum of squares is almost stable */
             if (S->outcome != 0) {
