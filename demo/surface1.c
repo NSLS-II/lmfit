@@ -62,7 +62,7 @@ int main()
     /* auxiliary parameters */
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.verbosity = 31;
+    control.verbosity = 9;
 
     /* perform the fit */
     printf( "Fitting:\n" );

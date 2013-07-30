@@ -6,6 +6,7 @@ Changes in lmfit-5.0
   - from now on, addition of par's to lm_control_struct is not an API change
 - bug fix:
   - correct memory leak introduced by reversal of mallock trick
+  - restore default scale_diag=1
 - monitoring:
   - improved text messages ("success" -> "converged", we should not say more)
 - demo: reworked examples

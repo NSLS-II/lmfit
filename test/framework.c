@@ -182,5 +182,5 @@ void run_one( int kTest )
         fprintf( stderr, "invalid test number\n" );
         exit(-1);
     }
-    run_test( kTest, 31 );
+    run_test( kTest, 9 );
 }

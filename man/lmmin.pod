@@ -121,7 +121,7 @@ Pointer to the stream the output shall be writen to. Typically &I<stdout> or &I<
 =item B<int> I<control.verbosity>
 
 If nonzero, some progress information from within the LM algorithm
-is written to control.stream. Which output, is not yet fixed. Try OR'ed bit values.
+is written to control.stream. 
 
 =item B<int> I<control.n_maxpri>
 

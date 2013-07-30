@@ -39,7 +39,7 @@ int main()
 
     lm_control_struct control = lm_control_double;
     lm_status_struct status;
-    control.verbosity = 7;
+    control.verbosity = 9;
 
     printf( "Fitting ...\n" );
     /* now the call to lmfit */
