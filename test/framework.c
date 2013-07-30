@@ -25,17 +25,6 @@
 #define SQR(x) ((x)*(x))
 
 //***************************************************************************//
-//  Auxiliaries
-//***************************************************************************//
-
-double std_tol()
-{
-    return sqrt( SQR(lm_control_double.ftol) +
-                 SQR(lm_control_double.gtol) +
-                 SQR(lm_control_double.xtol) );
-}
-
-//***************************************************************************//
 //  Setup test cases (called by test setup functions t001, ...)
 //***************************************************************************//
 
@@ -130,23 +119,17 @@ void register_mini( tfunc_typ t, int nTP, ... )
 
 void run_test( int kTest, int verbose )
 {
-    printf( "%3i", kTest );
+    // Call Tests[kTest].t() to obtain test setup S for given parameters TP.
     mini_typ *T;
     T = Tests+kTest;
     setup_typ S;
     T->t( &S, T->nTP, T->TP );
-    printf( " ""%-20s """, S.name );
+    printf( "%3i %-20s %2i %3i", kTest, S.name, S.n, S.m );
 
-    int n_par = S.n, m_dat = S.m;
-    double tol = std_tol();
-
-    int i, j, failed=0, badx0=0, badx1=0;
-    double rel, errx0=0, errx1=0;
-    static double *v;
+    // Prepare for the minimization.
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
     lm_princon_struct princon = lm_princon_std;
-    struct timespec tim = { (time_t)0, (long)0 };
     if ( verbose ) {
         princon.form  = 1;
         princon.flags = 3;
@@ -155,45 +138,41 @@ void run_test( int kTest, int verbose )
         princon.form  = 1;
         princon.flags = 0;
     }
+    struct timespec tim = { (time_t)0, (long)0 };
 
-    if ( !( v = (double *) realloc( v, m_dat * sizeof(double)) ) ) {
-        fprintf( stderr, "allocation of v failed\n" );
-        exit( -1 );
-    }
-
-    printf( "%2i %3i", n_par, m_dat );
-
+    // Run the minization.
+    if (verbose )
+        printf( ":\n" );
     clock_settime( CLOCK_PROCESS_CPUTIME_ID, &tim );
-    lmmin( n_par, S.x, m_dat, T->TP,
+    lmmin( S.n, S.x, S.m, T->TP,
            S.f, lm_printout_std, &control, &princon, &status );
     clock_gettime( CLOCK_PROCESS_CPUTIME_ID, &tim );
-    printf( " %3i %8.4f", status.nfev, tim.tv_sec + tim.tv_nsec*1e-9 );
-    if ( status.info >= 4 )
-        failed = 1;
+    if (verbose )
+        printf( "------------------------------------> " );
 
-    // check fitted parameters
-    for ( i=0; i<n_par; ++i ) {
-        if ( S.xpect[i]==0 ) {
-            if( fabs(S.x[i]) > 1e-100 ) {
-                ++badx0;
-                if ( fabs(S.x[i]) > errx0 )
-                    errx0 = fabs(S.x[i]);
-            }
-        } else {
-            rel = fabs((S.x[i]-S.xpect[i])/S.xpect[i]);
-            if( rel > tol ) {
-                ++badx1;
-                if( rel > errx1 )
-                    errx1 = rel;
-            }
+    // Check fitted parameters.
+    int badx=0;
+    double errx=0, rel;
+    for ( int i=0; i<S.n; ++i ) {
+        if ( fabs(S.xpect[i]) < 1e-90 ?
+             ( rel = fabs(S.x[i]) ) > 1e-99 :
+             ( rel = fabs((S.x[i]-S.xpect[i])/S.xpect[i]) ) > 1e-14 ) {
+            ++badx;
+            if( rel > errx )
+                errx = rel;
         }
     }
-    if ( badx0 || badx1 )
-        failed = 1;
-
-    printf ( " %s %2i  %i %i  %8.2e %8.2e\n",
-             (failed ? "failed" : "passed"), status.info,
-             badx0, badx1, errx0, errx1 );
+    const char *result;
+    if      ( status.info >= 4 )
+        result = "failed";
+    else if ( badx )
+        result = "doubt";
+    else
+        result = "passed";
+        
+    // Print outcome.
+    printf( " %8.4f %1i %3i %6s %2i %8.2e\n", tim.tv_sec + tim.tv_nsec*1e-9,
+            status.info, status.nfev, result, badx, errx );
 }
 
 //! High-level API to run all tests.
