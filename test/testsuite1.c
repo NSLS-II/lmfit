@@ -60,6 +60,26 @@ void t005( setup_typ *S, int nTP, const double* TP )
     set_xpec( S, 3., 0.5 );
 }
 
+//  ==========================================================================
+//  MoGH81 (10) Meyer function
+
+void f010( const double *x, int m, const void *TP, double *v, int *usrbrk )
+{
+    assert( m==16 );
+    static int y[16] = { 34780, 28610, 23650, 19630, 16370, 13720, 11540,
+                         9744, 8261, 7030, 6005, 5147, 4427, 3820, 3307, 2872 };
+    for ( int i=0; i<m; ++i )
+        v[i] = x[0] * exp( x[1]/(50+5*i+x[2]) ) - y[i];
+}
+
+void t010( setup_typ *S, int nTP, const double* TP )
+{
+    assert( nTP==0 );
+    set_name( S, "MoGH81#10" );
+    set_task( S, 3, 16, f010 );
+    set_init( S, 0.02, 4000., 250. );
+    set_xpec( S, 0., 0., 0. ); // to replace ...
+}
 
 //  ==========================================================================
 //  MoGH81 (32) linear function - full rank
@@ -102,6 +122,8 @@ int testsuite1()
     register_mini( t004, 1, 1.e8 );
 
     register_mini( t005, 0 );
+
+    register_mini( t010, 0 );
 
     register_mini( t032, 2, 4., 7. );
 }

@@ -129,6 +129,7 @@ void run_test( int kTest, int verbosity )
     // Prepare for the minimization.
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
+    control.patience = 1000;
     control.verbosity = verbosity;
     struct timespec tim = { (time_t)0, (long)0 };
 
