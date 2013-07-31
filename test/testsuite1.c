@@ -62,6 +62,7 @@ void t005( setup_typ *S, int nTP, const double* TP )
 
 //  ==========================================================================
 //  MoGH81 (10) Meyer function
+//  http://www.itl.nist.gov/div898/strd/nls/data/LINKS/DATA/MGH10.dat
 
 void f010( const double *x, int m, const void *TP, double *v, int *usrbrk )
 {
@@ -78,7 +79,7 @@ void t010( setup_typ *S, int nTP, const double* TP )
     set_name( S, "MoGH81#10" );
     set_task( S, 3, 16, f010 );
     set_init( S, 0.02, 4000., 250. );
-    set_xpec( S, 0., 0., 0. ); // to replace ...
+    set_xpec( S, 5.6096364710E-03, 6.1813463463E+03, 3.4522363462E+02 );
 }
 
 //  ==========================================================================
