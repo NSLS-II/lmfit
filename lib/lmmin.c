@@ -105,15 +105,13 @@ const char *lm_shortmsg[] = {
 /*  Monitoring auxiliaries.                                                  */
 /*****************************************************************************/
 
-void lm_print_pars( int n, const double *par, double fnorm,
+void lm_print_pars( int nout, const double *par, double fnorm,
                     const lm_control_struct *C )
 {
-    int i, nout;
-    nout = C->n_maxpri==-1 ? n : MIN( C->n_maxpri, n );
+    int i;
     for (i = 0; i < nout; ++i)
         fprintf( *(C->stream), " %16.9g", par[i] );
-    fprintf( *(C->stream), " => %18.11g", fnorm );
-    fprintf( *(C->stream), "\n" );
+    fprintf( *(C->stream), " => %18.11g\n", fnorm );
 }
 
 
@@ -141,6 +139,8 @@ void lmmin( int n, double *x, int m, const void *data,
     double delta = 0;
     double xnorm = 0;
     double eps = sqrt(MAX(C->epsilon, LM_MACHEP)); /* for forward differences */
+
+    int nout = C->n_maxpri==-1 ? n : MIN( C->n_maxpri, n );
 
     S->outcome = 0;      /* status code */
     S->userbreak = 0;
@@ -223,7 +223,7 @@ void lmmin( int n, double *x, int m, const void *data,
     fnorm = lm_enorm(m, fvec);
     if( C->verbosity ) {
         fprintf( *(C->stream), "lmmin start " );
-        lm_print_pars( n, x, fnorm, C );
+        lm_print_pars( nout, x, fnorm, C );
     }
     if( fnorm <= LM_DWARF ){
         S->outcome = 0; /* sum of squares almost zero, nothing to do */
@@ -337,8 +337,18 @@ void lmmin( int n, double *x, int m, const void *data,
                 xnorm = lm_enorm(n, wa3);
                 if( C->verbosity >= 2 ) {
                     fprintf( *(C->stream), "lmmin diag  " );
-                    lm_print_pars( n, x, xnorm, C );
+                    lm_print_pars( nout, x, xnorm, C );
                 }
+                /* only now print the header for the loop table */
+                if( C->verbosity >=3 ) {
+                    fprintf( *(C->stream), "  o  i     lmpar    prered"
+                             "      ratio    dirder     delta     pnorm"
+                             "            fnorm" );
+                    for (i = 0; i < nout; ++i)
+                        fprintf( *(C->stream), "               p%i", i );
+                    fprintf( *(C->stream), "\n" );
+                }
+
             } else {
                 xnorm = lm_enorm(n, x);
             }
@@ -390,10 +400,6 @@ void lmmin( int n, double *x, int m, const void *data,
             if ( S->userbreak )
                 goto terminate;
             fnorm1 = lm_enorm(m, wf);
-            if( C->verbosity >= 2 ) {
-                fprintf( *(C->stream), "lmmin (%i:%i) ", outer, inner );
-                lm_print_pars( n, wa2, fnorm1, C );
-            }
 
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
@@ -403,12 +409,17 @@ void lmmin( int n, double *x, int m, const void *data,
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
 
-            if( C->verbosity >= 3 ) 
-                printf("lmmin pnorm %.3e delta=%.3e lmpar=%.3e"
-                       " actred %.3e prered %.3e ratio %.3e"
-                       " sq1 %.3e sq2 %.3e dd %.3e\n",
-                       pnorm, delta, lmpar, actred, prered, ratio,
-                       temp1, temp2, dirder);
+            if( C->verbosity == 2 ) {
+                fprintf( *(C->stream), "lmmin (%i:%i) ", outer, inner );
+                lm_print_pars( nout, wa2, fnorm1, C );
+            } else if( C->verbosity >= 3 ) {
+                printf( "%3i %2i %9.2g %9.2g %10.4g %9.2g %9.2g %9.2g %16.9g",
+                        outer, inner, lmpar, prered, ratio, dirder,
+                        delta, pnorm, fnorm1 );
+                for (i = 0; i < nout; ++i)
+                    fprintf( *(C->stream), " %16.9g", wa2[i] );
+                fprintf( *(C->stream), "\n" );
+            }
 
             /* update the step bound */
             if        ( ratio <= 0.25 ) {
@@ -497,7 +508,7 @@ terminate:
                S->outcome, xnorm, C->ftol, C->xtol );
     if( C->verbosity & 1 ) {
         fprintf( *(C->stream), "lmmin final " );
-        lm_print_pars( n, x, S->fnorm, C  );
+        lm_print_pars( nout, x, S->fnorm, C  );
     }
     if ( S->userbreak ) /* user-requested break */
         S->outcome = 11;
