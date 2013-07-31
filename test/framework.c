@@ -59,8 +59,8 @@ void set_init( setup_typ* setup, ... )
 {
     va_list args;
     va_start ( args, setup );
-    for ( int i = 0; i < setup->n; ++i )
-        setup->x[i] = va_arg ( args, double );
+    for ( int j = 0; j < setup->n; ++j )
+        setup->x[j] = va_arg ( args, double );
     va_end ( args );
 }
 
@@ -70,8 +70,8 @@ void set_xpec( setup_typ* setup, ... )
 {
     va_list args;
     va_start ( args, setup );
-    for ( int i = 0; i < setup->n; ++i )
-        setup->xpect[i] = va_arg ( args, double );
+    for ( int j = 0; j < setup->n; ++j )
+        setup->xpect[j] = va_arg ( args, double );
     va_end ( args );
 }
 

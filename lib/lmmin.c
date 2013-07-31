@@ -463,20 +463,20 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [inner]  Tests for termination and stringent tolerances.  ***/
 
-            if (S->nfev >= maxfev){
+            if ( S->nfev >= maxfev ){
                 S->outcome = 5;
                 goto terminate;
             }
-            if (fabs(actred) <= LM_MACHEP &&
-                prered <= LM_MACHEP && 0.5 * ratio <= 1){
+            if ( fabs(actred) <= LM_MACHEP &&
+                 prered <= LM_MACHEP && ratio <= 2 ){
                 S->outcome = 6;
                 goto terminate;
             }
-            if (delta <= LM_MACHEP * xnorm){
+            if ( delta <= LM_MACHEP*xnorm ){
                 S->outcome = 7;
                 goto terminate;
             }
-            if (gnorm <= LM_MACHEP){
+            if ( gnorm <= LM_MACHEP ){
                 S->outcome = 8;
                 goto terminate;
             }

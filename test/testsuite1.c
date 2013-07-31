@@ -23,9 +23,9 @@
 //  ==========================================================================
 //  MoGH81 (4) Brown badly scaled function
 
-void f004( const double *x, int m, const void *TP, double *v, int *info )
+void f004( const double *x, int m, const void *TP, double *v, int *usrbrk )
 {
-    assert( m== 3 );
+    assert( m==3 );
     v[0] = x[0] - ((double*)TP)[0];
     v[1] = x[1] - 2/((double*)TP)[0];
     v[2] = x[0]*x[1] - 2;
@@ -43,9 +43,9 @@ void t004( setup_typ *S, int nTP, const double* TP )
 //  ==========================================================================
 //  MoGH81 (5) Beale function
 
-void f005( const double *x, int m, const void *TP, double *v, int *info )
+void f005( const double *x, int m, const void *TP, double *v, int *usrbrk )
 {
-    assert( m== 3 );
+    assert( m==3 );
     v[0] = 1.5   - x[0]*(1-x[1]);
     v[1] = 2.25  - x[0]*(1-SQR(x[1]));
     v[2] = 2.625 - x[0]*(1-pow(x[1],3));
@@ -62,6 +62,36 @@ void t005( setup_typ *S, int nTP, const double* TP )
 
 
 //  ==========================================================================
+//  MoGH81 (32) linear function - full rank
+
+void f032( const double *x, int m, const void *TP, double *v, int *usrbrk )
+{
+    int n = lrint( ((double*)TP)[0] );
+    double s = 0;
+    for ( int j=0; j<n; ++j )
+        s += x[j];
+    s = -2*s/m-1;
+    for ( int i=0; i<n; ++i )
+        v[i] = x[i] + s;
+    for ( int i=n; i<m; ++i )
+        v[i] = s;
+}
+
+void t032( setup_typ *S, int nTP, const double* TP )
+{
+    assert( nTP==2 );
+    int n = lrint( TP[0] );
+    int m = lrint( TP[1] );
+    set_name( S, "MoGH81#32[%i,%i]", n, m );
+    set_task( S, n, m, f032 );
+    for ( int j=0; j<n; ++j ) {
+        S->x[j] = 1;
+        S->xpect[j] = -1;
+    }
+}
+
+
+//  ==========================================================================
 //  register examples
 
 int testsuite1()
@@ -72,4 +102,6 @@ int testsuite1()
     register_mini( t004, 1, 1.e8 );
 
     register_mini( t005, 0 );
+
+    register_mini( t032, 2, 4., 7. );
 }
