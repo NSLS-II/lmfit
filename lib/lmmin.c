@@ -342,8 +342,8 @@ void lmmin( int n, double *x, int m, const void *data,
                 /* only now print the header for the loop table */
                 if( C->verbosity >=3 ) {
                     fprintf( *(C->stream), "  o  i     lmpar    prered"
-                             "      ratio    dirder     delta     pnorm"
-                             "            fnorm" );
+                             "          ratio    dirder      delta"
+                             "      pnorm                 fnorm" );
                     for (i = 0; i < nout; ++i)
                         fprintf( *(C->stream), "               p%i", i );
                     fprintf( *(C->stream), "\n" );
@@ -413,9 +413,10 @@ void lmmin( int n, double *x, int m, const void *data,
                 fprintf( *(C->stream), "lmmin (%i:%i) ", outer, inner );
                 lm_print_pars( nout, wa2, fnorm1, C );
             } else if( C->verbosity >= 3 ) {
-                printf( "%3i %2i %9.2g %9.2g %10.4g %9.2g %9.2g %9.2g %16.9g",
-                        outer, inner, lmpar, prered, ratio, dirder,
-                        delta, pnorm, fnorm1 );
+                printf( "%3i %2i %9.2g %9.2g %14.6g"
+                        " %9.2g %10.3e %10.3e %21.15e",
+                        outer, inner, lmpar, prered, ratio,
+                        dirder, delta, pnorm, fnorm1 );
                 for (i = 0; i < nout; ++i)
                     fprintf( *(C->stream), " %16.9g", wa2[i] );
                 fprintf( *(C->stream), "\n" );
