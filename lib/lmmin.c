@@ -462,7 +462,7 @@ void lmmin( int n, double *x, int m, const void *data,
                 /* convergence tests */
                 S->outcome = 0;
                 if( fnorm<=LM_DWARF )
-                    goto terminate; /* success: sum of squares almost zero */
+                    goto terminate;  /* success: sum of squares almost zero */
                 /* test two criteria (both may be fulfilled) */
                 if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
                     S->outcome = 1;  /* success: x almost stable */
