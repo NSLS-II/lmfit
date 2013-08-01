@@ -1,12 +1,20 @@
 TODO
-- writeup
-- code cleanup
-  - compute nfev from outer*n+inner
-- monitoring
-  - tabular form, all in one line
-  - also print currect direction and change angle
-       (requires understanding of diag-scaling)
-- long-term aims
+
+- RELEASE 5.0
+
+  - clarify or reverse termination criteria
+  - mark pivot switch: MAY BE REMOVED
+ 
+
+- EASY
+
+  - comments from More 1978
+  - compute nfev from outer*n+inner ?
+  - print currect direction ?
+  - print change-of-direction angle
+
+- PERSPECTIVE
+
   - full test suite
   - improve core algorithm as described in some literature?
   - estimate parameter errors via smallest-gradient ascent
