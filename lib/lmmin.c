@@ -326,12 +326,9 @@ void lmmin( int n, double *x, int m, const void *data,
             /* first iteration only */
             if (C->scale_diag) {
                 /* diag := norms of the columns of the initial Jacobian */
-                for (j = 0; j < n; j++) {
-                    diag[j] = wa2[j];
-                    if (wa2[j] == 0.)
-                        diag[j] = 1.;
-                }
-                /* use diag to scale x */
+                for (j = 0; j < n; j++)
+                    diag[j] = wa2[j] ? wa2[j] : 1;
+                /* xnorm := || D x || */
                 for (j = 0; j < n; j++)
                     wa3[j] = diag[j] * x[j];
                 xnorm = lm_enorm(n, wa3);
@@ -348,7 +345,6 @@ void lmmin( int n, double *x, int m, const void *data,
                         fprintf( *(C->stream), "               p%i", i );
                     fprintf( *(C->stream), "\n" );
                 }
-
             } else {
                 xnorm = lm_enorm(n, x);
             }
