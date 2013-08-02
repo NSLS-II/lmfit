@@ -61,7 +61,7 @@ void t005( setup_typ *S, int nTP, const double* TP )
 }
 
 //  ==========================================================================
-//  MoGH81 (10) Meyer function
+//  MoGH81 (10) Meyer (1970) thermistor problem
 //  http://www.itl.nist.gov/div898/strd/nls/data/LINKS/DATA/MGH10.dat
 
 void f010( const double *x, int m, const void *TP, double *v, int *usrbrk )
