@@ -61,6 +61,28 @@ void t005( setup_typ *S, int nTP, const double* TP )
 }
 
 //  ==========================================================================
+//  MoGH81 (9) Gaussian
+
+void f009( const double *x, int m, const void *TP, double *v, int *usrbrk )
+{
+    assert( m==15 );
+    static double y[15] = { 
+        .0009, .0044, .0175, .0540, .1295, .2420, .3521, .3989,
+        .3521, .2420, .1295, .0540, .0175, .0044, .0009 };
+    for ( int i=0; i<m; ++i )
+        v[i] = x[0] * exp( -x[1]*SQR((7.-i)/2-x[2])/2 ) - y[i];
+}
+
+void t009( setup_typ *S, int nTP, const double* TP )
+{
+    assert( nTP==0 );
+    set_name( S, "MoGH81#09" );
+    set_task( S, 3, 15, f009 );
+    set_init( S, .4, 1., 0. );
+    set_xpec( S, .398956138, 1.00001909, 6.53302966e-9 ); // TO CHECK
+}
+
+//  ==========================================================================
 //  MoGH81 (10) Meyer (1970) thermistor problem
 //  http://www.itl.nist.gov/div898/strd/nls/data/LINKS/DATA/MGH10.dat
 
@@ -80,6 +102,45 @@ void t010( setup_typ *S, int nTP, const double* TP )
     set_task( S, 3, 16, f010 );
     set_init( S, 0.02, 4000., 250. );
     set_xpec( S, 5.6096364710E-03, 6.1813463463E+03, 3.4522363462E+02 );
+}
+
+//  ==========================================================================
+//  MoGH81 (11) Gulf research function
+//  Don't use it. I cannot make sense of it. Why should 50,25,1.5 solve it?
+//  It just causes underflow of the argument of exp().
+
+void f011( const double *x, int m, const void *TP, double *v, int *usrbrk )
+{
+    for ( int i=0; i<m; ++i ) {
+        double t = (i+1.)/100;
+        double y = 25 + pow( -50*log(t), 2./3 );
+        if( fabs(x[0])<1e-100 ) {
+            *usrbrk = 1;
+            return;
+        }
+        y = pow(fabs(y*m*(i+1)*x[1]),x[2])/x[0];
+        if( y<-700 ) {
+            *usrbrk = 2;
+            return;
+        }
+        if( y>700 ) {
+            *usrbrk = 3;
+            return;
+        }
+        v[i] = exp(-y)-t;
+    }
+}
+
+void t011( setup_typ *S, int nTP, const double* TP )
+{
+    assert( nTP==1 );
+    int n = 3;
+    int m = lrint( TP[0] );
+    assert( n<=m && m<=100 );
+    set_name( S, "MoGH81#11[%i]", m );
+    set_task( S, n, m, f011 );
+    set_init( S, 5., 2.5, .15 );
+    set_xpec( S, 50., 25., 1.5 );
 }
 
 //  ==========================================================================
@@ -123,6 +184,8 @@ int testsuite1()
     register_mini( t004, 1, 1.e8 );
 
     register_mini( t005, 0 );
+
+    register_mini( t009, 0 );
 
     register_mini( t010, 0 );
 

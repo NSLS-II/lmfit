@@ -155,7 +155,9 @@ void run_test( int kTest, int verbosity )
         }
     }
     const char *result;
-    if      ( status.outcome >= 4 )
+    if      ( status.outcome == 11 )
+        result = "usrbrk";
+    else if ( status.outcome >= 4 )
         result = "failed";
     else if ( badx )
         result = "doubt";
@@ -163,8 +165,10 @@ void run_test( int kTest, int verbosity )
         result = "passed";
         
     // Print outcome.
-    printf( " %8.4f %1i %3i %6s %2i %8.2e\n", tim.tv_sec + tim.tv_nsec*1e-9,
-            status.outcome, status.nfev, result, badx, errx );
+    printf( " %8.4f %2i %3i %6s %2i %8.2e\n",
+            tim.tv_sec + tim.tv_nsec*1e-9,
+            status.outcome==11 ? -status.userbreak : status.outcome,
+            status.nfev, result, badx, errx );
 }
 
 //! High-level API to run all tests.
