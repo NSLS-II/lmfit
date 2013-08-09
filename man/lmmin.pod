@@ -110,10 +110,6 @@ Used to set the maximum number of function evaluations to patience*n_par.
 
 Logical switch (0 or 1). If 1, then scale parameters to their initial value. This is the recommended setting.
 
-=item B<int> I<control.pivot>
-
-Logical switch (0 or 1). If 1, then use pivots in matrix operations. This is the recommended setting.
-
 =item B<FILE**> I<control.stream>
 
 Pointer to the stream the output shall be writen to. Typically &I<stdout> or &I<stderr>.

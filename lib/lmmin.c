@@ -27,7 +27,7 @@
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
                double *qtb, double delta, double *par, double *x,
                double *sdiag, double *aux, double *xdi );
-void lm_qrfac( int m, int n, double *a, int pivot, int *ipvt,
+void lm_qrfac( int m, int n, double *a, int *ipvt,
                double *rdiag, double *acnorm, double *wa );
 void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
                 double *qtb, double *x, double *sdiag, double *wa );
@@ -59,10 +59,10 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 */
 
 const lm_control_struct lm_control_double = {
-    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 1, 
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 
     &stdout, 0, -1, -1 };
 const lm_control_struct lm_control_float = {
-    1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 1, 1,
+    1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 1,
     &stdout, 0, -1, -1 };
 
 
@@ -183,12 +183,6 @@ void lmmin( int n, double *x, int m, const void *data,
         S->outcome = 10;
         return;
     }
-    if (C->pivot != 0 && C->pivot != 1) {
-        fprintf( stderr, "lmmin: logical variable pivot=%i, "
-                 "should be 0 or 1\n", C->pivot );
-        S->outcome = 10;
-        return;
-    }
 
 /***  Allocate work space.  ***/
 
@@ -208,10 +202,6 @@ void lmmin( int n, double *x, int m, const void *data,
     if (!C->scale_diag) {
         for (j = 0; j < n; j++)
             diag[j] = 1.;
-    }
-    if (!C->pivot) {
-        for (j = 0; j < n; j++)
-            ipvt[j] = j;
     }
 
 /***  Evaluate function at starting point and calculate norm.  ***/
@@ -281,7 +271,7 @@ void lmmin( int n, double *x, int m, const void *data,
  *        is column ipvt(j) of the identity matrix.
  */
 
-        lm_qrfac(m, n, fjac, C->pivot, ipvt, wa1, wa2, wa3);
+        lm_qrfac(m, n, fjac, ipvt, wa1, wa2, wa3);
         /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
 /***  [outer]  Form q^T * fvec and store first n components in qtf.  ***/
@@ -454,19 +444,19 @@ void lmmin( int n, double *x, int m, const void *data,
                     fvec[i] = wf[i];
                 xnorm = lm_enorm(n, wa2);
                 fnorm = fnorm1;
+            }
 
-                /* convergence tests */
-                S->outcome = 0;
-                if( fnorm<=LM_DWARF )
-                    goto terminate;  /* success: sum of squares almost zero */
-                /* test two criteria (both may be fulfilled) */
-                if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
-                    S->outcome = 1;  /* success: x almost stable */
-                if (delta <= C->xtol * xnorm)
-                    S->outcome += 2; /* success: sum of squares almost stable */
-                if (S->outcome != 0) {
-                    goto terminate;
-                }
+            /* convergence tests */ 
+            S->outcome = 0;
+            if( fnorm<=LM_DWARF )
+                goto terminate;  /* success: sum of squares almost zero */
+            /* test two criteria (both may be fulfilled) */
+            if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
+                S->outcome = 1;  /* success: x almost stable */
+            if (delta <= C->xtol * xnorm)
+                S->outcome += 2; /* success: sum of squares almost stable */
+            if (S->outcome != 0) {
+                goto terminate;
             }
 
 /***  [inner]  Tests for termination and stringent tolerances.  ***/
@@ -755,7 +745,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 /*  lm_qrfac (QR factorization, from lapack)                                 */
 /*****************************************************************************/
 
-void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
+void lm_qrfac(int m, int n, double *a, int *ipvt,
               double *rdiag, double *acnorm, double *wa)
 {
 /*
@@ -788,13 +778,9 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
  *        part of a contains a factored form of q (the non-trivial
  *        elements of the u vectors described above).
  *
- *      pivot is a logical input variable. If pivot is set true,
- *        then column pivoting is enforced.
- *
  *      ipvt is an integer OUTPUT array of length lipvt. This array
  *        defines the permutation matrix p such that a*p = q*r.
  *        Column j of p is column ipvt(j) of the identity matrix.
- *        If pivot is false, ipvt is not referenced.
  *
  *      rdiag is an OUTPUT array of length n which contains the
  *        diagonal elements of r.
@@ -804,8 +790,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
  *        If this information is not needed, then acnorm can coincide
  *        with rdiag.
  *
- *      wa is a work array of length n. If pivot is false, then wa
- *        can coincide with rdiag.
+ *      wa is a work array of length n.
  *
  */
     int i, j, k, kmax, minmn;
@@ -817,8 +802,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
         acnorm[j] = lm_enorm(m, &a[j*m]);
         rdiag[j] = acnorm[j];
         wa[j] = rdiag[j];
-        if (pivot)
-            ipvt[j] = j;
+        ipvt[j] = j;
     }
 #ifdef LMFIT_DEBUG_MESSAGES
     printf("debug qrfac\n");
@@ -828,8 +812,6 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
 
     minmn = MIN(m, n);
     for (j = 0; j < minmn; j++) {
-        if (!pivot)
-            goto pivot_ok;
 
         /** bring the column of largest norm into the pivot position. **/
 
@@ -881,7 +863,7 @@ void lm_qrfac(int m, int n, double *a, int pivot, int *ipvt,
             for (i = j; i < m; i++)
                 a[k*m+i] -= temp * a[j*m+i];
 
-            if (pivot && rdiag[k] != 0.) {
+            if (rdiag[k] != 0.) {
                 temp = a[m * k + j] / rdiag[k];
                 temp = MAX(0., 1 - temp * temp);
                 rdiag[k] *= sqrt(temp);

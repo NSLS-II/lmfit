@@ -1,8 +1,9 @@
-Changes in lmfit-5.0
+Changes in lmfit-5.0, released 9aug13
 
 - API changes:
   - removed callback function for printout
   - removed control structure for printout; some par's go to lm_control_struct
+  - pivoting can no longer be switched off
   - from now on, addition of par's to lm_control_struct is not an API change
 - bug fix:
   - correct memory leak introduced by reversal of mallock trick

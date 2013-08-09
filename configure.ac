@@ -13,7 +13,7 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/lmfit
 
-AC_INIT([lmfit], [4:1], [http://apps.jcns.fz-juelich.de/lmfit])
+AC_INIT([lmfit], [5:0], [http://apps.jcns.fz-juelich.de/lmfit])
 
 # standard configuration for shared libraries
 AC_CONFIG_AUX_DIR([build-aux])
