@@ -16,5 +16,5 @@
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = lmfit.pc
 
-SUBDIRS = lib man demo test
+SUBDIRS = lib man demo
 ACLOCAL_AMFLAGS = -I m4

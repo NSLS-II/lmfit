@@ -30,9 +30,6 @@ AC_HEADER_STDC
 # consistency check: is source code present?
 AC_CONFIG_SRCDIR([lib/lmmin.c], [demo/curve1.c])
 
-# dependency checks
-AC_CHECK_LIB([rt], [clock_gettime], , [AC_MSG_ERROR(clock_gettime not found)])
-
 # make these Makefiles
-AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile demo/Makefile test/Makefile lmfit.pc])
+AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile demo/Makefile lmfit.pc])
 AC_OUTPUT

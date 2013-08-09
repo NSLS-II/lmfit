@@ -12,7 +12,7 @@ Changes in lmfit-5.0
 - demo: reworked examples
   - new example nonlin1: solution of 2 nonlinear equations in 2 variables
   - example surface1 improved and included in man page lmmin(3)
-- test: now contains functional testsuite
+  - otherwise testsuite started as new project fittest
 - packaging: configure now supports pkg-config
 
 Changes in lmfit-4.0, released 16jul13
