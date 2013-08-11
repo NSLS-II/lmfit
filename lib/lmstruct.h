@@ -47,8 +47,6 @@ typedef struct {
                          to patience*(number_of_parameters+1). */
     int scale_diag;   /* If 1, the variables will be rescaled internally.
                          Recommended value is 1. */
-    int pivot;        /* If 1, use pivoting in QR factorization.
-                         Recommended value is 1. */
     FILE** stream;    /* Pointer to output stream to write to. */
     int verbosity;    /* OR'ed: 1: print some messages; 2: print Jacobian. */
     int n_maxpri;     /* -1, or max number of parameters to print. */
