@@ -1,3 +1,5 @@
+#! /usr/bin/env ruby
+
 # This is 'curve1.c' demo done with RubyInline gem (instead of using swig)
 # Contributed by Igor Drozdov <idrozdov@gmail.com> 2012
 # $ ruby curve1_rubyinline.rb
