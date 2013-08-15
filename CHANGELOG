@@ -1,4 +1,6 @@
 Changes in lmfit-5.1
+- code cleanup:
+  - better wrapper for "extern C" declaration
 
 Changes in lmfit-5.0, released 9aug13
 

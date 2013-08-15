@@ -14,10 +14,16 @@
  
 #ifndef LMSTRUCT_H
 #define LMSTRUCT_H
-
+#undef __BEGIN_DECLS
+#undef __END_DECLS
 #ifdef __cplusplus
-extern "C" {
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
 #endif
+__BEGIN_DECLS
 
 #include <stdio.h>
 
@@ -71,8 +77,5 @@ extern const lm_control_struct lm_control_float;
 extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];
 
-#ifdef __cplusplus
-}
-#endif
-
+__END_DECLS
 #endif /* LMSTRUCT_H */
