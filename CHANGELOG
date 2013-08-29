@@ -1,4 +1,9 @@
-Changes in lmfit-5.1
+Changes in lmfit-5.1, released 29aug13
+
+- bug fix:
+  - FILE** initialization from &stdout was not standard compliant
+    (report by Jan Krieger, cf http://stackoverflow.com/questions/18505530);
+    now FILE* initialized to NULL
 - code cleanup:
   - better wrapper for "extern C" declaration
 
