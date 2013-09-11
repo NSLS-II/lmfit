@@ -37,7 +37,7 @@ On success, I<par> represents a local minimum, not necessarily a global one; it 
 
 For applications in curve fitting, the wrapper function B<lmcurve(3)> offers a simplified API.
 
-The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method. For more background, see Moré 1978, Madsen et al. 2004, and comments in the source code.
+The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method.
 
 Function arguments:
 
