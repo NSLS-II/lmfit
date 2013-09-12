@@ -1,5 +1,7 @@
-Changes in lmfit-5.2
+Changes in lmfit-5.2 [master]
 
+- bug fix:
+  - correct man page (5.0 API change)
 
 Changes in lmfit-5.1, released 29aug13
 
