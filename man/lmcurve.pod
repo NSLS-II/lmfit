@@ -19,14 +19,11 @@ B<void lmcurve( int> I<n_par>B<, double *>I<par>B<, int> I<m_dat>B<,
               constS< >double *>I<t>B<, constS< >double *>I<y>B<,
               double (*>I<f>B<)( double >I<ti>B<, const double *>I<par>B< ),
               constS< >lm_control_struct *>I<control>B<,
-              constS< >lm_princon_struct *>I<princon>B<,
               lm_status_struct *>I<status>B<);>
 
 B<extern const lm_control_struct lm_control_double;>
 
 B<extern const lm_control_struct lm_control_float;>
-
-B<extern const lm_princon_struct lm_princon_std;>
 
 B<extern const char *lm_infmsg[];>
 
@@ -77,12 +74,6 @@ Parameter collection for tuning the fit procedure.
 In most cases, the default &I<lm_control_double> is adequate.
 If I<f> is only computed with single-precision accuracy,
 I<&lm_control_float> should be used.
-Parameters are explained in B<lmmin(3)>.
-
-=item I<princon>
-
-Parameter collection for tuning monitoring messages.
-For values NULL or &I<lm_princon_def>, the fit is silent.
 Parameters are explained in B<lmmin(3)>.
 
 =item I<status>
