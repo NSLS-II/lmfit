@@ -15,10 +15,12 @@ lmmin - Levenberg-Marquardt least-squares minimization
 
 B<#include <lmmin.h>>
 
-B<void lmmin( int> I<n_par>B<, double *>I<par>B<, int> I<m_dat>B<, constS< >void *>I<data>B<,
+B<void lmmin( int> I<n_par>B<, double *>I<par>B<, int *>I<userderive>B<,
+            int> I<m_dat>B<, constS< >void *>I<data>B<,
             void *>I<evaluate>B<(
-                 constS< >double *>I<par>B<, int >I<m_dat>B<,
-                 constS< >void *>I<data>B<, double *>I<fvec>B<, int *>I<userbreak>B<),
+                 constS< >double *>I<par>B<, int >I<m_dat>B<, constS< >void *>I<data>B<,
+                 double *>I<fvec>B<, int *>I<userderive>B<, double *>I<fjac>B<,
+                 int *>I<userbreak>B<),
             constS< >lm_control_struct *>I<control>B<,
             lm_status_struct *>I<status>B< );>
 
@@ -45,30 +47,30 @@ Function arguments:
 
 =item I<n_par>
 
-Number of free variables. Dimension of parameter vector I<par>.
+Number of free variables. Length of parameter vector I<par>.
 
 =item I<par>
 
-Parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||I<fvec>||.
+Parameter vector, of length I<n_par>. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||I<fvec>||.
+
+=item I<userderive>
+
+Integer vector of length I<n_par>, can be used to indicate whether I<evaluate> shall or shall not compute derivatives with respect to individual parameters. 
 
 =item I<m_dat>
 
-Dimension of vector I<fvec>.
+Number of scalar functions to be minimized. Length of vector I<fvec>.
 Must statisfy I<n_par> <= I<m_dat>.
 
 =item I<data>
 
 This pointer is ignored by the fit algorithm,
 except for appearing as an argument in all calls to the user-supplied
-routines I<evaluate> and I<printout>.
+routine I<evaluate>.
 
 =item I<evaluate>
 
 Pointer to a user-supplied function that computes I<m_dat> elements of vector I<fvec> for a given parameter vector I<par>. If I<evaluate> return with *I<userbreak> set to a negative value, B<lmmin()> will interrupt the fitting and terminate.
-
-=item I<printout>
-
-A function that prints messages about the fit progress. Legitimate values of this pointer argument are NULL (to indicate that no messages are wanted), &I<lm_printout_std> (pointer to a default implementation), or a pointer to a user-supplied function.
 
 =item I<control>
 
