@@ -15,12 +15,10 @@ lmmin - Levenberg-Marquardt least-squares minimization
 
 B<#include <lmmin.h>>
 
-B<void lmmin( int> I<n_par>B<, double *>I<par>B<, int *>I<userderive>B<,
-            int> I<m_dat>B<, constS< >void *>I<data>B<,
+B<void lmmin( int> I<n_par>B<, double *>I<par>B<, int> I<m_dat>B<, constS< >void *>I<data>B<,
             void *>I<evaluate>B<(
-                 constS< >double *>I<par>B<, int >I<m_dat>B<, constS< >void *>I<data>B<,
-                 double *>I<fvec>B<, int *>I<userderive>B<, double *>I<fjac>B<,
-                 int *>I<userbreak>B<),
+                 constS< >double *>I<par>B<, int >I<m_dat>B<,
+                 constS< >void *>I<data>B<, double *>I<fvec>B<, int *>I<userbreak>B<),
             constS< >lm_control_struct *>I<control>B<,
             lm_status_struct *>I<status>B< );>
 
@@ -47,19 +45,18 @@ Function arguments:
 
 =item I<n_par>
 
-Number of free variables. Length of parameter vector I<par>.
+Number of free variables.
+Length of parameter vector I<par>.
 
 =item I<par>
 
-Parameter vector, of length I<n_par>. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||I<fvec>||.
-
-=item I<userderive>
-
-Integer vector of length I<n_par>, can be used to indicate whether I<evaluate> shall or shall not compute derivatives with respect to individual parameters. 
+Parameter vector.
+On input, it must contain a reasonable guess.
+On output, it contains the solution found to minimize ||I<fvec>||.
 
 =item I<m_dat>
 
-Number of scalar functions to be minimized. Length of vector I<fvec>.
+Length of vector I<fvec>.
 Must statisfy I<n_par> <= I<m_dat>.
 
 =item I<data>
@@ -70,7 +67,8 @@ routine I<evaluate>.
 
 =item I<evaluate>
 
-Pointer to a user-supplied function that computes I<m_dat> elements of vector I<fvec> for a given parameter vector I<par>. If I<evaluate> return with *I<userbreak> set to a negative value, B<lmmin()> will interrupt the fitting and terminate.
+Pointer to a user-supplied function that computes I<m_dat> elements of vector I<fvec> for a given parameter vector I<par>.
+If I<evaluate> return with *I<userbreak> set to a negative value, B<lmmin()> will interrupt the fitting and terminate.
 
 =item I<control>
 
@@ -86,19 +84,23 @@ I<control> has the following members (for more details, see the source file I<lm
 
 =item B<double> I<control.ftol>
 
-Relative error desired in the sum of squares; recommended setting: somewhat above machine precision; less if I<fvec> is computed with reduced accuracy.
+Relative error desired in the sum of squares.
+Recommended setting: somewhat above machine precision; less if I<fvec> is computed with reduced accuracy.
 
 =item B<double> I<control.xtol>
 
-Relative error between last two approximations; recommended setting: as I<ftol>.
+Relative error between last two approximations.
+Recommended setting: as I<ftol>.
 
 =item B<double> I<control.gtol>
 
-A measure for degeneracy; recommended setting: as I<ftol>.
+A measure for degeneracy.
+Recommended setting: as I<ftol>.
 
 =item B<double> I<control.epsilon>
 
-Step used to calculate the Jacobian; recommended setting: as I<ftol>, but definitely less than the accuracy of I<fvec>.
+Step used to calculate the Jacobian.
+Recommended setting: as I<ftol>, but definitely less than the accuracy of I<fvec>.
 
 =item B<double> I<control.stepbound>
 
@@ -110,11 +112,15 @@ Used to set the maximum number of function evaluations to patience*n_par.
 
 =item B<int> I<control.scale_diag>
 
-Logical switch (0 or 1). If 1, then scale parameters to their initial value. This is the recommended setting.
+Logical switch (0 or 1).
+If 1, then scale parameters to their initial value.
+This is the recommended setting.
 
 =item B<FILE*> I<control.msgfile>
 
-Progress messages will be written to this file. Typically I<stdout> or I<stderr>. The value I<NULL> will be interpreted as I<stdout>.
+Progress messages will be written to this file.
+Typically I<stdout> or I<stderr>.
+The value I<NULL> will be interpreted as I<stdout>.
 
 =item B<int> I<control.verbosity>
 

@@ -43,15 +43,19 @@ Function arguments:
 
 =item I<n_par>
 
-Number of free variables. Dimension of parameter vector I<par>.
+Number of free variables.
+Length of parameter vector I<par>.
 
 =item I<par>
 
-Parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||I<r>||.
+Parameter vector.
+On input, it must contain a reasonable guess.
+On output, it contains the solution found to minimize ||I<r>||.
 
 =item I<m_dat>
 
-Number of data points. Dimension of vectors I<t> and I<y>.
+Number of data points.
+Length of vectors I<t> and I<y>.
 Must statisfy I<n_par> <= I<m_dat>.
 
 =item I<t>
