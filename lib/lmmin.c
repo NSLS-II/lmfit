@@ -123,8 +123,6 @@ void lmmin( int n, double *x, int m, const void *data,
                               double *fvec, int *userbreak),
             const lm_control_struct *C, lm_status_struct *S )
 {
-    double *fvec, *diag, *fjac, *qtf, *wa1, *wa2, *wa3, *wf;
-    int *ipvt;
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
         prered, ratio, step, sum, temp, temp1, temp2, temp3;
@@ -132,7 +130,6 @@ void lmmin( int n, double *x, int m, const void *data,
 
     int maxfev = C->patience * (n+1);
 
-    int    outer, inner;  /* loop counters, for monitoring */
     int    inner_success; /* flag for loop control */
     double lmpar = 0;     /* Levenberg-Marquardt parameter */
     double delta = 0;
@@ -189,19 +186,27 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  Allocate work space.  ***/
 
-    if ( (fvec = (double *) malloc(m * sizeof(double))) == NULL ||
-         (diag = (double *) malloc(n * sizeof(double))) == NULL ||
-         (qtf  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (fjac = (double *) malloc(n*m*sizeof(double))) == NULL ||
-         (wa1  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa2  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wa3  = (double *) malloc(n * sizeof(double))) == NULL ||
-         (wf  = (double *)  malloc(m * sizeof(double))) == NULL ||
-         (ipvt = (int *)    malloc(n * sizeof(int)   )) == NULL    ) {
+    /* Allocate total workspace with just one system call */
+    char *ws;
+    if ( ( ws = malloc(
+               (2*m+5*n+m*n)*sizeof(double) + n*sizeof(int) ) ) == NULL ) {
         S->outcome = 9;
         return;
     }
 
+    /* Assign workspace segments. */
+    char *pws = ws;
+    double *fvec = (double*) pws; pws += m * sizeof(double)/sizeof(char);
+    double *diag = (double*) pws; pws += n * sizeof(double)/sizeof(char);
+    double *qtf  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
+    double *fjac = (double*) pws; pws += n*m*sizeof(double)/sizeof(char);
+    double *wa1  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
+    double *wa2  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
+    double *wa3  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
+    double *wf   = (double*) pws; pws += m * sizeof(double)/sizeof(char);
+    int    *ipvt = (int*)    pws; pws += n * sizeof(int)   /sizeof(char);
+
+    /* Initialize diag */ // TODO: check whether this is still needed
     if (!C->scale_diag) {
         for (j = 0; j < n; j++)
             diag[j] = 1.;
@@ -225,7 +230,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  The outer loop: compute gradient, then descend.  ***/
 
-    for( outer=0; ; ++outer ) {
+    for( int outer=0; ; ++outer ) {
 
 /***  [outer]  Calculate the Jacobian.  ***/
 
@@ -354,7 +359,7 @@ void lmmin( int n, double *x, int m, const void *data,
         }
 
 /***  The inner loop. ***/
-        inner = 0;
+        int inner = 0;
         do {
 
 /***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
@@ -504,15 +509,7 @@ terminate:
         S->outcome = 11;
 
 /***  Deallocate the workspace.  ***/
-    free(fvec);
-    free(diag);
-    free(qtf);
-    free(fjac);
-    free(wa1);
-    free(wa2);
-    free(wa3);
-    free(wf);
-    free(ipvt);
+    free(ws);
 
 } /*** lmmin. ***/
 
