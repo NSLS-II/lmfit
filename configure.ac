@@ -19,7 +19,7 @@ AC_INIT([lmfit], [5:2], [http://apps.jcns.fz-juelich.de/lmfit])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([foreign]) # don't insert GNU standard text files
+AM_INIT_AUTOMAKE([foreign]) # don't insert GNU standard blabla
 LT_INIT([disable-static])
 
 AC_PROG_CC_C99
