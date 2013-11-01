@@ -21,6 +21,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([foreign]) # don't insert GNU standard blabla
 LT_INIT([disable-static])
+AM_MAINTAINER_MODE([disable]) # work around rebuild rules
 
 AC_PROG_CC_C99
 AC_SUBST(AM_CFLAGS,"-g -pedantic -Wall -Werror")
