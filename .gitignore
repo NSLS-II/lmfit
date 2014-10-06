@@ -44,7 +44,6 @@ config.h
 *.pc
 stamp*
 libtool
-compile
 test-driver
 
 # doxygen generated
