@@ -1,0 +1,64 @@
+*.bak
+*.patch
+*.tmp
+
+a.out
+*.o
+*.a
+*.so
+*.so.*
+*.la
+*.lo
+*.lai
+*.Po
+*.Plo
+
+# TeX auxiliaries
+*.aux
+*.dvi
+*.bbl
+*.blg
+*.log
+*.swp
+
+# manual sections
+*.1
+*.2
+*.3
+*.4
+*.5
+*.6
+*.7
+*.8
+*.9
+*~
+
+# autotools generated
+Makefile
+autom4te.cache/
+config.log
+config.status
+config.h
+.libs/
+.deps/
+*.pc
+stamp*
+libtool
+compile
+test-driver
+
+# doxygen generated
+dox/
+latex/
+html/
+
+# docs
+pod2*
+demo/*demo
+demo/*test
+man/*.html
+*/man/*.html
+
+# executables
+
+demo/*1
