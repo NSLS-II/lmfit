@@ -105,12 +105,12 @@ const char *lm_shortmsg[] = {
 /*  Monitoring auxiliaries.                                                  */
 /*****************************************************************************/
 
-void lm_print_pars( int nout, const double *par, double fnorm, FILE* fout )
+void lm_print_pars( int nout, const double *par, FILE* fout )
 {
     int i;
     for (i = 0; i < nout; ++i)
         fprintf( fout, " %16.9g", par[i] );
-    fprintf( fout, " => %18.11g\n", fnorm );
+    fprintf( fout, "\n" );
 }
 
 
@@ -214,15 +214,21 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  Evaluate function at starting point and calculate norm.  ***/
 
+    if( C->verbosity ) {
+        fprintf( msgfile, "lmmin start " );
+        lm_print_pars( nout, x, msgfile );
+    }
     (*evaluate)( x, m, data, fvec, &(S->userbreak) );
+    if( C->verbosity>4 )
+        for( i=0; i<m; ++i )
+            fprintf( msgfile, "    fvec[%4i] = %18.8g\n", i, fvec[i] );
     S->nfev = 1;
     if ( S->userbreak )
         goto terminate;
     fnorm = lm_enorm(m, fvec);
-    if( C->verbosity ) {
-        fprintf( msgfile, "lmmin start " );
-        lm_print_pars( nout, x, fnorm, msgfile );
-    }
+    if( C->verbosity )
+        fprintf( msgfile, "  fnorm = %18.8g\n", fnorm );
+        
     if( fnorm <= LM_DWARF ){
         S->outcome = 0; /* sum of squares almost zero, nothing to do */
         goto terminate;
@@ -332,7 +338,8 @@ void lmmin( int n, double *x, int m, const void *data,
                 xnorm = lm_enorm(n, wa3);
                 if( C->verbosity >= 2 ) {
                     fprintf( msgfile, "lmmin diag  " );
-                    lm_print_pars( nout, x, xnorm, msgfile );
+                    lm_print_pars( nout, x, msgfile ); // xnorm
+                    fprintf( msgfile, "  xnorm = %18.8g\n", xnorm );
                 }
                 /* only now print the header for the loop table */
                 if( C->verbosity >=3 ) {
@@ -405,7 +412,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
             if( C->verbosity == 2 ) {
                 fprintf( msgfile, "lmmin (%i:%i) ", outer, inner );
-                lm_print_pars( nout, wa2, fnorm1, msgfile );
+                lm_print_pars( nout, wa2, msgfile ); // fnorm1, 
             } else if( C->verbosity >= 3 ) {
                 printf( "%3i %2i %9.2g %9.2g %14.6g"
                         " %9.2g %10.3e %10.3e %21.15e",
@@ -503,7 +510,8 @@ terminate:
                S->outcome, xnorm, C->ftol, C->xtol );
     if( C->verbosity & 1 ) {
         fprintf( msgfile, "lmmin final " );
-        lm_print_pars( nout, x, S->fnorm, msgfile );
+        lm_print_pars( nout, x, msgfile ); // S->fnorm, 
+        fprintf( msgfile, "  fnorm = %18.8g\n", S->fnorm );
     }
     if ( S->userbreak ) /* user-requested break */
         S->outcome = 11;
