@@ -1,3 +1,8 @@
+Changes in
+
+- monitoring:
+  - detect if norm is not finite, new outcome code 12 = "found nan"
+
 Changes in lmfit-5.2, released 23oct14
 
 - bug fix:

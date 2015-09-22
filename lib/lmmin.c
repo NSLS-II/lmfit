@@ -82,7 +82,8 @@ const char *lm_infmsg[] = {
     "failed     (gtol<tol: cannot improve approximate solution any further)",
     "crashed    (not enough memory)",
     "exploded   (fatal coding error: improper input parameters)",
-    "stopped    (break requested within function evaluation)"
+    "stopped    (break requested within function evaluation)",
+    "found nan  (function value is not-a-number or infinite)"
 };
 
 const char *lm_shortmsg[] = {
@@ -97,7 +98,8 @@ const char *lm_shortmsg[] = {
     "failed (o)",
     "no memory",
     "invalid input",
-    "user break"
+    "user break",
+    "found nan"
 };
 
 
@@ -229,7 +231,10 @@ void lmmin( int n, double *x, int m, const void *data,
     if( C->verbosity )
         fprintf( msgfile, "  fnorm = %18.8g\n", fnorm );
         
-    if( fnorm <= LM_DWARF ){
+    if( !isfinite(fnorm) ){
+        S->outcome = 12; /* nan */
+        goto terminate;
+    } else if( fnorm <= LM_DWARF ){
         S->outcome = 0; /* sum of squares almost zero, nothing to do */
         goto terminate;
     }
@@ -353,6 +358,10 @@ void lmmin( int n, double *x, int m, const void *data,
             } else {
                 xnorm = lm_enorm(n, x);
             }
+            if( !isfinite(xnorm) ){
+                S->outcome = 12; /* nan */
+                goto terminate;
+            }
             /* initialize the step bound delta. */
             if ( xnorm )
                 delta = C->stepbound * xnorm;
@@ -377,6 +386,10 @@ void lmmin( int n, double *x, int m, const void *data,
 
             /* predict scaled reduction */
             pnorm = lm_enorm(n, wa3);
+            if( !isfinite(pnorm) ){
+                S->outcome = 12; /* nan */
+                goto terminate;
+            }
             temp2 = lmpar * SQR( pnorm / fnorm );
             for (j = 0; j < n; j++) {
                 wa3[j] = 0;
@@ -384,6 +397,10 @@ void lmmin( int n, double *x, int m, const void *data,
                     wa3[i] -= fjac[j*m+i] * wa1[ipvt[j]];
             }
             temp1 = SQR( lm_enorm(n, wa3) / fnorm );
+            if( !isfinite(temp1) ){
+                S->outcome = 12; /* nan */
+                goto terminate;
+            }
             prered = temp1 + 2 * temp2;
             dirder = -temp1 + temp2; /* scaled directional derivative */
 
@@ -401,6 +418,10 @@ void lmmin( int n, double *x, int m, const void *data,
             if ( S->userbreak )
                 goto terminate;
             fnorm1 = lm_enorm(m, wf);
+            if( !isfinite(fnorm1) ){
+                S->outcome = 12; /* nan */
+                goto terminate;
+            }
 
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
@@ -458,6 +479,10 @@ void lmmin( int n, double *x, int m, const void *data,
                 for (i = 0; i < m; i++)
                     fvec[i] = wf[i];
                 xnorm = lm_enorm(n, wa2);
+                if( !isfinite(xnorm) ){
+                    S->outcome = 12; /* nan */
+                    goto terminate;
+                }
                 fnorm = fnorm1;
             }
 
