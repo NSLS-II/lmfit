@@ -159,7 +159,7 @@ for a short code, print I<lm_shortmsg>B<[>I<status.outcome>B<]>.
 
 =item B<int> I<status.userbreak>
 
-Set when termination has been forded by the user supplied routine I<evaluate>.
+Set when termination has been forced by the user-supplied routine I<evaluate>.
 
 =back
 
