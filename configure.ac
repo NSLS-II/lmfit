@@ -24,7 +24,7 @@ LT_INIT([disable-static])
 AM_MAINTAINER_MODE([disable]) # work around rebuild rules
 
 AC_PROG_CC_C99
-AC_SUBST(AM_CFLAGS,"-g -pedantic -Wall -Werror")
+AC_SUBST(AM_CFLAGS,"-O3 -g -pedantic -Wall -Werror")
 AC_CONFIG_HEADERS([config.h]) # to avoid endless -D options
 AC_HEADER_STDC
 
