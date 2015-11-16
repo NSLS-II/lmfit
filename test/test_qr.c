@@ -84,18 +84,24 @@ int main( int argc, char *argv[] )
     }
     for ( int i=0; i<9; ++i )
         A[i] = atof( argv[1+i] );
+    matrix_transposition( 3, A );
 
     printf( "Input matrix A:\n" );
     print_matrix(3, 3, A);
 
     lm_qrfac(3, 3, A, ipvt, rdiag, acnorm, wa);
 
-    printf( "Ouput matrix A:\n" );
+    printf( "Output matrix A:\n" );
     print_matrix(3, 3, A);
 
-    printf( "Ouput vector rdiag:\n" );
+    printf( "Output vector rdiag:\n" );
     print_matrix(1, 3, rdiag);
 
-    printf( "Ouput vector acnorm:\n" );
+    printf( "Output vector acnorm:\n" );
     print_matrix(1, 3, acnorm);
+
+    printf( "Output vector ipvt:\n" );
+    for (i=0; i<3; ++i)
+        printf( "%i ", ipvt[i] );
+    printf("\n");
 }
