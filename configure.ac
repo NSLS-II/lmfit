@@ -32,5 +32,5 @@ AC_HEADER_STDC
 AC_CONFIG_SRCDIR([lib/lmmin.c], [demo/curve1.c])
 
 # make these Makefiles
-AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile demo/Makefile lmfit.pc])
+AC_CONFIG_FILES([Makefile lib/Makefile test/Makefile man/Makefile demo/Makefile lmfit.pc])
 AC_OUTPUT
