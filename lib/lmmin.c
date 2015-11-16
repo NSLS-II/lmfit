@@ -161,7 +161,7 @@ void lmmin( int n, double *x, int m, const void *data,
         S->outcome = 10;
         return;
     }
-    if (C->ftol < 0. || C->xtol < 0. || C->gtol < 0.) {
+    if (C->ftol < 0 || C->xtol < 0 || C->gtol < 0) {
         fprintf( stderr,
                  "lmmin: negative tolerance (at least one of %g %g %g)\n",
                  C->ftol, C->xtol, C->gtol );
@@ -174,7 +174,7 @@ void lmmin( int n, double *x, int m, const void *data,
         S->outcome = 10;
         return;
     }
-    if (C->stepbound <= 0.) {
+    if (C->stepbound <= 0) {
         fprintf( stderr, "lmmin: nonpositive stepbound %g\n", C->stepbound );
         S->outcome = 10;
         return;
@@ -300,7 +300,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
         for (j = 0; j < n; j++) {
             temp3 = fjac[j*m+j];
-            if (temp3 != 0.) {
+            if (temp3 != 0) {
                 sum = 0;
                 for (i = j; i < m; i++)
                     sum += fjac[j*m+i] * wf[i];
@@ -318,7 +318,7 @@ void lmmin( int n, double *x, int m, const void *data,
         for (j = 0; j < n; j++) {
             if (wa2[ipvt[j]] == 0)
                 continue;
-            sum = 0.;
+            sum = 0;
             for (i = 0; i <= j; i++)
                 sum += fjac[j*m+i] * qtf[i];
             gnorm = MAX( gnorm, fabs( sum / wa2[ipvt[j]] / fnorm ) );
@@ -670,8 +670,8 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     }
 
 /*** lmpar: if the jacobian is not rank deficient, the newton
-     step provides a lower bound, parl, for the 0. of
-     the function. otherwise set this bound to 0.. ***/
+     step provides a lower bound, parl, for the zero of
+     the function. otherwise set this bound to zero. ***/
 
     parl = 0;
     if (nsing >= n) {
@@ -679,7 +679,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
             aux[j] = diag[ipvt[j]] * xdi[ipvt[j]] / dxnorm;
 
         for (j = 0; j < n; j++) {
-            sum = 0.;
+            sum = 0;
             for (i = 0; i < j; i++)
                 sum += r[j * ldr + i] * aux[i];
             aux[j] = (aux[j] - sum) / r[j + ldr * j];
@@ -688,7 +688,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
         parl = fp / delta / temp / temp;
     }
 
-/*** lmpar: calculate an upper bound, paru, for the 0. of the function. ***/
+/*** lmpar: calculate an upper bound, paru, for the zero of the function. ***/
 
     for (j = 0; j < n; j++) {
         sum = 0;
@@ -698,7 +698,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     }
     gnorm = lm_enorm(n, aux);
     paru = gnorm / delta;
-    if (paru == 0.)
+    if (paru == 0)
         paru = LM_DWARF / MIN(delta, p1);
 
 /*** lmpar: if the input par lies outside of the interval (parl,paru),
@@ -706,7 +706,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 
     *par = MAX(*par, parl);
     *par = MIN(*par, paru);
-    if (*par == 0.)
+    if (*par == 0)
         *par = gnorm / dxnorm;
 
 /*** lmpar: iterate. ***/
@@ -715,7 +715,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 
         /** evaluate the function at the current value of par. **/
 
-        if (*par == 0.)
+        if (*par == 0)
             *par = MAX(LM_DWARF, 0.001 * paru);
         temp = sqrt(*par);
         for (j = 0; j < n; j++)
@@ -735,7 +735,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
             is zero or the number of iterations has reached 10. **/
 
         if (fabs(fp) <= p1 * delta
-            || (parl == 0. && fp <= fp_old && fp_old < 0.)
+            || (parl == 0 && fp <= fp_old && fp_old < 0)
             || iter == 10) {
 #ifdef LMFIT_DEBUG_MESSAGES
             printf("debug lmpar nsing %d iter %d "
@@ -869,12 +869,12 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
             j-th column of a to a multiple of the j-th unit vector. **/
 
         ajnorm = lm_enorm(m-j, &a[j*m+j]);
-        if (ajnorm == 0.) {
+        if (ajnorm == 0) {
             rdiag[j] = 0;
             continue;
         }
 
-        if (a[j*m+j] < 0.)
+        if (a[j*m+j] < 0)
             ajnorm = -ajnorm;
         for (i = j; i < m; i++)
             a[j*m+i] /= ajnorm;
@@ -885,7 +885,6 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
 
         for (k = j+1; k < n; k++) {
             sum = 0;
-
             for (i = j; i < m; i++)
                 sum += a[j*m+i] * a[k*m+i];
 
@@ -893,9 +892,9 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
             for (i = j; i < m; i++)
                 a[k*m+i] -= temp * a[j*m+i];
 
-            if (rdiag[k] != 0.) {
+            if (rdiag[k] != 0) {
                 temp = a[m*k+j] / rdiag[k];
-                temp = MAX(0., 1 - temp * temp);
+                temp = MAX(0, 1 - temp * temp);
                 rdiag[k] *= sqrt(temp);
                 temp = rdiag[k] / wa[k];
                 if ( 0.05 * SQR(temp) <= LM_MACHEP ) {
@@ -998,22 +997,22 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 /*** qrsolv: prepare the row of d to be eliminated, locating the
      diagonal element using p from the qr factorization. ***/
 
-        if (diag[ipvt[j]] == 0.)
+        if (diag[ipvt[j]] == 0)
             goto L90;
         for (k = j; k < n; k++)
-            sdiag[k] = 0.;
+            sdiag[k] = 0;
         sdiag[j] = diag[ipvt[j]];
 
 /*** qrsolv: the transformations to eliminate the row of d modify only
      a single element of qT*b beyond the first n, which is initially 0. ***/
 
-        qtbpj = 0.;
+        qtbpj = 0;
         for (k = j; k < n; k++) {
 
             /** determine a Givens rotation which eliminates the
                 appropriate element in the current row of d. **/
 
-            if (sdiag[k] == 0.)
+            if (sdiag[k] == 0)
                 continue;
             kk = k + ldr * k;
             if (fabs(r[kk]) < fabs(sdiag[k])) {
@@ -1056,7 +1055,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 
     nsing = n;
     for (j = 0; j < n; j++) {
-        if (sdiag[j] == 0. && nsing == n)
+        if (sdiag[j] == 0 && nsing == n)
             nsing = j;
         if (nsing < n)
             wa[j] = 0;
@@ -1132,7 +1131,7 @@ double lm_enorm(int n, const double *x)
             temp = x3max / xabs;
             s3 = 1 + s3 * SQR(temp);
             x3max = xabs;
-        } else if (xabs != 0.) {
+        } else if (xabs != 0) {
             temp = xabs / x3max;
             s3 += SQR(temp);
         }
