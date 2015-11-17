@@ -13,6 +13,7 @@
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -825,7 +826,7 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
  *      wa is a work array of length n.
  *
  */
-    int i, j, k, kmax, minmn;
+    int i, j, k, kmax;
     double ajnorm, sum, temp;
 
 /*** qrfac: compute initial column norms and initialize several arrays. ***/
@@ -842,8 +843,8 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
 
 /*** qrfac: reduce a to r with Householder transformations. ***/
 
-    minmn = MIN(m, n);
-    for (j = 0; j < minmn; j++) {
+    assert( n <= m );
+    for (j = 0; j < n; j++) {
 
         /** bring the column of largest norm into the pivot position. **/
 
