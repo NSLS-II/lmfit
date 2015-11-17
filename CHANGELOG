@@ -1,10 +1,9 @@
-Changes in
+Changes in lmfit-5.3, released
 
 - monitoring:
   - detect if norm is not finite, new outcome code 12 = "found nan"
 - code cleanup:
-  - correct comments in qrfac
-  - specialize qrfac to n<=m
+  - correct and improve comments in qrfac
 
 Changes in lmfit-5.2, released 23oct14
 

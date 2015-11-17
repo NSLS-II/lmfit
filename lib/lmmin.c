@@ -779,51 +779,47 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 /*  lm_qrfac (QR factorization, from lapack)                                 */
 /*****************************************************************************/
 
-void lm_qrfac(int m, int n, double *a, int *ipvt,
-              double *rdiag, double *acnorm, double *wa)
+void lm_qrfac(int m, int n, double *A, int *Pivot,
+              double *Rdiag, double *Acnorm, double *W)
 {
 /*
  *     This subroutine uses Householder transformations with column pivoting
- *     to compute a qr factorization of the m by n matrix a. That is, qrfac
- *     determines an orthogonal matrix q, a permutation matrix p, and an
- *     upper trapezoidal matrix r with diagonal elements of nonincreasing
- *     magnitude, such that a*p = q*r. The Householder transformation for
- *     column k, k = 1,2,...,min(m,n), is of the form
+ *     to compute a QR factorization of the m by n matrix A. That is, qrfac
+ *     determines an orthogonal matrix Q, a permutation matrix P, and an
+ *     upper trapezoidal matrix R with diagonal elements of nonincreasing
+ *     magnitude, such that A*P = Q*R. The Householder transformation for
+ *     column k, k = 1,2,...,n, is of the form
  *
- *          i - (1/u(k))*u*uT
+ *          I - 2*w*wT/|w|^2
  *
- *     where u has zeroes in the first k-1 positions. The form of
- *     this transformation and the method of pivoting first
- *     appeared in the corresponding linpack subroutine.
+ *     where w has zeroes in the first k-1 positions.
  *
  *     Parameters:
  *
- *      m is a positive integer INPUT variable set to the number
- *        of rows of a.
+ *      m is an INPUT parameter set to the number of rows of A.
  *
- *      n is a positive integer INPUT variable set to the number
- *        of columns of a.
+ *      n is an INPUT parameter set to the number of columns of A.
  *
- *      a is an m by n array. On INPUT a contains the matrix for
- *        which the qr factorization is to be computed. On OUTPUT
- *        the strict upper trapezoidal part of a contains the strict
- *        upper trapezoidal part of r, and the lower trapezoidal
- *        part of a contains a factored form of q (the non-trivial
- *        elements of the u vectors described above).
+ *      A is an m by n array. On INPUT, A contains the matrix for
+ *        which the QR factorization is to be computed. On OUTPUT
+ *        the strict upper trapezoidal part of A contains the strict
+ *        upper trapezoidal part of R, and the lower trapezoidal
+ *        part of A contains a factored form of Q (the non-trivial
+ *        elements of the vectors w described above).
  *
- *      ipvt is an integer OUTPUT array of length lipvt. This array
- *        defines the permutation matrix p such that a*p = q*r.
- *        Column j of p is column ipvt(j) of the identity matrix.
+ *      Pivot is an integer OUTPUT array of length n that describes the
+ *        permutation matrix P:
+ *        Column j of P is column ipvt(j) of the identity matrix.
  *
- *      rdiag is an OUTPUT array of length n which contains the
- *        diagonal elements of r.
+ *      Rdiag is an OUTPUT array of length n which contains the
+ *        diagonal elements of R.
  *
- *      acnorm is an OUTPUT array of length n which contains the
- *        norms of the corresponding columns of the input matrix a.
- *        If this information is not needed, then acnorm can coincide
- *        with rdiag.
+ *      Acnorm is an OUTPUT array of length n which contains the
+ *        norms of the corresponding columns of the input matrix A.
+ *        If this information is not needed, then Acnorm can share
+ *        storage with Rdiag.
  *
- *      wa is a work array of length n.
+ *      W is a work array of length n.
  *
  */
     int i, j, k, kmax;
@@ -833,82 +829,90 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
     printf("debug qrfac\n");
 #endif
 
-/*** qrfac: compute initial column norms and initialize several arrays. ***/
+    /** Compute initial column norms;
+        initialize Pivot with identity permutation. ***/
 
     for (j = 0; j < n; j++) {
-        wa[j] = rdiag[j] = acnorm[j] = lm_enorm(m, &a[j*m]);
-        ipvt[j] = j;
+        W[j] = Rdiag[j] = Acnorm[j] = lm_enorm(m, &A[j*m]);
+        Pivot[j] = j;
     }
 
-/*** qrfac: reduce a to r with Householder transformations. ***/
+    /** Loop over columns of A. **/
 
     assert( n <= m );
     for (j = 0; j < n; j++) {
 
-        /** bring the column of largest norm into the pivot position. **/
+        /** Bring the column of largest norm into the pivot position. **/
 
         kmax = j;
         for (k = j+1; k < n; k++)
-            if (rdiag[k] > rdiag[kmax])
+            if (Rdiag[k] > Rdiag[kmax])
                 kmax = k;
 
         if (kmax != j) {
-            /* swap columns j and kmax */
-            k = ipvt[j];
-            ipvt[j] = ipvt[kmax];
-            ipvt[kmax] = k;
+            /* Swap columns j and kmax. */
+            k = Pivot[j];
+            Pivot[j] = Pivot[kmax];
+            Pivot[kmax] = k;
             for (i = 0; i < m; i++) {
-                temp = a[j*m+i];
-                a[j*m+i] = a[kmax*m+i];
-                a[kmax*m+i] = temp;
+                temp = A[j*m+i];
+                A[j*m+i] = A[kmax*m+i];
+                A[kmax*m+i] = temp;
             }
-            /* half-swap: rdiag[j], wa[j] won't be needed any further */
-            rdiag[kmax] = rdiag[j];
-            wa[kmax] = wa[j];
+            /* Half-swap: Rdiag[j], W[j] won't be needed any further. */
+            Rdiag[kmax] = Rdiag[j];
+            W[kmax] = W[j];
         }
 
-        /** compute the Householder transformation to reduce the
-            j-th column of a to a multiple of the j-th unit vector. **/
+        /** Compute the Householder reflection vector w_j to reduce the
+            j-th column of A to a multiple of the j-th unit vector. **/
 
-        ajnorm = lm_enorm(m-j, &a[j*m+j]);
+        ajnorm = lm_enorm(m-j, &A[j*m+j]);
         if (ajnorm == 0) {
-            rdiag[j] = 0;
+            Rdiag[j] = 0;
             continue;
         }
 
-        if (a[j*m+j] < 0)
+        /* Let the partial column vector A[j][j:] contain w_j := e_j+-a_j/|a_j|,
+           where the sign +- is chosen to avoid cancellation in w_jj. */
+        if (A[j*m+j] < 0)
             ajnorm = -ajnorm;
         for (i = j; i < m; i++)
-            a[j*m+i] /= ajnorm;
-        a[j*m+j] += 1;
+            A[j*m+i] /= ajnorm;
+        A[j*m+j] += 1;
 
-        /** apply the transformation to the remaining columns
-            and update the norms. **/
+        /** Apply the Householder transformation U_w := 1 - 2*w_j.w_j/|w_j|^2
+            to the remaining columns, and update the norms. **/
 
         for (k = j+1; k < n; k++) {
+            /* Compute scalar product w_j * a_j. */
             sum = 0;
             for (i = j; i < m; i++)
-                sum += a[j*m+i] * a[k*m+i];
+                sum += A[j*m+i] * A[k*m+i];
 
-            temp = sum / a[j+m*j];
+            /* Normalization is simplified by the coincidence |w_j|^2=2w_jj. */
+            temp = sum / A[j*m+j];
+
+            /* Carry out transform U_w_j * a_k. */
             for (i = j; i < m; i++)
-                a[k*m+i] -= temp * a[j*m+i];
+                A[k*m+i] -= temp * A[j*m+i];
 
-            if (rdiag[k] != 0) {
-                temp = a[m*k+j] / rdiag[k];
+            /* No idea what happens here. */
+            if (Rdiag[k] != 0) {
+                temp = A[m*k+j] / Rdiag[k];
                 if ( fabs(temp)<1 ) {
-                    rdiag[k] *= sqrt(1-SQR(temp));
-                    temp = rdiag[k] / wa[k];
+                    Rdiag[k] *= sqrt(1-SQR(temp));
+                    temp = Rdiag[k] / W[k];
                 } else
                     temp = 0;
                 if ( temp == 0 || 0.05 * SQR(temp) <= LM_MACHEP ) {
-                    rdiag[k] = lm_enorm(m-j-1, &a[m*k+j+1]);
-                    wa[k] = rdiag[k];
+                    Rdiag[k] = lm_enorm(m-j-1, &A[m*k+j+1]);
+                    W[k] = Rdiag[k];
                 }
             }
         }
 
-        rdiag[j] = -ajnorm;
+        Rdiag[j] = -ajnorm;
     }
 } /*** lm_qrfac. ***/
 
