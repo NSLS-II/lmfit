@@ -829,17 +829,16 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
     int i, j, k, kmax;
     double ajnorm, sum, temp;
 
-/*** qrfac: compute initial column norms and initialize several arrays. ***/
-
-    for (j = 0; j < n; j++) {
-        acnorm[j] = lm_enorm(m, &a[j*m]);
-        rdiag[j] = acnorm[j];
-        wa[j] = rdiag[j];
-        ipvt[j] = j;
-    }
 #ifdef LMFIT_DEBUG_MESSAGES
     printf("debug qrfac\n");
 #endif
+
+/*** qrfac: compute initial column norms and initialize several arrays. ***/
+
+    for (j = 0; j < n; j++) {
+        wa[j] = rdiag[j] = acnorm[j] = lm_enorm(m, &a[j*m]);
+        ipvt[j] = j;
+    }
 
 /*** qrfac: reduce a to r with Householder transformations. ***/
 
@@ -853,17 +852,19 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
             if (rdiag[k] > rdiag[kmax])
                 kmax = k;
 
-        if (kmax != j) { /* pivot not yet ok */
+        if (kmax != j) {
+            /* swap columns j and kmax */
+            k = ipvt[j];
+            ipvt[j] = ipvt[kmax];
+            ipvt[kmax] = k;
             for (i = 0; i < m; i++) {
                 temp = a[j*m+i];
                 a[j*m+i] = a[kmax*m+i];
                 a[kmax*m+i] = temp;
             }
+            /* half-swap: rdiag[j], wa[j] won't be needed any further */
             rdiag[kmax] = rdiag[j];
             wa[kmax] = wa[j];
-            k = ipvt[j];
-            ipvt[j] = ipvt[kmax];
-            ipvt[kmax] = k;
         }
 
         /** compute the Householder transformation to reduce the
@@ -895,10 +896,12 @@ void lm_qrfac(int m, int n, double *a, int *ipvt,
 
             if (rdiag[k] != 0) {
                 temp = a[m*k+j] / rdiag[k];
-                temp = MAX(0, 1 - temp * temp);
-                rdiag[k] *= sqrt(temp);
-                temp = rdiag[k] / wa[k];
-                if ( 0.05 * SQR(temp) <= LM_MACHEP ) {
+                if ( fabs(temp)<1 ) {
+                    rdiag[k] *= sqrt(1-SQR(temp));
+                    temp = rdiag[k] / wa[k];
+                } else
+                    temp = 0;
+                if ( temp == 0 || 0.05 * SQR(temp) <= LM_MACHEP ) {
                     rdiag[k] = lm_enorm(m-j-1, &a[m*k+j+1]);
                     wa[k] = rdiag[k];
                 }
