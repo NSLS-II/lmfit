@@ -1,18 +1,27 @@
-Changes in lmfit-5.3, released
+Changes in lmfit-5.3, released 24nov15:
 
+- autotools:
+  - set default optimization -O3
 - monitoring:
   - detect if norm is not finite, new outcome code 12 = "found nan"
+  - print parameters before invoking callback functiion
+- docs:
+  - correct typo in lmmin(3)
 - code cleanup:
-  - correct and improve comments in qrfac
+  - uniform code layout, starting from clang-format
+  - correct and improve comments, especially in qrfac
+  - uppercase matrix names
+- testing:
+  - new unit test directory test/, for development purposes only
 
-Changes in lmfit-5.2, released 23oct14
+Changes in lmfit-5.2, released 23oct14:
 
 - bug fix:
   - correct man page (5.0 API change)
 - acceleration(?):
   - revert to just one malloc for all workspaces, now based on a char array
 
-Changes in lmfit-5.1, released 29aug13
+Changes in lmfit-5.1, released 29aug13:
 
 - bug fix:
   - FILE** initialization from &stdout was not standard compliant
@@ -21,7 +30,7 @@ Changes in lmfit-5.1, released 29aug13
 - code cleanup:
   - better wrapper for "extern C" declaration
 
-Changes in lmfit-5.0, released 9aug13
+Changes in lmfit-5.0, released 9aug13:
 
 - API changes:
   - removed callback function for printout
@@ -39,7 +48,7 @@ Changes in lmfit-5.0, released 9aug13
   - otherwise testsuite started as new project fittest
 - packaging: configure now supports pkg-config
 
-Changes in lmfit-4.0, released 16jul13
+Changes in lmfit-4.0, released 16jul13:
 
 - binary library renamed: lmmin -> lmfit
 - API changes:
@@ -62,13 +71,13 @@ Changes in lmfit-4.0, released 16jul13
   - new entry page (dokuwiki) instead of man page
   - man page split and largely rewritten: lmcurve(3), lmmin(3)
 
-Changes in lmfit-3.5, released 3feb13
+Changes in lmfit-3.5, released 3feb13:
 
 - changed overall license to FreeBSD to facilitate inclusion in Linux
   distributions (request by M. Hroncok)
 - directory doc renamed man
 
-Changes in lmfit-3.4, released 21jan13
+Changes in lmfit-3.4, released 21jan13:
 
 - only one malloc call to allocate all arrays (proposal by F. Polchow)
 - liblmmin_la_LDFLAGS += -lm (required by Ubuntu, report by J. M. Agosta)
@@ -77,7 +86,7 @@ Changes in lmfit-3.4, released 21jan13
 - long message for degenerate case now suggests increasing epsilon
   (suggestion by Nghia Ho)
 
-Changes in lmfit-3.3, released 12sep12
+Changes in lmfit-3.3, released 12sep12:
 
 - moved "int" declarations to top of lm_printout_std() and lmmin()
   (required by Visual Studio 2005: bug report M. Beek)
