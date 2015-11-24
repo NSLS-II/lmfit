@@ -127,7 +127,7 @@ void lmmin(int n, double* x, int m, const void* data,
 
     /***  Initialize internal variables.  ***/
 
-    int maxfev = C->patience * (n + 1);
+    int maxfev = C->patience * (n+1);
 
     int inner_success; /* flag for loop control */
     double lmpar = 0;  /* Levenberg-Marquardt parameter */
@@ -191,7 +191,7 @@ void lmmin(int n, double* x, int m, const void* data,
 
     /* Allocate total workspace with just one system call */
     char* ws;
-    if ((ws = malloc((2 * m + 5 * n + m * n) * sizeof(double) +
+    if ((ws = malloc((2*m + 5*n + m*n) * sizeof(double) +
                      n * sizeof(int))) == NULL) {
         S->outcome = 9;
         return;
@@ -404,7 +404,7 @@ void lmmin(int n, double* x, int m, const void* data,
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
-            prered = temp1 + 2 * temp2;
+            prered = temp1 + 2*temp2;
             dirder = -temp1 + temp2; /* scaled directional derivative */
 
             /* At first call, adjust the initial step bound. */
@@ -450,7 +450,7 @@ void lmmin(int n, double* x, int m, const void* data,
                 if (actred >= 0)
                     temp = 0.5;
                 else if (actred > -99) /* -99 = 1-1/0.1^2 */
-                    temp = MAX(dirder / (2 * dirder + actred), 0.1);
+                    temp = MAX(dirder / (2*dirder + actred), 0.1);
                 else
                     temp = 0.1;
                 delta = temp * MIN(delta, pnorm / 0.1);
@@ -822,7 +822,7 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
 
         /** Bring the column of largest norm into the pivot position. **/
         kmax = j;
-        for (k = j + 1; k < n; k++)
+        for (k = j+1; k < n; k++)
             if (Rdiag[k] > Rdiag[kmax])
                 kmax = k;
 
@@ -859,7 +859,7 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
 
         /** Apply the Householder transformation U_w := 1 - 2*w_j.w_j/|w_j|^2
             to the remaining columns, and update the norms. **/
-        for (k = j + 1; k < n; k++) {
+        for (k = j+1; k < n; k++) {
             /* Compute scalar product w_j * a_j. */
             sum = 0;
             for (i = j; i < m; i++)
@@ -1014,7 +1014,7 @@ void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
             W[k] = temp;
 
             /** Accumulate the tranformation in the row of S. **/
-            for (i = k + 1; i < n; i++) {
+            for (i = k+1; i < n; i++) {
                 temp = _cos * r[k*ldr+i] + _sin * Sdiag[i];
                 Sdiag[i] = -_sin * r[k*ldr+i] + _cos * Sdiag[i];
                 r[k*ldr+i] = temp;
@@ -1041,7 +1041,7 @@ void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
 
     for (j = nsing-1; j >= 0; j--) {
         sum = 0;
-        for (i = j + 1; i < nsing; i++)
+        for (i = j+1; i < nsing; i++)
             sum += r[j*ldr+i] * W[i];
         W[j] = (W[j] - sum) / Sdiag[j];
     }
