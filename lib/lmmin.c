@@ -60,10 +60,11 @@ void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
 
 /* Predefined control parameter sets (msgfile=NULL means stdout). */
 const lm_control_struct lm_control_double = {
-    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100,
-    1,          NULL,       0,          -1,         -1};
+    LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL,
+    100., 100, 1, NULL, 0, -1, -1};
 const lm_control_struct lm_control_float = {
-    1.e-7, 1.e-7, 1.e-7, 1.e-7, 100., 100, 1, NULL, 0, -1, -1};
+    1.e-7, 1.e-7, 1.e-7, 1.e-7,
+    100., 100, 1, NULL, 0, -1, -1};
 
 /******************************************************************************/
 /*  Message texts (indexed by status.info)                                    */
@@ -84,11 +85,20 @@ const char* lm_infmsg[] = {
     "stopped    (break requested within function evaluation)",
     "found nan  (function value is not-a-number or infinite)"};
 
-const char* lm_shortmsg[] = {"found zero",    "converged (f)", "converged (p)",
-                             "converged (2)", "degenerate",    "call limit",
-                             "failed (f)",    "failed (p)",    "failed (o)",
-                             "no memory",     "invalid input", "user break",
-                             "found nan"};
+const char* lm_shortmsg[] = {
+    "found zero",
+    "converged (f)",
+    "converged (p)",
+    "converged (2)",
+    "degenerate",
+    "call limit",
+    "failed (f)",
+    "failed (p)",
+    "failed (o)",
+    "no memory",
+    "invalid input",
+    "user break",
+    "found nan"};
 
 /******************************************************************************/
 /*  Monitoring auxiliaries.                                                   */
@@ -1068,7 +1078,7 @@ double lm_enorm(int n, const double* x)
  */
 {
     int i;
-    double agiant, s1, s2, s3, xabs, x1max, x3max, temp;
+    double agiant, s1, s2, s3, xabs, x1max, x3max;
 
     s1 = 0;
     s2 = 0;
@@ -1082,22 +1092,18 @@ double lm_enorm(int n, const double* x)
         xabs = fabs(x[i]);
         if (xabs > LM_SQRT_DWARF) {
             if (xabs < agiant) {
-                s2 += xabs * xabs;
+                s2 += SQR(xabs);
             } else if (xabs > x1max) {
-                temp = x1max / xabs;
-                s1 = 1 + s1 * SQR(temp);
+                s1 = 1 + s1 * SQR(x1max / xabs);
                 x1max = xabs;
             } else {
-                temp = xabs / x1max;
-                s1 += SQR(temp);
+                s1 += SQR(xabs / x1max);
             }
         } else if (xabs > x3max) {
-            temp = x3max / xabs;
-            s3 = 1 + s3 * SQR(temp);
+            s3 = 1 + s3 * SQR(x3max / xabs);
             x3max = xabs;
         } else if (xabs != 0) {
-            temp = xabs / x3max;
-            s3 += SQR(temp);
+            s3 += SQR(xabs / x3max);
         }
     }
 
