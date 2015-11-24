@@ -252,7 +252,7 @@ void lmmin(int n, double* x, int m, const void* data,
             if (S->userbreak)
                 goto terminate;
             for (i = 0; i < m; i++)
-                fjac[j * m + i] = (wf[i] - fvec[i]) / step;
+                fjac[j*m+i] = (wf[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
         }
         if (C->verbosity >= 10) {
@@ -261,7 +261,7 @@ void lmmin(int n, double* x, int m, const void* data,
             for (i = 0; i < m; i++) {
                 printf("  ");
                 for (j = 0; j < n; j++)
-                    printf("%.5e ", fjac[j * m + i]);
+                    printf("%.5e ", fjac[j*m+i]);
                 printf("\n");
             }
         }
@@ -296,16 +296,16 @@ void lmmin(int n, double* x, int m, const void* data,
             wf[i] = fvec[i];
 
         for (j = 0; j < n; j++) {
-            temp3 = fjac[j * m + j];
+            temp3 = fjac[j*m+j];
             if (temp3 != 0) {
                 sum = 0;
                 for (i = j; i < m; i++)
-                    sum += fjac[j * m + i] * wf[i];
+                    sum += fjac[j*m+i] * wf[i];
                 temp = -sum / temp3;
                 for (i = j; i < m; i++)
-                    wf[i] += fjac[j * m + i] * temp;
+                    wf[i] += fjac[j*m+i] * temp;
             }
-            fjac[j * m + j] = wa1[j];
+            fjac[j*m+j] = wa1[j];
             qtf[j] = wf[j];
         }
 
@@ -316,7 +316,7 @@ void lmmin(int n, double* x, int m, const void* data,
                 continue;
             sum = 0;
             for (i = 0; i <= j; i++)
-                sum += fjac[j * m + i] * qtf[i];
+                sum += fjac[j*m+i] * qtf[i];
             gnorm = MAX(gnorm, fabs(sum / wa2[Pivot[j]] / fnorm));
         }
 
@@ -387,7 +387,7 @@ void lmmin(int n, double* x, int m, const void* data,
             for (j = 0; j < n; j++) {
                 wa3[j] = 0;
                 for (i = 0; i <= j; i++)
-                    wa3[i] -= fjac[j * m + i] * wa1[Pivot[j]];
+                    wa3[i] -= fjac[j*m+i] * wa1[Pivot[j]];
             }
             temp1 = SQR(lm_enorm(n, wa3) / fnorm);
             if (!isfinite(temp1)) {
@@ -619,16 +619,16 @@ void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
     nsing = n;
     for (j = 0; j < n; j++) {
         aux[j] = qtb[j];
-        if (r[j * ldr + j] == 0 && nsing == n)
+        if (r[j*ldr+j] == 0 && nsing == n)
             nsing = j;
         if (nsing < n)
             aux[j] = 0;
     }
-    for (j = nsing - 1; j >= 0; j--) {
-        aux[j] = aux[j] / r[j + ldr * j];
+    for (j = nsing-1; j >= 0; j--) {
+        aux[j] = aux[j] / r[j+ldr*j];
         temp = aux[j];
         for (i = 0; i < j; i++)
-            aux[i] -= r[j * ldr + i] * temp;
+            aux[i] -= r[j*ldr+i] * temp;
     }
 
     for (j = 0; j < n; j++)
@@ -662,8 +662,8 @@ void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
         for (j = 0; j < n; j++) {
             sum = 0;
             for (i = 0; i < j; i++)
-                sum += r[j * ldr + i] * aux[i];
-            aux[j] = (aux[j] - sum) / r[j + ldr * j];
+                sum += r[j*ldr+i] * aux[i];
+            aux[j] = (aux[j] - sum) / r[j+ldr*j];
         }
         temp = lm_enorm(n, aux);
         parl = fp / delta / temp / temp;
@@ -674,7 +674,7 @@ void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
     for (j = 0; j < n; j++) {
         sum = 0;
         for (i = 0; i <= j; i++)
-            sum += r[j * ldr + i] * qtb[i];
+            sum += r[j*ldr+i] * qtb[i];
         aux[j] = sum / diag[Pivot[j]];
     }
     gnorm = lm_enorm(n, aux);
@@ -729,8 +729,8 @@ void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
 
         for (j = 0; j < n; j++) {
             aux[j] = aux[j] / Sdiag[j];
-            for (i = j + 1; i < n; i++)
-                aux[i] -= r[j * ldr + i] * aux[j];
+            for (i = j+1; i < n; i++)
+                aux[i] -= r[j*ldr+i] * aux[j];
         }
         temp = lm_enorm(n, aux);
         parc = fp / delta / temp / temp;
@@ -738,9 +738,8 @@ void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
         /** Depending on the sign of the function, update parl or paru. **/
         if (fp > 0)
             parl = MAX(parl, *par);
-        else if (fp < 0)
+        else /* fp < 0 [the case fp==0 is precluded by the break condition] */
             paru = MIN(paru, *par);
-        /* the case fp==0 is precluded by the break condition  */
 
         /** Compute an improved estimate for par. **/
         *par = MAX(parl, *par + parc);
@@ -803,7 +802,7 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
     /** Compute initial column norms;
         initialize Pivot with identity permutation. ***/
     for (j = 0; j < n; j++) {
-        W[j] = Rdiag[j] = Acnorm[j] = lm_enorm(m, &A[j * m]);
+        W[j] = Rdiag[j] = Acnorm[j] = lm_enorm(m, &A[j*m]);
         Pivot[j] = j;
     }
 
@@ -823,9 +822,9 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
             Pivot[j] = Pivot[kmax];
             Pivot[kmax] = k;
             for (i = 0; i < m; i++) {
-                temp = A[j * m + i];
-                A[j * m + i] = A[kmax * m + i];
-                A[kmax * m + i] = temp;
+                temp = A[j*m+i];
+                A[j*m+i] = A[kmax*m+i];
+                A[kmax*m+i] = temp;
             }
             /* Half-swap: Rdiag[j], W[j] won't be needed any further. */
             Rdiag[kmax] = Rdiag[j];
@@ -834,7 +833,7 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
 
         /** Compute the Householder reflection vector w_j to reduce the
             j-th column of A to a multiple of the j-th unit vector. **/
-        ajnorm = lm_enorm(m - j, &A[j * m + j]);
+        ajnorm = lm_enorm(m-j, &A[j*m+j]);
         if (ajnorm == 0) {
             Rdiag[j] = 0;
             continue;
@@ -842,11 +841,11 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
 
         /* Let the partial column vector A[j][j:] contain w_j := e_j+-a_j/|a_j|,
            where the sign +- is chosen to avoid cancellation in w_jj. */
-        if (A[j * m + j] < 0)
+        if (A[j*m+j] < 0)
             ajnorm = -ajnorm;
         for (i = j; i < m; i++)
-            A[j * m + i] /= ajnorm;
-        A[j * m + j] += 1;
+            A[j*m+i] /= ajnorm;
+        A[j*m+j] += 1;
 
         /** Apply the Householder transformation U_w := 1 - 2*w_j.w_j/|w_j|^2
             to the remaining columns, and update the norms. **/
@@ -854,25 +853,25 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
             /* Compute scalar product w_j * a_j. */
             sum = 0;
             for (i = j; i < m; i++)
-                sum += A[j * m + i] * A[k * m + i];
+                sum += A[j*m+i] * A[k*m+i];
 
             /* Normalization is simplified by the coincidence |w_j|^2=2w_jj. */
-            temp = sum / A[j * m + j];
+            temp = sum / A[j*m+j];
 
             /* Carry out transform U_w_j * a_k. */
             for (i = j; i < m; i++)
-                A[k * m + i] -= temp * A[j * m + i];
+                A[k*m+i] -= temp * A[j*m+i];
 
             /* No idea what happens here. */
             if (Rdiag[k] != 0) {
-                temp = A[m * k + j] / Rdiag[k];
+                temp = A[m*k+j] / Rdiag[k];
                 if (fabs(temp) < 1) {
                     Rdiag[k] *= sqrt(1 - SQR(temp));
                     temp = Rdiag[k] / W[k];
                 } else
                     temp = 0;
                 if (temp == 0 || 0.05 * SQR(temp) <= LM_MACHEP) {
-                    Rdiag[k] = lm_enorm(m - j - 1, &A[m * k + j + 1]);
+                    Rdiag[k] = lm_enorm(m-j-1, &A[m*k+j+1]);
                     W[k] = Rdiag[k];
                 }
             }
@@ -957,8 +956,8 @@ void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
 
     for (j = 0; j < n; j++) {
         for (i = j; i < n; i++)
-            r[j * ldr + i] = r[i * ldr + j];
-        x[j] = r[j * ldr + j];
+            r[j*ldr+i] = r[i*ldr+j];
+        x[j] = r[j*ldr+j];
         W[j] = qtb[j];
     }
 
@@ -1006,17 +1005,17 @@ void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
 
             /** Accumulate the tranformation in the row of S. **/
             for (i = k + 1; i < n; i++) {
-                temp = _cos * r[k * ldr + i] + _sin * Sdiag[i];
-                Sdiag[i] = -_sin * r[k * ldr + i] + _cos * Sdiag[i];
-                r[k * ldr + i] = temp;
+                temp = _cos * r[k*ldr+i] + _sin * Sdiag[i];
+                Sdiag[i] = -_sin * r[k*ldr+i] + _cos * Sdiag[i];
+                r[k*ldr+i] = temp;
             }
         }
 
     L90:
         /** Store the diagonal element of S and restore
             the corresponding diagonal element of R. **/
-        Sdiag[j] = r[j * ldr + j];
-        r[j * ldr + j] = x[j];
+        Sdiag[j] = r[j*ldr+j];
+        r[j*ldr+j] = x[j];
     }
 
     /*** Solve the triangular system for z. If the system is singular, then
@@ -1030,10 +1029,10 @@ void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
             W[j] = 0;
     }
 
-    for (j = nsing - 1; j >= 0; j--) {
+    for (j = nsing-1; j >= 0; j--) {
         sum = 0;
         for (i = j + 1; i < nsing; i++)
-            sum += r[j * ldr + i] * W[i];
+            sum += r[j*ldr+i] * W[i];
         W[j] = (W[j] - sum) / Sdiag[j];
     }
 
