@@ -335,8 +335,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [outer]  Initialize / update diag and delta. ***/
 
-        if ( !outer ) {
-            /* first iteration only */
+        if ( !outer ) { /* first iteration only */
             if (C->scale_diag) {
                 /* diag := norms of the columns of the initial Jacobian */
                 for (j = 0; j < n; j++)
@@ -350,7 +349,7 @@ void lmmin( int n, double *x, int m, const void *data,
                     lm_print_pars( nout, x, msgfile ); // xnorm
                     fprintf( msgfile, "  xnorm = %18.8g\n", xnorm );
                 }
-                /* only now print the header for the loop table */
+                /* Only now print the header for the loop table. */
                 if( C->verbosity >=3 ) {
                     fprintf( msgfile, "  o  i     lmpar    prered"
                              "          ratio    dirder      delta"
@@ -366,7 +365,7 @@ void lmmin( int n, double *x, int m, const void *data,
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
-            /* initialize the step bound delta. */
+            /* Initialize the step bound delta. */
             if ( xnorm )
                 delta = C->stepbound * xnorm;
             else
@@ -388,7 +387,7 @@ void lmmin( int n, double *x, int m, const void *data,
                       wa1, wa2, wf, wa3 );
             /* used return values are fjac (partly), lmpar, wa1=x, wa3=diag*x */
 
-            /* predict scaled reduction */
+            /* Predict scaled reduction. */
             pnorm = lm_enorm(n, wa3);
             if( !isfinite(pnorm) ){
                 S->outcome = 12; /* nan */
@@ -408,7 +407,7 @@ void lmmin( int n, double *x, int m, const void *data,
             prered = temp1 + 2 * temp2;
             dirder = -temp1 + temp2; /* scaled directional derivative */
 
-            /* at first call, adjust the initial step bound. */
+            /* At first call, adjust the initial step bound. */
             if ( !outer && pnorm < delta )
                 delta = pnorm;
 
@@ -429,10 +428,10 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
-            /* actual scaled reduction */
+            /* Actual scaled reduction. */
             actred = 1 - SQR(fnorm1/fnorm);
 
-            /* ratio of actual to predicted reduction */
+            /* Ratio of actual to predicted reduction. */
             ratio = prered ? actred/prered : 0;
 
             if( C->verbosity == 2 ) {
@@ -448,7 +447,7 @@ void lmmin( int n, double *x, int m, const void *data,
                 fprintf( msgfile, "\n" );
             }
 
-            /* update the step bound */
+            /* Update the step bound. */
             if        ( ratio <= 0.25 ) {
                 if      ( actred >= 0 )
                     temp = 0.5;
@@ -470,7 +469,7 @@ void lmmin( int n, double *x, int m, const void *data,
             inner_success = ratio >= 1e-4;
             if ( inner_success ) {
 
-                /* update x, fvec, and their norms */
+                /* Update x, fvec, and their norms. */
                 if (C->scale_diag) {
                     for (j = 0; j < n; j++) {
                         x[j] = wa2[j];
@@ -490,11 +489,11 @@ void lmmin( int n, double *x, int m, const void *data,
                 fnorm = fnorm1;
             }
 
-            /* convergence tests */
+            /* Convergence tests. */
             S->outcome = 0;
             if( fnorm<=LM_DWARF )
                 goto terminate;  /* success: sum of squares almost zero */
-            /* test two criteria (both may be fulfilled) */
+            /* Test two criteria (both may be fulfilled). */
             if (fabs(actred) <= C->ftol && prered <= C->ftol && ratio <= 2)
                 S->outcome = 1;  /* success: x almost stable */
             if (delta <= C->xtol * xnorm)
@@ -631,8 +630,8 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
     double sum, temp;
     static double p1 = 0.1;
 
-/*** lmpar: compute and store in x the gauss-newton direction. if the
-     jacobian is rank-deficient, obtain a least squares solution. ***/
+/*** Compute and store in x the Gauss-Newton direction. If the Jacobian
+     is rank-deficient, obtain a least-squares solution. ***/
 
     nsing = n;
     for (j = 0; j < n; j++) {
@@ -652,8 +651,8 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
     for (j = 0; j < n; j++)
         x[Pivot[j]] = aux[j];
 
-/*** lmpar: initialize the iteration counter, evaluate the function at the
-     origin, and test for acceptance of the gauss-newton direction. ***/
+/*** Initialize the iteration counter, evaluate the function at the origin,
+     and test for acceptance of the Gauss-Newton direction. ***/
 
     for (j = 0; j < n; j++)
         xdi[j] = diag[j] * x[j];
@@ -668,9 +667,9 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
         return;
     }
 
-/*** lmpar: if the jacobian is not rank deficient, the newton
-     step provides a lower bound, parl, for the zero of
-     the function. otherwise set this bound to zero. ***/
+/*** If the Jacobian is not rank deficient, the Newton step provides a
+     lower bound, parl, for the zero of the function. Otherwise set this
+     bound to zero. ***/
 
     parl = 0;
     if (nsing >= n) {
@@ -687,7 +686,7 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
         parl = fp / delta / temp / temp;
     }
 
-/*** lmpar: calculate an upper bound, paru, for the zero of the function. ***/
+/*** Calculate an upper bound, paru, for the zero of the function. ***/
 
     for (j = 0; j < n; j++) {
         sum = 0;
@@ -700,7 +699,7 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
     if (paru == 0)
         paru = LM_DWARF / MIN(delta, p1);
 
-/*** lmpar: if the input par lies outside of the interval (parl,paru),
+/*** If the input par lies outside of the interval (parl,paru),
      set par to the closer endpoint. ***/
 
     *par = MAX(*par, parl);
@@ -708,12 +707,11 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
     if (*par == 0)
         *par = gnorm / dxnorm;
 
-/*** lmpar: iterate. ***/
+/*** Iterate. ***/
 
     for (iter=0; ; iter++) {
 
-        /** evaluate the function at the current value of par. **/
-
+        /** Evaluate the function at the current value of par. **/
         if (*par == 0)
             *par = MAX(LM_DWARF, 0.001 * paru);
         temp = sqrt(*par);
@@ -729,10 +727,9 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
         fp_old = fp;
         fp = dxnorm - delta;
 
-        /** if the function is small enough, accept the current value
+        /** If the function is small enough, accept the current value
             of par. Also test for the exceptional cases where parl
             is zero or the number of iterations has reached 10. **/
-
         if (fabs(fp) <= p1 * delta
             || (parl == 0 && fp <= fp_old && fp_old < 0)
             || iter == 10) {
@@ -744,8 +741,7 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
             break; /* the only exit from the iteration. */
         }
 
-        /** compute the Newton correction. **/
-
+        /** Compute the Newton correction. **/
         for (j = 0; j < n; j++)
             aux[j] = diag[Pivot[j]] * xdi[Pivot[j]] / dxnorm;
 
@@ -757,18 +753,15 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
         temp = lm_enorm(n, aux);
         parc = fp / delta / temp / temp;
 
-        /** depending on the sign of the function, update parl or paru. **/
-
+        /** Depending on the sign of the function, update parl or paru. **/
         if (fp > 0)
             parl = MAX(parl, *par);
         else if (fp < 0)
             paru = MIN(paru, *par);
         /* the case fp==0 is precluded by the break condition  */
 
-        /** compute an improved estimate for par. **/
-
+        /** Compute an improved estimate for par. **/
         *par = MAX(parl, *par + parc);
-
     }
 
 } /*** lm_lmpar. ***/
@@ -827,19 +820,16 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
 
     /** Compute initial column norms;
         initialize Pivot with identity permutation. ***/
-
     for (j = 0; j < n; j++) {
         W[j] = Rdiag[j] = Acnorm[j] = lm_enorm(m, &A[j*m]);
         Pivot[j] = j;
     }
 
     /** Loop over columns of A. **/
-
     assert( n <= m );
     for (j = 0; j < n; j++) {
 
         /** Bring the column of largest norm into the pivot position. **/
-
         kmax = j;
         for (k = j+1; k < n; k++)
             if (Rdiag[k] > Rdiag[kmax])
@@ -862,7 +852,6 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
 
         /** Compute the Householder reflection vector w_j to reduce the
             j-th column of A to a multiple of the j-th unit vector. **/
-
         ajnorm = lm_enorm(m-j, &A[j*m+j]);
         if (ajnorm == 0) {
             Rdiag[j] = 0;
@@ -879,7 +868,6 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
 
         /** Apply the Householder transformation U_w := 1 - 2*w_j.w_j/|w_j|^2
             to the remaining columns, and update the norms. **/
-
         for (k = j+1; k < n; k++) {
             /* Compute scalar product w_j * a_j. */
             sum = 0;
@@ -983,7 +971,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
     double qtbpj, sum, temp;
     double _sin, _cos, _tan, _cot; /* local variables, not functions */
 
-/*** qrsolv: copy R and Q^T*b to preserve input and initialize S.
+/*** Copy R and Q^T*b to preserve input and initialize S.
      In particular, save the diagonal elements of R in x. ***/
 
     for (j = 0; j < n; j++) {
@@ -993,12 +981,12 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
         W[j] = qtb[j];
     }
 
-/*** qrsolv: eliminate the diagonal matrix D using a Givens rotation. ***/
+/*** Eliminate the diagonal matrix D using a Givens rotation. ***/
 
     for (j = 0; j < n; j++) {
 
-/*** qrsolv: prepare the row of D to be eliminated, locating the
-     diagonal element using P from the QR factorization. ***/
+/*** Prepare the row of D to be eliminated, locating the diagonal element
+     using P from the QR factorization. ***/
 
         if (diag[Pivot[j]] == 0)
             goto L90;
@@ -1006,15 +994,14 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
             Sdiag[k] = 0;
         Sdiag[j] = diag[Pivot[j]];
 
-/*** qrsolv: the transformations to eliminate the row of D modify only
-     a single element of Q^T*b beyond the first n, which is initially 0. ***/
+/*** The transformations to eliminate the row of D modify only a single
+     element of Q^T*b beyond the first n, which is initially 0. ***/
 
         qtbpj = 0;
         for (k = j; k < n; k++) {
 
-            /** determine a Givens rotation which eliminates the
+            /** Determine a Givens rotation which eliminates the
                 appropriate element in the current row of D. **/
-
             if (Sdiag[k] == 0)
                 continue;
             kk = k + ldr * k;
@@ -1028,16 +1015,14 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
                 _sin = _cos * _tan;
             }
 
-            /** compute the modified diagonal element of R and
+            /** Compute the modified diagonal element of R and
                 the modified element of (Q^T*b,0). **/
-
             r[kk] = _cos * r[kk] + _sin * Sdiag[k];
             temp = _cos * W[k] + _sin * qtbpj;
             qtbpj = -_sin * W[k] + _cos * qtbpj;
             W[k] = temp;
 
-            /** accumulate the tranformation in the row of S. **/
-
+            /** Accumulate the tranformation in the row of S. **/
             for (i = k + 1; i < n; i++) {
                 temp = _cos * r[k * ldr + i] + _sin * Sdiag[i];
                 Sdiag[i] = -_sin * r[k * ldr + i] + _cos * Sdiag[i];
@@ -1046,15 +1031,14 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
         }
 
       L90:
-        /** store the diagonal element of S and restore
+        /** Store the diagonal element of S and restore
             the corresponding diagonal element of R. **/
-
         Sdiag[j] = r[j * ldr + j];
         r[j * ldr + j] = x[j];
     }
 
-/*** qrsolv: solve the triangular system for z. If the system is
-     singular, then obtain a least squares solution. ***/
+/*** Solve the triangular system for z. If the system is singular, then
+    obtain a least-squares solution. ***/
 
     nsing = n;
     for (j = 0; j < n; j++) {
@@ -1071,7 +1055,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
         W[j] = (W[j] - sum) / Sdiag[j];
     }
 
-/*** qrsolv: permute the components of z back to components of x. ***/
+/*** Permute the components of z back to components of x. ***/
 
     for (j = 0; j < n; j++)
         x[Pivot[j]] = W[j];
@@ -1113,8 +1097,7 @@ double lm_enorm(int n, const double *x)
     x3max = 0;
     agiant = LM_SQRT_GIANT / n;
 
-    /** sum squares. **/
-
+    /** Sum squares. **/
     for (i = 0; i < n; i++) {
         xabs = fabs(x[i]);
         if (xabs > LM_SQRT_DWARF) {
@@ -1138,8 +1121,7 @@ double lm_enorm(int n, const double *x)
         }
     }
 
-    /** calculation of norm. **/
-
+    /** Calculate the norm. **/
     if (s1 != 0)
         return x1max * sqrt(s1 + (s2 / x1max) / x1max);
     else if (s2 != 0)
