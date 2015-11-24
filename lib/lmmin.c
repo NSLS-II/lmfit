@@ -274,24 +274,24 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [outer]  Compute the QR factorization of the Jacobian.  ***/
 
-/*      fjac is an m by n array. The upper n by n submatrix of fjac is made
- *        to contain an upper triangular matrix R with diagonal elements of
- *        nonincreasing magnitude such that
+/* fjac is an m by n array. The upper n by n submatrix of fjac is made
+ *   to contain an upper triangular matrix R with diagonal elements of
+ *   nonincreasing magnitude such that
  *
- *              P^T*(J^T*J)*P = R^T*R
+ *         P^T*(J^T*J)*P = R^T*R
  *
- *              (NOTE: ^T stands for matrix transposition),
+ *         (NOTE: ^T stands for matrix transposition),
  *
- *        where P is a permutation matrix and J is the final calculated
- *        Jacobian. Column j of P is column Pivot(j) of the identity matrix.
- *        The lower trapezoidal part of fjac contains information generated
- *        during the computation of R.
+ *   where P is a permutation matrix and J is the final calculated
+ *   Jacobian. Column j of P is column Pivot(j) of the identity matrix.
+ *   The lower trapezoidal part of fjac contains information generated
+ *   during the computation of R.
  *
- *      Pivot is an integer array of length n. It defines a permutation
- *        matrix P such that jac*P = Q*R, where jac is the final calculated
- *        Jacobian, Q is orthogonal (not stored), and R is upper triangular
- *        with diagonal elements of nonincreasing magnitude. Column j of P
- *        is column Pivot(j) of the identity matrix.
+ * Pivot is an integer array of length n. It defines a permutation
+ *   matrix P such that jac*P = Q*R, where jac is the final calculated
+ *   Jacobian, Q is orthogonal (not stored), and R is upper triangular
+ *   with diagonal elements of nonincreasing magnitude. Column j of P
+ *   is column Pivot(j) of the identity matrix.
  */
 
         lm_qrfac(m, n, fjac, Pivot, wa1, wa2, wa3);
@@ -557,7 +557,6 @@ terminate:
 void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
               double *qtb, double delta, double *par, double *x,
               double *Sdiag, double *aux, double *xdi)
-{
 /*     Given an m by n matrix A, an n by n nonsingular diagonal matrix D,
  *     an m-vector b, and a positive number delta, the problem is to
  *     determine a parameter value par such that if x solves the system
@@ -625,6 +624,7 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
  *      xdi is a work array of length n. On OUTPUT: diag[j] * x[j].
  *
  */
+{
     int i, iter, j, nsing;
     double dxnorm, fp, fp_old, gnorm, parc, parl, paru;
     double sum, temp;
@@ -772,7 +772,6 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
 
 void lm_qrfac(int m, int n, double *A, int *Pivot,
               double *Rdiag, double *Acnorm, double *W)
-{
 /*
  *     This subroutine uses Householder transformations with column pivoting
  *     to compute a QR factorization of the m by n matrix A. That is, qrfac
@@ -811,6 +810,7 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
  *      W is a work array of length n.
  *
  */
+{
     int i, j, k, kmax;
     double ajnorm, sum, temp;
 
@@ -907,7 +907,6 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
 
 void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
                double *qtb, double *x, double *Sdiag, double *W)
-{
 /*
  *     Given an m by n matrix A, an n by n diagonal matrix D, and an
  *     m-vector b, the problem is to determine an x which solves the
@@ -967,6 +966,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
  *      W is a work array of length n.
  *
  */
+{
     int i, kk, j, k, nsing;
     double qtbpj, sum, temp;
     double _sin, _cos, _tan, _cot; /* local variables, not functions */
@@ -1068,7 +1068,6 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
 /******************************************************************************/
 
 double lm_enorm(int n, const double *x)
-{
 /*     This function calculates the Euclidean norm of an n-vector x.
  *
  *     The Euclidean norm is computed by accumulating the sum of squares
@@ -1087,6 +1086,7 @@ double lm_enorm(int n, const double *x)
  *
  *      x is an INPUT array of length n.
  */
+{
     int i;
     double agiant, s1, s2, s3, xabs, x1max, x3max, temp;
 
