@@ -29,9 +29,17 @@
 
 __BEGIN_DECLS
 
-void lmcurve(const int n_par, double* par, const int m_dat, const double* t,
-             const double* y, double (*f)(double t, const double* par),
-             const lm_control_struct* control, lm_status_struct* status);
+void lmcurve(
+    const int n_par, double* par, const int m_dat,
+    const double* t, const double* y,
+    double (*f)(double t, const double* par),
+    const lm_control_struct* control, lm_status_struct* status);
+
+void lmcurve_tyd(
+    const int n_par, double* par, const int m_dat,
+    const double* t, const double* y, const double* dy,
+    double (*f)(double t, const double* par),
+    const lm_control_struct* control, lm_status_struct* status);
 
 __END_DECLS
 #endif /* LMCURVE_H */

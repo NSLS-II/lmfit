@@ -61,4 +61,5 @@ man/*.html
 # executables
 
 demo/*1
+demo/*2
 test/test_qr

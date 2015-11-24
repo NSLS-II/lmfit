@@ -8,16 +8,23 @@
 
 =head1 NAME
 
-lmcurve - Levenberg-Marquardt least-squares curve fitting
+lmcurve - Levenberg-Marquardt least-squares fit of a curve (t,y)
 
 
 =head1 SYNOPSIS
 
 B<#include <lmcurve.h>>
 
-B<void lmcurve( int> I<n_par>B<, double *>I<par>B<, int> I<m_dat>B<,
+B<void lmcurve( const int> I<n_par>B<, double *>I<par>B<, const int> I<m_dat>B<,
               constS< >double *>I<t>B<, constS< >double *>I<y>B<,
-              double (*>I<f>B<)( double >I<ti>B<, const double *>I<par>B< ),
+              double (*>I<f>B<)( const double >I<ti>B<, const double *>I<par>B< ),
+              constS< >lm_control_struct *>I<control>B<,
+              lm_status_struct *>I<status>B<);>
+
+B<void lmcurve_tyd(
+              const int> I<n_par>B<, double *>I<par>B<, const int> I<m_dat>B<,
+              constS< >double *>I<t>B<, constS< >double *>I<y>B<, constS< >double *>I<dy>B<,
+              double (*>I<f>B<)( const double >I<ti>B<, const double *>I<par>B< ),
               constS< >lm_control_struct *>I<control>B<,
               lm_status_struct *>I<status>B<);>
 
@@ -31,10 +38,11 @@ B<extern const char *lm_shortmsg[];>
 
 =head1 DESCRIPTION
 
-B<lmcurve()> wraps the more generic minimization function B<lmmin()>,
-for use in curve fitting.
+B<lmcurve()> and B<lmcurve_tyd()> wrap the more generic minimization function B<lmmin()>, for use in curve fitting.
 
 B<lmcurve()> determines a vector I<par> that minimizes the sum of squared elements of a residue vector I<r>[i] := I<y>[i] - I<f>(I<t>[i];I<par>). Typically, B<lmcurve()> is used to approximate a data set I<t>,I<y> by a parametric function I<f>(I<ti>;I<par>). On success, I<par> represents a local minimum, not necessarily a global one; it may depend on its starting value.
+
+B<lmcurve_tyd()> does the same for a data set I<t>,I<y>,I<dy>, where I<dy> represents the standard deviation of empirical data I<y>. Residues are computed as I<r>[i] := (I<y>[i] - I<f>(I<t>[i];I<par>))/I<dy>[i]. Users must ensure that all I<dy>[i] are positive.
 
 
 Function arguments:
@@ -67,6 +75,12 @@ Contains the abcissae (time, or "x") for which function I<f> will be evaluated.
 
 Array of length I<m_dat>.
 Contains the ordinate values that shall be fitted.
+
+=item I<dy>
+
+Only in B<lmcurve_tyd()>.
+Array of length I<m_dat>.
+Contains the standard deviations of the values I<y>.
 
 =item I<f>
 
@@ -138,7 +152,7 @@ Fit a data set y(x) by a curve f(x;p):
 
 =head1 COPYING
 
-Copyright (C) 2009-2013 Joachim Wuttke, Forschungszentrum Juelich GmbH
+Copyright (C) 2009-2015 Joachim Wuttke, Forschungszentrum Juelich GmbH
 
 Software: FreeBSD License
 
