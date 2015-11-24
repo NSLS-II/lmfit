@@ -8,10 +8,15 @@
  * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
  *
  * License:   see ../COPYING (FreeBSD)
- * 
+ *
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
+ *
+ * Note to programmers: Don't patch and fork, but copy and variate!
+ *   If you need to compute residues differently, then please do not patch
+ * lmcurve.h and lmcurve.c, but copy them, and create differently named
+ * versions of lmcurve_data_struct, lmcurve_evaluate, and lmcurve of your own.
  */
- 
+
 #ifndef LMCURVE_H
 #define LMCURVE_H
 #undef __BEGIN_DECLS
