@@ -2,6 +2,7 @@ lmfit-6.0, released 24nov15:
 
 - API changes:
   - a few more 'const' qualifiers in lmmin and lmcurve.
+  - new wrapper function lmcurve_tyd, for use in GROMACS
 - code cleanup:
   - further unify code layout
   - use temporary variable for readability in lmcurve (suggested by T. Klauser)
