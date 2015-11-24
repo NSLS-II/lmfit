@@ -274,9 +274,9 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [outer]  Compute the QR factorization of the Jacobian.  ***/
 
-/*      fjac is an m by n array. The upper n by n submatrix of fjac
- *        is made to contain an upper triangular matrix R with diagonal
- *        elements of nonincreasing magnitude such that
+/*      fjac is an m by n array. The upper n by n submatrix of fjac is made
+ *        to contain an upper triangular matrix R with diagonal elements of
+ *        nonincreasing magnitude such that
  *
  *              P^T*(J^T*J)*P = R^T*R
  *
@@ -565,66 +565,61 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
  *
  *          A*x = b  and  sqrt(par)*D*x = 0
  *
- *     in the least squares sense, and dxnorm is the euclidean
- *     norm of D*x, then either par=0 and (dxnorm-delta) < 0.1*delta,
- *     or par>0 and abs(dxnorm-delta) < 0.1*delta.
+ *     in the least squares sense, and dxnorm is the Euclidean norm of D*x,
+ *     then either par=0 and (dxnorm-delta) < 0.1*delta, or par>0 and
+ *     abs(dxnorm-delta) < 0.1*delta.
  *
  *     Using lm_qrsolv, this subroutine completes the solution of the
- *     problem if it is provided with the necessary information from
- *     the QR factorization, with column pivoting, of A. That is, if
- *     A*P = Q*R, where P is a permutation matrix, Q has orthogonal
- *     columns, and R is an upper triangular matrix with diagonal
- *     elements of nonincreasing magnitude, then lmpar expects the
- *     full upper triangle of R, the permutation matrix P, and the
- *     first n components of Q^T*b. On output lmpar also provides an
- *     upper triangular matrix S such that
+ *     problem if it is provided with the necessary information from the
+ *     QR factorization, with column pivoting, of A. That is, if A*P = Q*R,
+ *     where P is a permutation matrix, Q has orthogonal columns, and R is
+ *     an upper triangular matrix with diagonal elements of nonincreasing
+ *     magnitude, then lmpar expects the full upper triangle of R, the
+ *     permutation matrix P, and the first n components of Q^T*b. On output
+ *     lmpar also provides an upper triangular matrix S such that
  *
  *          P^T*(A^T*A + par*D*D)*P = S^T*S.
  *
  *     S is employed within lmpar and may be of separate interest.
  *
- *     Only a few iterations are generally needed for convergence
- *     of the algorithm. If, however, the limit of 10 iterations
- *     is reached, then the output par will contain the best value
- *     obtained so far.
+ *     Only a few iterations are generally needed for convergence of the
+ *     algorithm. If, however, the limit of 10 iterations is reached, then
+ *     the output par will contain the best value obtained so far.
  *
  *     Parameters:
  *
  *      n is a positive integer INPUT variable set to the order of r.
  *
- *      r is an n by n array. On INPUT the full upper triangle
- *        must contain the full upper triangle of the matrix R.
- *        On OUTPUT the full upper triangle is unaltered, and the
- *        strict lower triangle contains the strict upper triangle
- *        (transposed) of the upper triangular matrix S.
+ *      r is an n by n array. On INPUT the full upper triangle must contain
+ *        the full upper triangle of the matrix R. On OUTPUT the full upper
+ *        triangle is unaltered, and the strict lower triangle contains the
+ *        strict upper triangle (transposed) of the upper triangular matrix S.
  *
- *      ldr is a positive integer INPUT variable not less than n
- *        which specifies the leading dimension of the array R.
+ *      ldr is a positive integer INPUT variable not less than n which
+ *        specifies the leading dimension of the array R.
  *
  *      Pivot is an integer INPUT array of length n which defines the
- *        permutation matrix P such that A*P = Q*R. Column j of P
- *        is column Pivot(j) of the identity matrix.
+ *        permutation matrix P such that A*P = Q*R. Column j of P is column
+ *        Pivot(j) of the identity matrix.
  *
- *      diag is an INPUT array of length n which must contain the
- *        diagonal elements of the matrix D.
+ *      diag is an INPUT array of length n which must contain the diagonal
+ *        elements of the matrix D.
  *
  *      qtb is an INPUT array of length n which must contain the first
  *        n elements of the vector Q^T*b.
  *
- *      delta is a positive INPUT variable which specifies an upper
- *        bound on the euclidean norm of D*x.
+ *      delta is a positive INPUT variable which specifies an upper bound
+ *        on the Euclidean norm of D*x.
  *
- *      par is a nonnegative variable. On INPUT par contains an
- *        initial estimate of the Levenberg-Marquardt parameter.
- *        On OUTPUT par contains the final estimate.
+ *      par is a nonnegative variable. On INPUT par contains an initial
+ *        estimate of the Levenberg-Marquardt parameter. On OUTPUT par
+ *        contains the final estimate.
  *
- *      x is an OUTPUT array of length n which contains the least
- *        squares solution of the system A*x = b, sqrt(par)*D*x = 0,
- *        for the output par.
+ *      x is an OUTPUT array of length n which contains the least-squares
+ *        solution of the system A*x = b, sqrt(par)*D*x = 0, for the output par.
  *
- *      Sdiag is an array of length n needed as workspace; on OUTPUT
- *        it contains the diagonal elements of the upper triangular
- *        matrix S.
+ *      Sdiag is an array of length n needed as workspace; on OUTPUT it
+ *        contains the diagonal elements of the upper triangular matrix S.
  *
  *      aux is a multi-purpose work array of length n.
  *
@@ -803,23 +798,22 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
  *
  *      n is an INPUT parameter set to the number of columns of A.
  *
- *      A is an m by n array. On INPUT, A contains the matrix for
- *        which the QR factorization is to be computed. On OUTPUT
- *        the strict upper trapezoidal part of A contains the strict
- *        upper trapezoidal part of R, and the lower trapezoidal
- *        part of A contains a factored form of Q (the non-trivial
- *        elements of the vectors w described above).
+ *      A is an m by n array. On INPUT, A contains the matrix for which the
+ *        QR factorization is to be computed. On OUTPUT the strict upper
+ *        trapezoidal part of A contains the strict upper trapezoidal part
+ *        of R, and the lower trapezoidal part of A contains a factored form
+ *        of Q (the non-trivial elements of the vectors w described above).
  *
  *      Pivot is an integer OUTPUT array of length n that describes the
- *        permutation matrix P:
- *        Column j of P is column Pivot(j) of the identity matrix.
+ *        permutation matrix P. Column j of P is column Pivot(j) of the
+ *        identity matrix.
  *
- *      Rdiag is an OUTPUT array of length n which contains the
- *        diagonal elements of R.
+ *      Rdiag is an OUTPUT array of length n which contains the diagonal
+ *        elements of R.
  *
- *      Acnorm is an OUTPUT array of length n which contains the norms
- *        of the corresponding columns of the input matrix A. If this
- *        information is not needed, then Acnorm can share storage with Rdiag.
+ *      Acnorm is an OUTPUT array of length n which contains the norms of
+ *        the corresponding columns of the input matrix A. If this information
+ *        is not needed, then Acnorm can share storage with Rdiag.
  *
  *      W is a work array of length n.
  *
@@ -958,30 +952,29 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
  *
  *      n is a positive integer INPUT variable set to the order of R.
  *
- *      r is an n by n array. On INPUT the full upper triangle must
- *        contain the full upper triangle of the matrix R. On OUTPUT
- *        the full upper triangle is unaltered, and the strict lower
- *        triangle contains the strict upper triangle (transposed) of
- *        the upper triangular matrix S.
+ *      r is an n by n array. On INPUT the full upper triangle must contain
+ *        the full upper triangle of the matrix R. On OUTPUT the full upper
+ *        triangle is unaltered, and the strict lower triangle contains the
+ *        strict upper triangle (transposed) of the upper triangular matrix S.
  *
- *      ldr is a positive integer INPUT variable not less than n
- *        which specifies the leading dimension of the array R.
+ *      ldr is a positive integer INPUT variable not less than n which
+ *        specifies the leading dimension of the array R.
  *
  *      Pivot is an integer INPUT array of length n which defines the
- *        permutation matrix P such that A*P = Q*R. Column j of P
- *        is column Pivot(j) of the identity matrix.
+ *        permutation matrix P such that A*P = Q*R. Column j of P is column
+ *        Pivot(j) of the identity matrix.
  *
- *      diag is an INPUT array of length n which must contain the
- *        diagonal elements of the matrix D.
+ *      diag is an INPUT array of length n which must contain the diagonal
+ *        elements of the matrix D.
  *
  *      qtb is an INPUT array of length n which must contain the first
  *        n elements of the vector Q^T*b.
  *
- *      x is an OUTPUT array of length n which contains the least
- *        squares solution of the system A*x = b, D*x = 0.
+ *      x is an OUTPUT array of length n which contains the least-squares
+ *        solution of the system A*x = b, D*x = 0.
  *
- *      Sdiag is an OUTPUT array of length n which contains the
- *        diagonal elements of the upper triangular matrix S.
+ *      Sdiag is an OUTPUT array of length n which contains the diagonal
+ *        elements of the upper triangular matrix S.
  *
  *      W is a work array of length n.
  *
@@ -1094,16 +1087,15 @@ double lm_enorm(int n, const double *x)
 {
 /*     This function calculates the Euclidean norm of an n-vector x.
  *
- *     The Euclidean norm is computed by accumulating the sum of
- *     squares in three different sums. The sums of squares for the
- *     small and large components are scaled so that no overflows
- *     occur. Non-destructive underflows are permitted. Underflows
- *     and overflows do not occur in the computation of the unscaled
- *     sum of squares for the intermediate components.
- *     The definitions of small, intermediate and large components
+ *     The Euclidean norm is computed by accumulating the sum of squares
+ *     in three different sums. The sums of squares for the small and large
+ *     components are scaled so that no overflows occur. Non-destructive
+ *     underflows are permitted. Underflows and overflows do not occur in
+ *     the computation of the unscaled sum of squares for the intermediate
+ *     components. The definitions of small, intermediate and large components
  *     depend on two constants, LM_SQRT_DWARF and LM_SQRT_GIANT. The main
- *     restrictions on these constants are that LM_SQRT_DWARF**2 not
- *     underflow and LM_SQRT_GIANT**2 not overflow.
+ *     restrictions on these constants are that LM_SQRT_DWARF**2 not underflow
+ *     and LM_SQRT_GIANT**2 not overflow.
  *
  *     Parameters:
  *
