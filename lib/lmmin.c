@@ -272,29 +272,29 @@ void lmmin( int n, double *x, int m, const void *data,
 /***  [outer]  Compute the QR factorization of the Jacobian.  ***/
 
 /*      fjac is an m by n array. The upper n by n submatrix of fjac
- *        is made to contain an upper triangular matrix r with diagonal
+ *        is made to contain an upper triangular matrix R with diagonal
  *        elements of nonincreasing magnitude such that
  *
- *              p^T*(jac^T*jac)*p = r^T*r
+ *              P^T*(J^T*J)*P = R^T*R
  *
  *              (NOTE: ^T stands for matrix transposition),
  *
- *        where p is a permutation matrix and jac is the final calculated
- *        Jacobian. Column j of p is column ipvt(j) of the identity matrix.
+ *        where P is a permutation matrix and J is the final calculated
+ *        Jacobian. Column j of P is column ipvt(j) of the identity matrix.
  *        The lower trapezoidal part of fjac contains information generated
- *        during the computation of r.
+ *        during the computation of R.
  *
  *      ipvt is an integer array of length n. It defines a permutation
- *        matrix p such that jac*p = q*r, where jac is the final calculated
- *        Jacobian, q is orthogonal (not stored), and r is upper triangular
- *        with diagonal elements of nonincreasing magnitude. Column j of p
+ *        matrix P such that jac*P = Q*R, where jac is the final calculated
+ *        Jacobian, Q is orthogonal (not stored), and R is upper triangular
+ *        with diagonal elements of nonincreasing magnitude. Column j of P
  *        is column ipvt(j) of the identity matrix.
  */
 
         lm_qrfac(m, n, fjac, ipvt, wa1, wa2, wa3);
         /* return values are ipvt, wa1=rdiag, wa2=acnorm */
 
-/***  [outer]  Form q^T * fvec and store first n components in qtf.  ***/
+/***  [outer]  Form Q^T * fvec, and store first n components in qtf.  ***/
 
         for (i = 0; i < m; i++)
             wf[i] = fvec[i];
@@ -556,72 +556,72 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
               double *qtb, double delta, double *par, double *x,
               double *sdiag, double *aux, double *xdi)
 {
-/*     Given an m by n matrix a, an n by n nonsingular diagonal
- *     matrix d, an m-vector b, and a positive number delta,
- *     the problem is to determine a value for the parameter
- *     par such that if x solves the system
+/*     Given an m by n matrix A, an n by n nonsingular diagonal matrix D,
+ *     an m-vector b, and a positive number delta, the problem is to
+ *     determine a parameter value par such that if x solves the system
  *
- *          a*x = b  and  sqrt(par)*d*x = 0
+ *          A*x = b  and  sqrt(par)*D*x = 0
  *
  *     in the least squares sense, and dxnorm is the euclidean
- *     norm of d*x, then either par=0 and (dxnorm-delta) < 0.1*delta,
+ *     norm of D*x, then either par=0 and (dxnorm-delta) < 0.1*delta,
  *     or par>0 and abs(dxnorm-delta) < 0.1*delta.
  *
- *     Using lm_qrsolv, this subroutine completes the solution of the problem
- *     if it is provided with the necessary information from the
- *     qr factorization, with column pivoting, of a. That is, if
- *     a*p = q*r, where p is a permutation matrix, q has orthogonal
- *     columns, and r is an upper triangular matrix with diagonal
- *     elements of nonincreasing magnitude, then lmpar expects
- *     the full upper triangle of r, the permutation matrix p,
- *     and the first n components of qT*b. On output
- *     lmpar also provides an upper triangular matrix s such that
+ *     Using lm_qrsolv, this subroutine completes the solution of the
+ *     problem if it is provided with the necessary information from
+ *     the QR factorization, with column pivoting, of A. That is, if
+ *     A*P = Q*R, where P is a permutation matrix, Q has orthogonal
+ *     columns, and R is an upper triangular matrix with diagonal
+ *     elements of nonincreasing magnitude, then lmpar expects the
+ *     full upper triangle of R, the permutation matrix P, and the
+ *     first n components of Q^T*b. On output lmpar also provides an
+ *     upper triangular matrix S such that
  *
- *          p^T*(a^T*a + par*d*d)*p = s^T*s.
+ *          P^T*(A^T*A + par*D*D)*P = S^T*S.
  *
- *     s is employed within lmpar and may be of separate interest.
+ *     S is employed within lmpar and may be of separate interest.
  *
  *     Only a few iterations are generally needed for convergence
  *     of the algorithm. If, however, the limit of 10 iterations
- *     is reached, then the output par will contain the best
- *     value obtained so far.
+ *     is reached, then the output par will contain the best value
+ *     obtained so far.
  *
- *     parameters:
+ *     Parameters:
  *
  *      n is a positive integer INPUT variable set to the order of r.
  *
- *      r is an n by n array. on INPUT the full upper triangle
- *        must contain the full upper triangle of the matrix r.
- *        on OUTPUT the full upper triangle is unaltered, and the
+ *      r is an n by n array. On INPUT the full upper triangle
+ *        must contain the full upper triangle of the matrix R.
+ *        On OUTPUT the full upper triangle is unaltered, and the
  *        strict lower triangle contains the strict upper triangle
- *        (transposed) of the upper triangular matrix s.
+ *        (transposed) of the upper triangular matrix S.
  *
  *      ldr is a positive integer INPUT variable not less than n
- *        which specifies the leading dimension of the array r.
+ *        which specifies the leading dimension of the array R.
  *
  *      ipvt is an integer INPUT array of length n which defines the
- *        permutation matrix p such that a*p = q*r. column j of p
+ *        permutation matrix P such that A*P = Q*R. Column j of P
  *        is column ipvt(j) of the identity matrix.
  *
  *      diag is an INPUT array of length n which must contain the
- *        diagonal elements of the matrix d.
+ *        diagonal elements of the matrix D.
  *
  *      qtb is an INPUT array of length n which must contain the first
- *        n elements of the vector (q transpose)*b.
+ *        n elements of the vector Q^T*b.
  *
  *      delta is a positive INPUT variable which specifies an upper
- *        bound on the euclidean norm of d*x.
+ *        bound on the euclidean norm of D*x.
  *
- *      par is a nonnegative variable. on INPUT par contains an
- *        initial estimate of the levenberg-marquardt parameter.
- *        on OUTPUT par contains the final estimate.
+ *      par is a nonnegative variable. On INPUT par contains an
+ *        initial estimate of the Levenberg-Marquardt parameter.
+ *        On OUTPUT par contains the final estimate.
  *
  *      x is an OUTPUT array of length n which contains the least
- *        squares solution of the system a*x = b, sqrt(par)*d*x = 0,
+ *        squares solution of the system A*x = b, sqrt(par)*D*x = 0,
  *        for the output par.
  *
  *      sdiag is an array of length n needed as workspace; on OUTPUT
- *        it contains the diagonal elements of the upper triangular matrix s.
+ *        it contains the diagonal elements of the upper triangular
+ *        matrix S.
  *
  *      aux is a multi-purpose work array of length n.
  *
@@ -814,10 +814,9 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
  *      Rdiag is an OUTPUT array of length n which contains the
  *        diagonal elements of R.
  *
- *      Acnorm is an OUTPUT array of length n which contains the
- *        norms of the corresponding columns of the input matrix A.
- *        If this information is not needed, then Acnorm can share
- *        storage with Rdiag.
+ *      Acnorm is an OUTPUT array of length n which contains the norms
+ *        of the corresponding columns of the input matrix A. If this
+ *        information is not needed, then Acnorm can share storage with Rdiag.
  *
  *      W is a work array of length n.
  *
@@ -925,62 +924,61 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
                double *qtb, double *x, double *sdiag, double *wa)
 {
 /*
- *     Given an m by n matrix a, an n by n diagonal matrix d,
- *     and an m-vector b, the problem is to determine an x which
- *     solves the system
+ *     Given an m by n matrix A, an n by n diagonal matrix D, and an
+ *     m-vector b, the problem is to determine an x which solves the
+ *     system
  *
- *          a*x = b  and  d*x = 0
+ *          A*x = b  and  D*x = 0
  *
  *     in the least squares sense.
  *
- *     This subroutine completes the solution of the problem
- *     if it is provided with the necessary information from the
- *     qr factorization, with column pivoting, of a. That is, if
- *     a*p = q*r, where p is a permutation matrix, q has orthogonal
- *     columns, and r is an upper triangular matrix with diagonal
- *     elements of nonincreasing magnitude, then qrsolv expects
- *     the full upper triangle of r, the permutation matrix p,
- *     and the first n components of (q transpose)*b. The system
- *     a*x = b, d*x = 0, is then equivalent to
+ *     This subroutine completes the solution of the problem if it is
+ *     provided with the necessary information from the QR factorization,
+ *     with column pivoting, of A. That is, if A*P = Q*R, where P is a
+ *     permutation matrix, Q has orthogonal columns, and R is an upper
+ *     triangular matrix with diagonal elements of nonincreasing magnitude,
+ *     then qrsolv expects the full upper triangle of R, the permutation
+ *     matrix P, and the first n components of Q^T*b. The system
+ *     A*x = b, D*x = 0, is then equivalent to
  *
- *          r*z = q^T*b,  p^T*d*p*z = 0,
+ *          R*z = Q^T*b,  P^T*D*P*z = 0,
  *
- *     where x = p*z. If this system does not have full rank,
- *     then a least squares solution is obtained. On output qrsolv
- *     also provides an upper triangular matrix s such that
+ *     where x = P*z. If this system does not have full rank, then a least
+ *     squares solution is obtained. On output qrsolv also provides an upper
+ *     triangular matrix S such that
  *
- *          p^T *(a^T *a + d*d)*p = s^T *s.
+ *          P^T*(A^T*A + D*D)*P = S^T*S.
  *
- *     s is computed within qrsolv and may be of separate interest.
+ *     S is computed within qrsolv and may be of separate interest.
  *
- *     Parameters
+ *     Parameters:
  *
- *      n is a positive integer INPUT variable set to the order of r.
+ *      n is a positive integer INPUT variable set to the order of R.
  *
- *      r is an n by n array. On INPUT the full upper triangle
- *        must contain the full upper triangle of the matrix r.
- *        On OUTPUT the full upper triangle is unaltered, and the
- *        strict lower triangle contains the strict upper triangle
- *        (transposed) of the upper triangular matrix s.
+ *      r is an n by n array. On INPUT the full upper triangle must
+ *        contain the full upper triangle of the matrix R. On OUTPUT
+ *        the full upper triangle is unaltered, and the strict lower
+ *        triangle contains the strict upper triangle (transposed) of
+ *        the upper triangular matrix S.
  *
  *      ldr is a positive integer INPUT variable not less than n
- *        which specifies the leading dimension of the array r.
+ *        which specifies the leading dimension of the array R.
  *
  *      ipvt is an integer INPUT array of length n which defines the
- *        permutation matrix p such that a*p = q*r. Column j of p
+ *        permutation matrix P such that A*P = Q*R. Column j of P
  *        is column ipvt(j) of the identity matrix.
  *
  *      diag is an INPUT array of length n which must contain the
- *        diagonal elements of the matrix d.
+ *        diagonal elements of the matrix D.
  *
  *      qtb is an INPUT array of length n which must contain the first
- *        n elements of the vector (q transpose)*b.
+ *        n elements of the vector Q^T*b.
  *
  *      x is an OUTPUT array of length n which contains the least
- *        squares solution of the system a*x = b, d*x = 0.
+ *        squares solution of the system A*x = b, D*x = 0.
  *
  *      sdiag is an OUTPUT array of length n which contains the
- *        diagonal elements of the upper triangular matrix s.
+ *        diagonal elements of the upper triangular matrix S.
  *
  *      wa is a work array of length n.
  *
@@ -989,8 +987,8 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
     double qtbpj, sum, temp;
     double _sin, _cos, _tan, _cot; /* local variables, not functions */
 
-/*** qrsolv: copy r and q^T*b to preserve input and initialize s.
-     in particular, save the diagonal elements of r in x. ***/
+/*** qrsolv: copy R and Q^T*b to preserve input and initialize S.
+     In particular, save the diagonal elements of R in x. ***/
 
     for (j = 0; j < n; j++) {
         for (i = j; i < n; i++)
@@ -998,12 +996,13 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
         x[j] = r[j * ldr + j];
         wa[j] = qtb[j];
     }
-/*** qrsolv: eliminate the diagonal matrix d using a Givens rotation. ***/
+
+/*** qrsolv: eliminate the diagonal matrix D using a Givens rotation. ***/
 
     for (j = 0; j < n; j++) {
 
-/*** qrsolv: prepare the row of d to be eliminated, locating the
-     diagonal element using p from the qr factorization. ***/
+/*** qrsolv: prepare the row of D to be eliminated, locating the
+     diagonal element using P from the QR factorization. ***/
 
         if (diag[ipvt[j]] == 0)
             goto L90;
@@ -1011,14 +1010,14 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
             sdiag[k] = 0;
         sdiag[j] = diag[ipvt[j]];
 
-/*** qrsolv: the transformations to eliminate the row of d modify only
-     a single element of qT*b beyond the first n, which is initially 0. ***/
+/*** qrsolv: the transformations to eliminate the row of D modify only
+     a single element of Q^T*b beyond the first n, which is initially 0. ***/
 
         qtbpj = 0;
         for (k = j; k < n; k++) {
 
             /** determine a Givens rotation which eliminates the
-                appropriate element in the current row of d. **/
+                appropriate element in the current row of D. **/
 
             if (sdiag[k] == 0)
                 continue;
@@ -1033,15 +1032,15 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
                 _sin = _cos * _tan;
             }
 
-            /** compute the modified diagonal element of r and
-                the modified element of ((q^T)*b,0). **/
+            /** compute the modified diagonal element of R and
+                the modified element of (Q^T*b,0). **/
 
             r[kk] = _cos * r[kk] + _sin * sdiag[k];
             temp = _cos * wa[k] + _sin * qtbpj;
             qtbpj = -_sin * wa[k] + _cos * qtbpj;
             wa[k] = temp;
 
-            /** accumulate the tranformation in the row of s. **/
+            /** accumulate the tranformation in the row of S. **/
 
             for (i = k + 1; i < n; i++) {
                 temp = _cos * r[k * ldr + i] + _sin * sdiag[i];
@@ -1051,14 +1050,14 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
         }
 
       L90:
-        /** store the diagonal element of s and restore
-            the corresponding diagonal element of r. **/
+        /** store the diagonal element of S and restore
+            the corresponding diagonal element of R. **/
 
         sdiag[j] = r[j * ldr + j];
         r[j * ldr + j] = x[j];
     }
 
-/*** qrsolv: solve the triangular system for z. if the system is
+/*** qrsolv: solve the triangular system for z. If the system is
      singular, then obtain a least squares solution. ***/
 
     nsing = n;
@@ -1090,10 +1089,9 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 
 double lm_enorm(int n, const double *x)
 {
-/*     Given an n-vector x, this function calculates the
- *     euclidean norm of x.
+/*     This function calculates the Euclidean norm of an n-vector x.
  *
- *     The euclidean norm is computed by accumulating the sum of
+ *     The Euclidean norm is computed by accumulating the sum of
  *     squares in three different sums. The sums of squares for the
  *     small and large components are scaled so that no overflows
  *     occur. Non-destructive underflows are permitted. Underflows
@@ -1104,7 +1102,7 @@ double lm_enorm(int n, const double *x)
  *     restrictions on these constants are that LM_SQRT_DWARF**2 not
  *     underflow and LM_SQRT_GIANT**2 not overflow.
  *
- *     Parameters
+ *     Parameters:
  *
  *      n is a positive integer INPUT variable.
  *
