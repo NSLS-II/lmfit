@@ -24,21 +24,21 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-/* function declarations (implemented below). */
-void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
+/* Function declarations (implemented below). */
+void lm_lmpar( int n, double *r, int ldr, int *Pivot, double *diag,
                double *qtb, double delta, double *par, double *x,
-               double *sdiag, double *aux, double *xdi );
-void lm_qrfac( int m, int n, double *a, int *ipvt,
-               double *rdiag, double *acnorm, double *wa );
-void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
-                double *qtb, double *x, double *sdiag, double *wa );
+               double *Sdiag, double *aux, double *xdi );
+void lm_qrfac( int m, int n, double *A, int *Pivot,
+               double *Rdiag, double *Acnorm, double *W );
+void lm_qrsolv( int n, double *r, int ldr, int *Pivot, double *diag,
+                double *qtb, double *x, double *Sdiag, double *W );
 
 
 /*****************************************************************************/
 /*  Numeric constants                                                        */
 /*****************************************************************************/
 
-/* machine-dependent constants from float.h */
+/* Set machine-dependent constants to values from float.h. */
 #define LM_MACHEP     DBL_EPSILON   /* resolution of arithmetic */
 #define LM_DWARF      DBL_MIN       /* smallest nonzero number */
 #define LM_SQRT_DWARF sqrt(DBL_MIN) /* square should not underflow */
@@ -59,6 +59,7 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
  LM_USER_TOL   1.e-14
 */
 
+/* Predefined control parameter sets (msgfile=NULL means stdout). */
 const lm_control_struct lm_control_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1,
     NULL, 0, -1, -1 };
@@ -129,7 +130,8 @@ void lmmin( int n, double *x, int m, const void *data,
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
         prered, ratio, step, sum, temp, temp1, temp2, temp3;
-    static double p0001 = 1.0e-4;
+
+/***  Initialize internal variables.  ***/
 
     int maxfev = C->patience * (n+1);
 
@@ -141,19 +143,21 @@ void lmmin( int n, double *x, int m, const void *data,
 
     int nout = C->n_maxpri==-1 ? n : MIN( C->n_maxpri, n );
 
-    /* The workaround msgfile=NULL is needed for default initialization */
+    /* Reinterpret C->msgfile=NULL as stdout (which is unavailable for
+       compile-time initialization of lm_control_double and similar). */
     FILE* msgfile = C->msgfile ? C->msgfile : stdout;
 
-    /* Default status info; must be set ahead of first return statements */
+/***  Default status info; must be set before first return statement.  ***/
+
     S->outcome = 0;      /* status code */
     S->userbreak = 0;
-    S->nfev = 0;      /* function evaluation counter */
+    S->nfev = 0;         /* function evaluation counter */
 
 /***  Check input parameters for errors.  ***/
 
     if ( n <= 0 ) {
         fprintf( stderr, "lmmin: invalid number of parameters %i\n", n );
-        S->outcome = 10; /* invalid parameter */
+        S->outcome = 10;
         return;
     }
     if (m < n) {
@@ -207,13 +211,12 @@ void lmmin( int n, double *x, int m, const void *data,
     double *wa2  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
     double *wa3  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
     double *wf   = (double*) pws; pws += m * sizeof(double)/sizeof(char);
-    int    *ipvt = (int*)    pws; pws += n * sizeof(int)   /sizeof(char);
+    int    *Pivot = (int*)    pws; pws += n * sizeof(int)   /sizeof(char);
 
-    /* Initialize diag */ // TODO: check whether this is still needed
-    if (!C->scale_diag) {
+    /* Initialize diag. */
+    if (!C->scale_diag)
         for (j = 0; j < n; j++)
-            diag[j] = 1.;
-    }
+            diag[j] = 1;
 
 /***  Evaluate function at starting point and calculate norm.  ***/
 
@@ -280,19 +283,19 @@ void lmmin( int n, double *x, int m, const void *data,
  *              (NOTE: ^T stands for matrix transposition),
  *
  *        where P is a permutation matrix and J is the final calculated
- *        Jacobian. Column j of P is column ipvt(j) of the identity matrix.
+ *        Jacobian. Column j of P is column Pivot(j) of the identity matrix.
  *        The lower trapezoidal part of fjac contains information generated
  *        during the computation of R.
  *
- *      ipvt is an integer array of length n. It defines a permutation
+ *      Pivot is an integer array of length n. It defines a permutation
  *        matrix P such that jac*P = Q*R, where jac is the final calculated
  *        Jacobian, Q is orthogonal (not stored), and R is upper triangular
  *        with diagonal elements of nonincreasing magnitude. Column j of P
- *        is column ipvt(j) of the identity matrix.
+ *        is column Pivot(j) of the identity matrix.
  */
 
-        lm_qrfac(m, n, fjac, ipvt, wa1, wa2, wa3);
-        /* return values are ipvt, wa1=rdiag, wa2=acnorm */
+        lm_qrfac(m, n, fjac, Pivot, wa1, wa2, wa3);
+        /* return values are Pivot, wa1=rdiag, wa2=acnorm */
 
 /***  [outer]  Form Q^T * fvec, and store first n components in qtf.  ***/
 
@@ -317,12 +320,12 @@ void lmmin( int n, double *x, int m, const void *data,
 
         gnorm = 0;
         for (j = 0; j < n; j++) {
-            if (wa2[ipvt[j]] == 0)
+            if (wa2[Pivot[j]] == 0)
                 continue;
             sum = 0;
             for (i = 0; i <= j; i++)
                 sum += fjac[j*m+i] * qtf[i];
-            gnorm = MAX( gnorm, fabs( sum / wa2[ipvt[j]] / fnorm ) );
+            gnorm = MAX( gnorm, fabs( sum / wa2[Pivot[j]] / fnorm ) );
         }
 
         if (gnorm <= C->gtol) {
@@ -381,7 +384,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
 
-            lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &lmpar,
+            lm_lmpar( n, fjac, m, Pivot, diag, qtf, delta, &lmpar,
                       wa1, wa2, wf, wa3 );
             /* used return values are fjac (partly), lmpar, wa1=x, wa3=diag*x */
 
@@ -395,7 +398,7 @@ void lmmin( int n, double *x, int m, const void *data,
             for (j = 0; j < n; j++) {
                 wa3[j] = 0;
                 for (i = 0; i <= j; i++)
-                    wa3[i] -= fjac[j*m+i] * wa1[ipvt[j]];
+                    wa3[i] -= fjac[j*m+i] * wa1[Pivot[j]];
             }
             temp1 = SQR( lm_enorm(n, wa3) / fnorm );
             if( !isfinite(temp1) ){
@@ -464,7 +467,7 @@ void lmmin( int n, double *x, int m, const void *data,
 
 /***  [inner]  On success, update solution, and test for convergence.  ***/
 
-            inner_success = ratio >= p0001;
+            inner_success = ratio >= 1e-4;
             if ( inner_success ) {
 
                 /* update x, fvec, and their norms */
@@ -552,9 +555,9 @@ terminate:
 /*  lm_lmpar (determine Levenberg-Marquardt parameter)                       */
 /*****************************************************************************/
 
-void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
+void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
               double *qtb, double delta, double *par, double *x,
-              double *sdiag, double *aux, double *xdi)
+              double *Sdiag, double *aux, double *xdi)
 {
 /*     Given an m by n matrix A, an n by n nonsingular diagonal matrix D,
  *     an m-vector b, and a positive number delta, the problem is to
@@ -598,9 +601,9 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *      ldr is a positive integer INPUT variable not less than n
  *        which specifies the leading dimension of the array R.
  *
- *      ipvt is an integer INPUT array of length n which defines the
+ *      Pivot is an integer INPUT array of length n which defines the
  *        permutation matrix P such that A*P = Q*R. Column j of P
- *        is column ipvt(j) of the identity matrix.
+ *        is column Pivot(j) of the identity matrix.
  *
  *      diag is an INPUT array of length n which must contain the
  *        diagonal elements of the matrix D.
@@ -619,7 +622,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
  *        squares solution of the system A*x = b, sqrt(par)*D*x = 0,
  *        for the output par.
  *
- *      sdiag is an array of length n needed as workspace; on OUTPUT
+ *      Sdiag is an array of length n needed as workspace; on OUTPUT
  *        it contains the diagonal elements of the upper triangular
  *        matrix S.
  *
@@ -652,7 +655,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     }
 
     for (j = 0; j < n; j++)
-        x[ipvt[j]] = aux[j];
+        x[Pivot[j]] = aux[j];
 
 /*** lmpar: initialize the iteration counter, evaluate the function at the
      origin, and test for acceptance of the gauss-newton direction. ***/
@@ -677,7 +680,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
     parl = 0;
     if (nsing >= n) {
         for (j = 0; j < n; j++)
-            aux[j] = diag[ipvt[j]] * xdi[ipvt[j]] / dxnorm;
+            aux[j] = diag[Pivot[j]] * xdi[Pivot[j]] / dxnorm;
 
         for (j = 0; j < n; j++) {
             sum = 0;
@@ -695,7 +698,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
         sum = 0;
         for (i = 0; i <= j; i++)
             sum += r[j * ldr + i] * qtb[i];
-        aux[j] = sum / diag[ipvt[j]];
+        aux[j] = sum / diag[Pivot[j]];
     }
     gnorm = lm_enorm(n, aux);
     paru = gnorm / delta;
@@ -722,8 +725,8 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
         for (j = 0; j < n; j++)
             aux[j] = temp * diag[j];
 
-        lm_qrsolv( n, r, ldr, ipvt, aux, qtb, x, sdiag, xdi );
-        /* return values are r, x, sdiag */
+        lm_qrsolv( n, r, ldr, Pivot, aux, qtb, x, Sdiag, xdi );
+        /* return values are r, x, Sdiag */
 
         for (j = 0; j < n; j++)
             xdi[j] = diag[j] * x[j]; /* used as output */
@@ -749,10 +752,10 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
         /** compute the Newton correction. **/
 
         for (j = 0; j < n; j++)
-            aux[j] = diag[ipvt[j]] * xdi[ipvt[j]] / dxnorm;
+            aux[j] = diag[Pivot[j]] * xdi[Pivot[j]] / dxnorm;
 
         for (j = 0; j < n; j++) {
-            aux[j] = aux[j] / sdiag[j];
+            aux[j] = aux[j] / Sdiag[j];
             for (i = j + 1; i < n; i++)
                 aux[i] -= r[j * ldr + i] * aux[j];
         }
@@ -809,7 +812,7 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
  *
  *      Pivot is an integer OUTPUT array of length n that describes the
  *        permutation matrix P:
- *        Column j of P is column ipvt(j) of the identity matrix.
+ *        Column j of P is column Pivot(j) of the identity matrix.
  *
  *      Rdiag is an OUTPUT array of length n which contains the
  *        diagonal elements of R.
@@ -920,8 +923,8 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
 /*  lm_qrsolv (linear least-squares)                                         */
 /*****************************************************************************/
 
-void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
-               double *qtb, double *x, double *sdiag, double *wa)
+void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
+               double *qtb, double *x, double *Sdiag, double *W)
 {
 /*
  *     Given an m by n matrix A, an n by n diagonal matrix D, and an
@@ -964,9 +967,9 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
  *      ldr is a positive integer INPUT variable not less than n
  *        which specifies the leading dimension of the array R.
  *
- *      ipvt is an integer INPUT array of length n which defines the
+ *      Pivot is an integer INPUT array of length n which defines the
  *        permutation matrix P such that A*P = Q*R. Column j of P
- *        is column ipvt(j) of the identity matrix.
+ *        is column Pivot(j) of the identity matrix.
  *
  *      diag is an INPUT array of length n which must contain the
  *        diagonal elements of the matrix D.
@@ -977,10 +980,10 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
  *      x is an OUTPUT array of length n which contains the least
  *        squares solution of the system A*x = b, D*x = 0.
  *
- *      sdiag is an OUTPUT array of length n which contains the
+ *      Sdiag is an OUTPUT array of length n which contains the
  *        diagonal elements of the upper triangular matrix S.
  *
- *      wa is a work array of length n.
+ *      W is a work array of length n.
  *
  */
     int i, kk, j, k, nsing;
@@ -994,7 +997,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
         for (i = j; i < n; i++)
             r[j * ldr + i] = r[i * ldr + j];
         x[j] = r[j * ldr + j];
-        wa[j] = qtb[j];
+        W[j] = qtb[j];
     }
 
 /*** qrsolv: eliminate the diagonal matrix D using a Givens rotation. ***/
@@ -1004,11 +1007,11 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 /*** qrsolv: prepare the row of D to be eliminated, locating the
      diagonal element using P from the QR factorization. ***/
 
-        if (diag[ipvt[j]] == 0)
+        if (diag[Pivot[j]] == 0)
             goto L90;
         for (k = j; k < n; k++)
-            sdiag[k] = 0;
-        sdiag[j] = diag[ipvt[j]];
+            Sdiag[k] = 0;
+        Sdiag[j] = diag[Pivot[j]];
 
 /*** qrsolv: the transformations to eliminate the row of D modify only
      a single element of Q^T*b beyond the first n, which is initially 0. ***/
@@ -1019,15 +1022,15 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
             /** determine a Givens rotation which eliminates the
                 appropriate element in the current row of D. **/
 
-            if (sdiag[k] == 0)
+            if (Sdiag[k] == 0)
                 continue;
             kk = k + ldr * k;
-            if (fabs(r[kk]) < fabs(sdiag[k])) {
-                _cot = r[kk] / sdiag[k];
+            if (fabs(r[kk]) < fabs(Sdiag[k])) {
+                _cot = r[kk] / Sdiag[k];
                 _sin = 1 / sqrt(1 + SQR(_cot));
                 _cos = _sin * _cot;
             } else {
-                _tan = sdiag[k] / r[kk];
+                _tan = Sdiag[k] / r[kk];
                 _cos = 1 / sqrt(1 + SQR(_tan));
                 _sin = _cos * _tan;
             }
@@ -1035,16 +1038,16 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
             /** compute the modified diagonal element of R and
                 the modified element of (Q^T*b,0). **/
 
-            r[kk] = _cos * r[kk] + _sin * sdiag[k];
-            temp = _cos * wa[k] + _sin * qtbpj;
-            qtbpj = -_sin * wa[k] + _cos * qtbpj;
-            wa[k] = temp;
+            r[kk] = _cos * r[kk] + _sin * Sdiag[k];
+            temp = _cos * W[k] + _sin * qtbpj;
+            qtbpj = -_sin * W[k] + _cos * qtbpj;
+            W[k] = temp;
 
             /** accumulate the tranformation in the row of S. **/
 
             for (i = k + 1; i < n; i++) {
-                temp = _cos * r[k * ldr + i] + _sin * sdiag[i];
-                sdiag[i] = -_sin * r[k * ldr + i] + _cos * sdiag[i];
+                temp = _cos * r[k * ldr + i] + _sin * Sdiag[i];
+                Sdiag[i] = -_sin * r[k * ldr + i] + _cos * Sdiag[i];
                 r[k * ldr + i] = temp;
             }
         }
@@ -1053,7 +1056,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
         /** store the diagonal element of S and restore
             the corresponding diagonal element of R. **/
 
-        sdiag[j] = r[j * ldr + j];
+        Sdiag[j] = r[j * ldr + j];
         r[j * ldr + j] = x[j];
     }
 
@@ -1062,23 +1065,23 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 
     nsing = n;
     for (j = 0; j < n; j++) {
-        if (sdiag[j] == 0 && nsing == n)
+        if (Sdiag[j] == 0 && nsing == n)
             nsing = j;
         if (nsing < n)
-            wa[j] = 0;
+            W[j] = 0;
     }
 
     for (j = nsing - 1; j >= 0; j--) {
         sum = 0;
         for (i = j + 1; i < nsing; i++)
-            sum += r[j * ldr + i] * wa[i];
-        wa[j] = (wa[j] - sum) / sdiag[j];
+            sum += r[j * ldr + i] * W[i];
+        W[j] = (W[j] - sum) / Sdiag[j];
     }
 
 /*** qrsolv: permute the components of z back to components of x. ***/
 
     for (j = 0; j < n; j++)
-        x[ipvt[j]] = wa[j];
+        x[Pivot[j]] = W[j];
 
 } /*** lm_qrsolv. ***/
 
