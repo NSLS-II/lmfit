@@ -34,9 +34,9 @@ void lm_qrsolv( int n, double *r, int ldr, int *Pivot, double *diag,
                 double *qtb, double *x, double *Sdiag, double *W );
 
 
-/*****************************************************************************/
-/*  Numeric constants                                                        */
-/*****************************************************************************/
+/******************************************************************************/
+/*  Numeric constants                                                         */
+/******************************************************************************/
 
 /* Set machine-dependent constants to values from float.h. */
 #define LM_MACHEP     DBL_EPSILON   /* resolution of arithmetic */
@@ -68,9 +68,9 @@ const lm_control_struct lm_control_float = {
     NULL, 0, -1, -1 };
 
 
-/*****************************************************************************/
-/*  Message texts (indexed by status.info)                                   */
-/*****************************************************************************/
+/******************************************************************************/
+/*  Message texts (indexed by status.info)                                    */
+/******************************************************************************/
 
 const char *lm_infmsg[] = {
     "found zero (sum of squares below underflow limit)",
@@ -105,9 +105,9 @@ const char *lm_shortmsg[] = {
 };
 
 
-/*****************************************************************************/
-/*  Monitoring auxiliaries.                                                  */
-/*****************************************************************************/
+/******************************************************************************/
+/*  Monitoring auxiliaries.                                                   */
+/******************************************************************************/
 
 void lm_print_pars( int nout, const double *par, FILE* fout )
 {
@@ -118,9 +118,9 @@ void lm_print_pars( int nout, const double *par, FILE* fout )
 }
 
 
-/*****************************************************************************/
-/*  lmmin (main minimization routine)                                        */
-/*****************************************************************************/
+/******************************************************************************/
+/*  lmmin (main minimization routine)                                         */
+/******************************************************************************/
 
 void lmmin( int n, double *x, int m, const void *data,
             void (*evaluate) (const double *par, int m_dat, const void *data,
@@ -551,9 +551,9 @@ terminate:
 } /*** lmmin. ***/
 
 
-/*****************************************************************************/
-/*  lm_lmpar (determine Levenberg-Marquardt parameter)                       */
-/*****************************************************************************/
+/******************************************************************************/
+/*  lm_lmpar (determine Levenberg-Marquardt parameter)                        */
+/******************************************************************************/
 
 void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
               double *qtb, double delta, double *par, double *x,
@@ -778,9 +778,9 @@ void lm_lmpar(int n, double *r, int ldr, int *Pivot, double *diag,
 
 } /*** lm_lmpar. ***/
 
-/*****************************************************************************/
-/*  lm_qrfac (QR factorization, from lapack)                                 */
-/*****************************************************************************/
+/******************************************************************************/
+/*  lm_qrfac (QR factorization, from lapack)                                  */
+/******************************************************************************/
 
 void lm_qrfac(int m, int n, double *A, int *Pivot,
               double *Rdiag, double *Acnorm, double *W)
@@ -919,9 +919,9 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
 } /*** lm_qrfac. ***/
 
 
-/*****************************************************************************/
-/*  lm_qrsolv (linear least-squares)                                         */
-/*****************************************************************************/
+/******************************************************************************/
+/*  lm_qrsolv (linear least-squares)                                          */
+/******************************************************************************/
 
 void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
                double *qtb, double *x, double *Sdiag, double *W)
@@ -1086,9 +1086,9 @@ void lm_qrsolv(int n, double *r, int ldr, int *Pivot, double *diag,
 } /*** lm_qrsolv. ***/
 
 
-/*****************************************************************************/
-/*  lm_enorm (Euclidean norm)                                                */
-/*****************************************************************************/
+/******************************************************************************/
+/*  lm_enorm (Euclidean norm)                                                 */
+/******************************************************************************/
 
 double lm_enorm(int n, const double *x)
 {
