@@ -988,11 +988,11 @@ void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
             kk = k + ldr * k;
             if (fabs(r[kk]) < fabs(Sdiag[k])) {
                 _cot = r[kk] / Sdiag[k];
-                _sin = 1 / sqrt(1 + SQR(_cot));
+                _sin = 1 / hypot(1, _cot);
                 _cos = _sin * _cot;
             } else {
                 _tan = Sdiag[k] / r[kk];
-                _cos = 1 / sqrt(1 + SQR(_tan));
+                _cos = 1 / hypot(1, _tan);
                 _sin = _cos * _tan;
             }
 
