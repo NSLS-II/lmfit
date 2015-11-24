@@ -24,14 +24,18 @@
 #define MAX(a, b) (((a) >= (b)) ? (a) : (b))
 #define SQR(x) (x) * (x)
 
-/* Function declarations (implemented below). */
-void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
-              double delta, double* par, double* x, double* Sdiag, double* aux,
+/* Declare functions that do the heavy numerics.
+   Implementions are in this source file, below lmmin.
+   Dependences: lmmin calls lmpar, which calls qrfac and qrsolv. */
+void lm_lmpar(const int n, double* r, const int ldr, const int* Pivot,
+              const double* diag, const double* qtb, const double delta,
+              double* par, double* x, double* Sdiag, double* aux,
               double* xdi);
-void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
+void lm_qrfac(const int m, const int n, double* A, int* Pivot, double* Rdiag,
               double* Acnorm, double* W);
-void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
-               double* x, double* Sdiag, double* W);
+void lm_qrsolv(const int n, double* r, const int ldr, const int* Pivot,
+               const double* diag, const double* qtb, double* x,
+               double* Sdiag, double* W);
 
 /******************************************************************************/
 /*  Numeric constants                                                         */
@@ -116,9 +120,9 @@ void lm_print_pars(int nout, const double* par, FILE* fout)
 /*  lmmin (main minimization routine)                                         */
 /******************************************************************************/
 
-void lmmin(int n, double* x, int m, const void* data,
-           void (*evaluate)(const double* par, int m_dat, const void* data,
-                            double* fvec, int* userbreak),
+void lmmin(const int n, double* x, const int m, const void* data,
+           void (*evaluate)(const double* par, const int m_dat,
+                            const void* data, double* fvec, int* userbreak),
            const lm_control_struct* C, lm_status_struct* S)
 {
     int j, i;
@@ -547,8 +551,9 @@ terminate:
 /*  lm_lmpar (determine Levenberg-Marquardt parameter)                        */
 /******************************************************************************/
 
-void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
-              double delta, double* par, double* x, double* Sdiag, double* aux,
+void lm_lmpar(const int n, double* r, const int ldr, const int* Pivot,
+              const double* diag, const double* qtb, const double delta,
+              double* par, double* x, double* Sdiag, double* aux,
               double* xdi)
 /*     Given an m by n matrix A, an n by n nonsingular diagonal matrix D,
  *     an m-vector b, and a positive number delta, the problem is to
@@ -761,7 +766,7 @@ void lm_lmpar(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
 /*  lm_qrfac (QR factorization, from lapack)                                  */
 /******************************************************************************/
 
-void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
+void lm_qrfac(const int m, const int n, double* A, int* Pivot, double* Rdiag,
               double* Acnorm, double* W)
 /*
  *     This subroutine uses Householder transformations with column pivoting
@@ -895,8 +900,9 @@ void lm_qrfac(int m, int n, double* A, int* Pivot, double* Rdiag,
 /*  lm_qrsolv (linear least-squares)                                          */
 /******************************************************************************/
 
-void lm_qrsolv(int n, double* r, int ldr, int* Pivot, double* diag, double* qtb,
-               double* x, double* Sdiag, double* W)
+void lm_qrsolv(const int n, double* r, const int ldr, const int* Pivot,
+               const double* diag, const double* qtb, double* x,
+               double* Sdiag, double* W)
 /*
  *     Given an m by n matrix A, an n by n diagonal matrix D, and an
  *     m-vector b, the problem is to determine an x which solves the
