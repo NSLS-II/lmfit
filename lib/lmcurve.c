@@ -3,12 +3,13 @@
  *
  * File:      lmcurve.c
  *
- * Contents:  Levenberg-Marquardt curve-fitting
+ * Contents:  Implements lmcurve, a simplified API for curve fitting
+ *            using the generic Levenberg-Marquardt routine lmmin.
  *
  * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
  *
  * License:   see ../COPYING (FreeBSD)
- * 
+ *
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
 
@@ -34,7 +35,7 @@ void lmcurve_evaluate( const double *par, int m_dat, const void *data,
 }
 
 
-void lmcurve( int n_par, double *par, int m_dat, 
+void lmcurve( int n_par, double *par, int m_dat,
               const double *t, const double *y,
               double (*f)( double t, const double *par ),
               const lm_control_struct *control,

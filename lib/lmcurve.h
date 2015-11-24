@@ -3,15 +3,16 @@
  *
  * File:      lmcurve.h
  *
- * Contents:  Declarations for Levenberg-Marquardt curve fitting.
+ * Contents:  Declares lmcurve, a simplified API for curve fitting
+ *            using the generic Levenberg-Marquardt routine lmmin.
  *
  * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
  *
  * License:   see ../COPYING (FreeBSD)
- * 
+ *
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
- 
+
 #ifndef LMCURVE_H
 #define LMCURVE_H
 #undef __BEGIN_DECLS
