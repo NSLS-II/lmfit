@@ -13,7 +13,7 @@
  * Homepage: apps.jcns.fz-juelich.de/lmfit
  */
 
-#include "lmcurve.h"
+#include "lmcurve_tyd.h"
 #include <stdio.h>
 
 /* model function: a parabola */
