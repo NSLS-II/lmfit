@@ -299,4 +299,6 @@ Documentation: Creative Commons Attribution Share Alike
 
 Homepage: http://apps.jcns.fz-juelich.de/lmfit
 
-Please report bugs to the author <j.wuttke@fz-juelich.de>
+=head1 BUGS
+
+Please send bug reports and suggestions to the author <j.wuttke@fz-juelich.de>.
