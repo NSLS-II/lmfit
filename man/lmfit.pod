@@ -13,7 +13,7 @@ lmfit - Levenberg-Marquardt least-squares minimization
 
 =head1 DESCRIPTION
 
-B<lmfit> is a C library for Levenberg-Marquardt least-squares minimization and curve fitting. It is very mature code, based on decades-old algorithms from the FORTRAN library MINPACK.
+B<lmfit> is a C library for Levenberg-Marquardt least-squares minimization and curve fitting. It is mature code, based on decades-old algorithms from the FORTRAN library MINPACK.
 
 For fitting a data set {(x_i,y_i)|i=0,1,..} by a parametric curve f(x,t), see B<lmcurve>(3).
 
