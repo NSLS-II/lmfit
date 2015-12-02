@@ -19,7 +19,8 @@ For fitting a data set {(x_i,y_i)|i=0,1,..} by a parametric curve f(x,t), see B<
 
 For generic minimization of the Eucledian norm of parametric vector, see B<lmmin>(3).
 
-For an example how to use B<lmmin>, see the source files I<lmcurve.h> and <lmcurve.c>. Do not patch these files; copy and modify them to create your own, differently named version of I<lmcurve_data_struct>, I<lmcurve_evaluate>, and I<lmcurve>.
+For an example how to use B<lmmin>, see the source files I<lmcurve.h> and I<lmcurve.c>. Do not patch these files; copy and modify them to create your own, differently named version of I<lmcurve_data_struct>, I<lmcurve_evaluate>, and I<lmcurve>.
+
 =head1 COPYING
 
 Copyright (C):
