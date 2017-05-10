@@ -24,7 +24,9 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 #define SQR(x)   (x)*(x)
 
-/* function declarations (implemented below). */
+/* Declare functions that do the heavy numerics.
+   Implementions are in this source file, below lmmin.
+   Dependences: lmmin calls qrfac and lmpar; lmpar calls qrsolv. */
 void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
                double *qtb, double delta, double *par, double *x,
                double *sdiag, double *aux, double *xdi );
