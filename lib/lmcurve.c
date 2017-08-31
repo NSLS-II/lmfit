@@ -21,13 +21,13 @@
 
 
 typedef struct {
-    const double *t;
-    const double *y;
-    double (*f) (double t, const double *par);
+    const double *const t;
+    const double *const y;
+    double (*const f) (const double t, const double *par);
 } lmcurve_data_struct;
 
 
-void lmcurve_evaluate( const double *par, int m_dat, const void *data,
+void lmcurve_evaluate( const double *par, const int m_dat, const void *data,
                        double *fvec, int *info )
 {
     int i;
@@ -39,17 +39,13 @@ void lmcurve_evaluate( const double *par, int m_dat, const void *data,
 }
 
 
-void lmcurve( int n_par, double *par, int m_dat,
+void lmcurve( const int n_par, double *par, const int m_dat,
               const double *t, const double *y,
-              double (*f)( double t, const double *par ),
+              double (*const f)(const double t, const double *par ),
               const lm_control_struct *control,
               lm_status_struct *status )
 {
-    lmcurve_data_struct data;
-    data.t = t;
-    data.y = y;
-    data.f = f;
-
+    lmcurve_data_struct data = {t, y, f};
     lmmin( n_par, par, m_dat, (const void*) &data,
            lmcurve_evaluate, control, status );
 }

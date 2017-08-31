@@ -8,7 +8,7 @@
  * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
  *
  * License:   see ../COPYING (FreeBSD)
- * 
+ *
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
 
@@ -29,9 +29,9 @@
 __BEGIN_DECLS
 
 /* Levenberg-Marquardt minimization. */
-void lmmin( int n_par, double *par, int m_dat, const void *data, 
-            void (*evaluate) (const double *par, int m_dat, const void *data,
-                              double *fvec, int *userbreak),
+void lmmin( const int n_par, double *par, const int m_dat, const void *data,
+            void (*const evaluate) (const double *par, const int m_dat, const void *data,
+                                    double *fvec, int *userbreak),
             const lm_control_struct *control, lm_status_struct *status );
 /*
  *   This routine contains the core algorithm of our library.
@@ -61,7 +61,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
  *          n, x, m, data as above.
  *          fvec is an array of length m; on OUTPUT, it must contain the
  *            m function values for the parameter vector x.
- *          userbreak is an integer pointer. When *userbreak is set to a 
+ *          userbreak is an integer pointer. When *userbreak is set to a
  *            nonzero value, lmmin will terminate.
  *
  *      control contains INPUT variables that control the fit algorithm,
@@ -72,7 +72,7 @@ void lmmin( int n_par, double *par, int m_dat, const void *data,
  */
 
 /* Refined calculation of Eucledian norm. */
-double lm_enorm( int, const double * );
+double lm_enorm( const int, const double * );
 
 __END_DECLS
 #endif /* LMMIN_H */

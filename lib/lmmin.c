@@ -27,12 +27,12 @@
 /* Declare functions that do the heavy numerics.
    Implementions are in this source file, below lmmin.
    Dependences: lmmin calls qrfac and lmpar; lmpar calls qrsolv. */
-void lm_lmpar( int n, double *r, int ldr, int *ipvt, double *diag,
+void lm_lmpar( const int n, double *r, const int ldr, int *ipvt, double *diag,
                double *qtb, double delta, double *par, double *x,
                double *sdiag, double *aux, double *xdi );
-void lm_qrfac( int m, int n, double *a, int *ipvt,
+void lm_qrfac( const int m, const int n, double *a, int *ipvt,
                double *rdiag, double *acnorm, double *wa );
-void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
+void lm_qrsolv( const int n, double *r, const int ldr, int *ipvt, double *diag,
                 double *qtb, double *x, double *sdiag, double *wa );
 
 
@@ -110,10 +110,9 @@ const char *lm_shortmsg[] = {
 /*  Monitoring auxiliaries.                                                  */
 /*****************************************************************************/
 
-void lm_print_pars( int nout, const double *par, FILE* fout )
+void lm_print_pars( const int nout, const double *par, FILE* fout )
 {
-    int i;
-    for (i = 0; i < nout; ++i)
+    for (int i = 0; i < nout; ++i)
         fprintf( fout, " %16.9g", par[i] );
     fprintf( fout, "\n" );
 }
@@ -123,9 +122,9 @@ void lm_print_pars( int nout, const double *par, FILE* fout )
 /*  lmmin (main minimization routine)                                        */
 /*****************************************************************************/
 
-void lmmin( int n, double *x, int m, const void *data,
-            void (*evaluate) (const double *par, int m_dat, const void *data,
-                              double *fvec, int *userbreak),
+void lmmin( const int n, double *x, const int m, const void *data,
+            void (*const evaluate) (const double *par, const int m_dat, const void *data,
+                                    double *fvec, int *userbreak),
             const lm_control_struct *C, lm_status_struct *S )
 {
     int j, i;
@@ -554,7 +553,7 @@ terminate:
 /*  lm_lmpar (determine Levenberg-Marquardt parameter)                       */
 /*****************************************************************************/
 
-void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
+void lm_lmpar(const int n, double *r, const int ldr, int *ipvt, double *diag,
               double *qtb, double delta, double *par, double *x,
               double *sdiag, double *aux, double *xdi)
 {
@@ -781,7 +780,7 @@ void lm_lmpar(int n, double *r, int ldr, int *ipvt, double *diag,
 /*  lm_qrfac (QR factorization, from lapack)                                 */
 /*****************************************************************************/
 
-void lm_qrfac(int m, int n, double *A, int *Pivot,
+void lm_qrfac(const int m, const int n, double *A, int *Pivot,
               double *Rdiag, double *Acnorm, double *W)
 {
 /*
@@ -922,7 +921,7 @@ void lm_qrfac(int m, int n, double *A, int *Pivot,
 /*  lm_qrsolv (linear least-squares)                                         */
 /*****************************************************************************/
 
-void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
+void lm_qrsolv(const int n, double *r, const int ldr, int *ipvt, double *diag,
                double *qtb, double *x, double *sdiag, double *wa)
 {
 /*
@@ -1089,7 +1088,7 @@ void lm_qrsolv(int n, double *r, int ldr, int *ipvt, double *diag,
 /*  lm_enorm (Euclidean norm)                                                */
 /*****************************************************************************/
 
-double lm_enorm(int n, const double *x)
+double lm_enorm(const int n, const double *x)
 {
 /*     This function calculates the Euclidean norm of an n-vector x.
  *
