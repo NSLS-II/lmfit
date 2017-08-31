@@ -29,11 +29,11 @@
 __BEGIN_DECLS
 
 /* Levenberg-Marquardt minimization. */
-void lmmin( const int n_par, double *const par, const int m_dat, const void *const data,
-            void (*const evaluate) (
-                const double *const par, const int m_dat, const void *const data,
-                double *const fvec, int *const userbreak),
-            const lm_control_struct *const control, lm_status_struct *const status );
+void lmmin( const int n_par, double *par, const int m_dat, const void *data,
+            void (*evaluate) (
+                const double *par, const int m_dat, const void *data,
+                double *fvec, int *userbreak),
+            const lm_control_struct *control, lm_status_struct *status );
 /*
  *   This routine contains the core algorithm of our library.
  *
@@ -73,7 +73,7 @@ void lmmin( const int n_par, double *const par, const int m_dat, const void *con
  */
 
 /* Refined calculation of Eucledian norm. */
-double lm_enorm( const int, const double * );
+double lm_enorm( const int, const double* );
 
 __END_DECLS
 #endif /* LMMIN_H */

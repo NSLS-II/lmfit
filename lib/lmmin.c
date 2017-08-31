@@ -1089,7 +1089,7 @@ void lm_qrsolv(const int n, double *const r, const int ldr, int *const ipvt, dou
 /*  lm_enorm (Euclidean norm)                                                */
 /*****************************************************************************/
 
-double lm_enorm(const int n, const double *const x)
+double lm_enorm( const int n, const double *const x )
 {
 /*     This function calculates the Euclidean norm of an n-vector x.
  *
