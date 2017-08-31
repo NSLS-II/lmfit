@@ -1,5 +1,7 @@
-Changes in lmfit-5.3, released
+Changes in lmfit-6.0, released
 
+- API changes:
+  - more const declarations
 - monitoring:
   - detect if norm is not finite, new outcome code 12 = "found nan"
 - code cleanup:
