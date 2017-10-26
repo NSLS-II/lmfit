@@ -262,7 +262,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 fjac[j*m+i] = (wf[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
         }
-        if ( C->verbosity >=10 ) {
+        if ( C->verbosity >6 ) {
             /* print the entire matrix */
             printf("\nlmmin Jacobian\n");
             for (i = 0; i < m; i++) {
@@ -353,7 +353,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 }
                 /* only now print the header for the loop table */
                 if( C->verbosity >=3 ) {
-                    fprintf( msgfile, "  o  i     lmpar    prered"
+                    fprintf( msgfile, " #o #i     lmpar    prered"
                              "          ratio    dirder      delta"
                              "      pnorm                 fnorm" );
                     for (i = 0; i < nout; ++i)
