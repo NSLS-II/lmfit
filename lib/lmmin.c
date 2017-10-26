@@ -235,6 +235,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
         fprintf( msgfile, "  fnorm = %18.8g\n", fnorm );
 
     if( !isfinite(fnorm) ){
+        if( C->verbosity )
+            fprintf( msgfile, "nan case 1\n" );
         S->outcome = 12; /* nan */
         goto terminate;
     } else if( fnorm <= LM_DWARF ){
@@ -362,6 +364,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 xnorm = lm_enorm(n, x);
             }
             if( !isfinite(xnorm) ){
+                if( C->verbosity )
+                    fprintf( msgfile, "nan case 2\n" );
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
@@ -390,6 +394,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             /* predict scaled reduction */
             pnorm = lm_enorm(n, wa3);
             if( !isfinite(pnorm) ){
+                if( C->verbosity )
+                    fprintf( msgfile, "nan case 3\n" );
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
@@ -401,6 +407,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             }
             temp1 = SQR( lm_enorm(n, wa3) / fnorm );
             if( !isfinite(temp1) ){
+                if( C->verbosity )
+                    fprintf( msgfile, "nan case 4\n" );
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
@@ -421,15 +429,13 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             if ( S->userbreak )
                 goto terminate;
             fnorm1 = lm_enorm(m, wf);
-            if( !isfinite(fnorm1) ){
-                S->outcome = 12; /* nan */
-                goto terminate;
-            }
+            // exceptionally, for this norm we do not test for infinity
+            // because we can deal with it without terminating.
 
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
-            /* actual scaled reduction */
-            actred = 1 - SQR(fnorm1/fnorm);
+            /* actual scaled reduction (supports even the case fnorm1=infty) */
+            actred = fnorm1 < 10*fnorm ? 1 - SQR(fnorm1/fnorm) : -1;
 
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
@@ -449,12 +455,13 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
             /* update the step bound */
             if        ( ratio <= 0.25 ) {
-                if      ( actred >= 0 )
+                if      ( actred >= 0 ) {
                     temp = 0.5;
-                else if ( actred > -99 ) /* -99 = 1-1/0.1^2 */
+                } else if ( actred > -99 ) { /* -99 = 1-1/0.1^2 */
                     temp = MAX( dirder / (2*dirder + actred), 0.1 );
-                else
+                } else {
                     temp = 0.1;
+                }
                 delta = temp * MIN(delta, pnorm / 0.1);
                 lmpar /= temp;
             } else if ( ratio >= 0.75 ) {
@@ -483,6 +490,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                     fvec[i] = wf[i];
                 xnorm = lm_enorm(n, wa2);
                 if( !isfinite(xnorm) ){
+                    if( C->verbosity )
+                        fprintf( msgfile, "nan case 6\n" );
                     S->outcome = 12; /* nan */
                     goto terminate;
                 }
