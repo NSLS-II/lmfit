@@ -1,7 +1,7 @@
 /*
  * Library:  lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:     surface1.c
+ * File:     demo/surface1.c
  *
  * Contents: Example for generic minimization with lmmin():
              fit data y(t) by a function f(t;p), where t is a 2-vector.
@@ -10,12 +10,12 @@
  *           the manual page source lmmin.pod and to the wiki.
  *
  * Author:   Joachim Wuttke 2010, following a suggestion by Mario Rudolphi
- * 
+ *
  * Licence:  see ../COPYING (FreeBSD)
- * 
+ *
  * Homepage: apps.jcns.fz-juelich.de/lmfit
  */
- 
+
 #include "lmmin.h"
 #include <stdio.h>
 

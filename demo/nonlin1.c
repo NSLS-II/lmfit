@@ -1,7 +1,7 @@
 /*
  * Library:  lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:     demo/curve1.c
+ * File:     demo/nonlin1.c
  *
  * Contents: Example for the solution of 2 nonlinear equations in 2 variables.
  *           Find the intersection of a circle and a parabola.
@@ -9,9 +9,9 @@
  * Note:     Any modification of this example should be copied to the wiki.
  *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2013
- * 
+ *
  * Licence:  see ../COPYING (FreeBSD)
- * 
+ *
  * Homepage: apps.jcns.fz-juelich.de/lmfit
  */
 

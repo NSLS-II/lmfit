@@ -24,28 +24,29 @@
 typedef struct {
     const double *const t;
     const double *const y;
-    double (*const f) (const double t, const double *par);
+    double (*const g) (const double t, const double *par);
 } lmcurve_data_struct;
 
 
-void lmcurve_evaluate( const double *const par, const int m_dat, const void *const data,
-                       double *const fvec, int *const info )
+void lmcurve_evaluate(
+    const double *const par, const int m_dat, const void *const data,
+    double *const fvec, int *const info )
 {
     for (int i = 0; i < m_dat; i++ )
         fvec[i] =
             ((lmcurve_data_struct*)data)->y[i] -
-            ((lmcurve_data_struct*)data)->f(
+            ((lmcurve_data_struct*)data)->g(
                 ((lmcurve_data_struct*)data)->t[i], par );
 }
 
 
-void lmcurve( const int n_par, double *const par, const int m_dat,
-              const double *const t, const double *const y,
-              double (*const f)(const double t, const double *const par ),
-              const lm_control_struct *const control,
-              lm_status_struct *const status )
+void lmcurve(
+    const int n_par, double *const par, const int m_dat,
+    const double *const t, const double *const y,
+    double (*const g)(const double t, const double *const par ),
+    const lm_control_struct *const control, lm_status_struct *const status )
 {
-    lmcurve_data_struct data = {t, y, f};
+    lmcurve_data_struct data = {t, y, g};
     lmmin( n_par, par, m_dat, (const void *const) &data,
            lmcurve_evaluate, control, status );
 }
