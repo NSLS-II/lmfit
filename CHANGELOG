@@ -1,3 +1,10 @@
+Changes in lmfit-6.2, released 27oct17:
+
+- algorithm improvement:
+  - removed test for infinity in one case where we can proceed nonetheless
+- code cleanup:
+  - added 'const' qualifiers
+
 Changes in lmfit-6.1, released 2dec15:
 
 - docs:
