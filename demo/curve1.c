@@ -10,18 +10,18 @@
  *           the manual page source lmcurve.pod and to the wiki.
  *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
- * 
+ *
  * Licence:  see ../COPYING (FreeBSD)
- * 
+ *
  * Homepage: apps.jcns.fz-juelich.de/lmfit
  */
- 
+
 #include "lmcurve.h"
 #include <stdio.h>
 
 /* model function: a parabola */
 
-double f( double t, const double *p )
+double f( const double t, const double *p )
 {
     return p[0] + p[1]*t + p[2]*t*t;
 }
@@ -30,7 +30,7 @@ int main()
 {
     int n = 3; /* number of parameters in model function f */
     double par[3] = { 100, 0, -10 }; /* really bad starting value */
-    
+
     /* data points: a slightly distorted standard parabola */
     int m = 9;
     int i;
@@ -44,7 +44,7 @@ int main()
     printf( "Fitting ...\n" );
     /* now the call to lmfit */
     lmcurve( n, par, m, t, y, f, &control, &status );
-        
+
     printf( "Results:\n" );
     printf( "status after %d function evaluations:\n  %s\n",
             status.nfev, lm_infmsg[status.outcome] );
@@ -53,7 +53,7 @@ int main()
     for ( i = 0; i < n; ++i)
         printf("  par[%i] = %12g\n", i, par[i]);
     printf("obtained norm:\n  %12g\n", status.fnorm );
-    
+
     printf("fitting data as follows:\n");
     for ( i = 0; i < m; ++i)
         printf( "  t[%2d]=%4g y=%6g fit=%10g residue=%12g\n",
