@@ -90,19 +90,19 @@ const char *lm_infmsg[] = {
 };
 
 const char *lm_shortmsg[] = {
-    "found zero",
-    "converged (f)",
-    "converged (p)",
-    "converged (2)",
-    "degenerate",
-    "call limit",
-    "failed (f)",
-    "failed (p)",
-    "failed (o)",
-    "no memory",
-    "invalid input",
-    "user break",
-    "found nan"
+    "found zero",      //  0
+    "converged (f)",   //  1
+    "converged (p)",   //  2
+    "converged (2)",   //  3
+    "degenerate",      //  4
+    "call limit",      //  5
+    "failed (f)",      //  6
+    "failed (p)",      //  7
+    "failed (o)",      //  8
+    "no memory",       //  9
+    "invalid input",   // 10
+    "user break",      // 11
+    "found nan"        // 12
 };
 
 
