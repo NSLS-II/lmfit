@@ -436,7 +436,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
             /* actual scaled reduction (supports even the case fnorm1=infty) */
-            actred = fnorm1 < 10*fnorm ? 1 - SQR(fnorm1/fnorm) : -1;
+            actred = fnorm1 < 10*fnorm ? 1 - SQR(fnorm1/fnorm) : -100;
 
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
