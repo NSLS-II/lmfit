@@ -352,15 +352,6 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                     lm_print_pars( nout, x, msgfile ); // xnorm
                     fprintf( msgfile, "  xnorm = %18.8g\n", xnorm );
                 }
-                /* only now print the header for the loop table */
-                if( C->verbosity >=3 ) {
-                    fprintf( msgfile, " #o #i     lmpar    prered"
-                             "          ratio    dirder      delta"
-                             "      pnorm                 fnorm" );
-                    for (i = 0; i < nout; ++i)
-                        fprintf( msgfile, "               p%i", i );
-                    fprintf( msgfile, "\n" );
-                }
             } else {
                 xnorm = lm_enorm(n, x);
             }
@@ -375,6 +366,15 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 delta = C->stepbound * xnorm;
             else
                 delta = C->stepbound;
+            /* only now print the header for the loop table */
+            if( C->verbosity >=3 ) {
+                fprintf( msgfile, " #o #i     lmpar    prered"
+                         "          ratio    dirder      delta"
+                         "      pnorm                 fnorm" );
+                for (i = 0; i < nout; ++i)
+                    fprintf( msgfile, "               p%i", i );
+                fprintf( msgfile, "\n" );
+            }
         } else {
             if (C->scale_diag) {
                 for (j = 0; j < n; j++)
