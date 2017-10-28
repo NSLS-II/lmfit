@@ -220,7 +220,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 /***  Evaluate function at starting point and calculate norm.  ***/
 
     if( C->verbosity ) {
-        fprintf( msgfile, "lmmin start " );
+        fprintf( msgfile, "lmmin start (ftol=%g gtol=%g xtol=%g)\n",
+                 C->ftol, C->gtol, C->xtol );
         lm_print_pars( nout, x, msgfile );
     }
     (*evaluate)( x, m, data, fvec, &(S->userbreak) );
@@ -232,7 +233,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
         goto terminate;
     fnorm = lm_enorm(m, fvec);
     if( C->verbosity )
-        fprintf( msgfile, "  fnorm = %18.8g\n", fnorm );
+        fprintf( msgfile, "  fnorm = %24.16g\n", fnorm );
 
     if( !isfinite(fnorm) ){
         if( C->verbosity )
@@ -542,13 +543,10 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
 terminate:
     S->fnorm = lm_enorm(m, fvec);
-    if ( C->verbosity >= 2 )
-        printf("lmmin outcome (%i) xnorm %g ftol %g xtol %g\n",
-               S->outcome, xnorm, C->ftol, C->xtol );
-    if( C->verbosity & 1 ) {
-        fprintf( msgfile, "lmmin final " );
-        lm_print_pars( nout, x, msgfile ); // S->fnorm,
-        fprintf( msgfile, "  fnorm = %18.8g\n", S->fnorm );
+    if( C->verbosity >= 1 ) {
+        fprintf( msgfile, "lmmin terminates with outcome %i", S->outcome);
+        lm_print_pars( nout, x, msgfile );
+        fprintf( msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm );
     }
     if ( S->userbreak ) /* user-requested break */
         S->outcome = 11;
