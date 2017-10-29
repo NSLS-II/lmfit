@@ -86,7 +86,8 @@ const char *lm_infmsg[] = {
     "crashed    (not enough memory)",
     "exploded   (fatal coding error: improper input parameters)",
     "stopped    (break requested within function evaluation)",
-    "found nan  (function value is not-a-number or infinite)"
+    "found nan  (function value is not-a-number or infinite)",
+    "won't fit  (no free parameter)"
 };
 
 const char *lm_shortmsg[] = {
@@ -102,7 +103,8 @@ const char *lm_shortmsg[] = {
     "no memory",       //  9
     "invalid input",   // 10
     "user break",      // 11
-    "found nan"        // 12
+    "found nan",       // 12
+    "no free par"      // 13
 };
 
 
@@ -153,7 +155,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
 /***  Check input parameters for errors.  ***/
 
-    if ( n <= 0 ) {
+    if ( n < 0 ) {
         fprintf( stderr, "lmmin: invalid number of parameters %i\n", n );
         S->outcome = 10; /* invalid parameter */
         return;
@@ -231,6 +233,12 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
     S->nfev = 1;
     if ( S->userbreak )
         goto terminate;
+    if ( n == 0 ) {
+        if( C->verbosity )
+            fprintf( msgfile, "lmmin: no free parameters\n" );
+        S->outcome = 13; /* won't fit */
+        goto terminate;
+    }
     fnorm = lm_enorm(m, fvec);
     if( C->verbosity )
         fprintf( msgfile, "  fnorm = %24.16g\n", fnorm );
