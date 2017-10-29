@@ -133,7 +133,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
         prered, ratio, step, sum, temp, temp1, temp2, temp3;
-    static double p0001 = 1.0e-4;
+    static double p1 = 0.1, p0001 = 1.0e-4;
 
     int maxfev = C->patience * (n+1);
 
@@ -444,7 +444,10 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
             /* actual scaled reduction (supports even the case fnorm1=infty) */
-            actred = fnorm1 < 10*fnorm ? 1 - SQR(fnorm1/fnorm) : -100;
+	    if (p1 * fnorm1 < fnorm)
+		actred = 1 - SQR(fnorm1 / fnorm);
+	    else
+		actred = -1;
 
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
@@ -463,22 +466,19 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             }
 
             /* update the step bound */
-            if        ( ratio <= 0.25 ) {
-                if      ( actred >= 0 ) {
-                    temp = 0.5;
-                } else if ( actred > -99 ) { /* -99 = 1-1/0.1^2 */
-                    temp = MAX( dirder / (2*dirder + actred), 0.1 );
-                } else {
-                    temp = 0.1;
-                }
-                delta = temp * MIN(delta, pnorm / 0.1);
-                lmpar /= temp;
-            } else if ( ratio >= 0.75 ) {
-                delta = 2*pnorm;
-                lmpar *= 0.5;
-            } else if ( !lmpar ) {
-                delta = 2*pnorm;
-            }
+	    if (ratio <= 0.25) {
+		if (actred >= 0.)
+		    temp = 0.5;
+		else
+		    temp = 0.5 * dirder / (dirder + 0.55 * actred);
+		if (p1 * fnorm1 >= fnorm || temp < p1)
+		    temp = p1;
+		delta = temp * MIN(delta, pnorm / p1);
+		lmpar /= temp;
+	    } else if (lmpar == 0. || ratio >= 0.75) {
+		delta = pnorm / 0.5;
+		lmpar *= 0.5;
+	    }
 
 /***  [inner]  On success, update solution, and test for convergence.  ***/
 
