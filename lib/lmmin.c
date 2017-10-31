@@ -377,7 +377,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             /* only now print the header for the loop table */
             if( C->verbosity >=3 ) {
                 fprintf( msgfile, " #o #i     lmpar    prered"
-                         "          ratio    dirder      delta"
+                         "  actred"
+                         "        ratio    dirder      delta"
                          "      pnorm                 fnorm" );
                 for (i = 0; i < nout; ++i)
                     fprintf( msgfile, "               p%i", i );
@@ -456,9 +457,9 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 fprintf( msgfile, "lmmin (%i:%i) ", outer, inner );
                 lm_print_pars( nout, wa2, msgfile ); // fnorm1,
             } else if( C->verbosity >= 3 ) {
-                printf( "%3i %2i %9.2g %9.2g %14.6g"
+                printf( "%3i %2i %9.2g %9.2g %9.2g %14.6g"
                         " %9.2g %10.3e %10.3e %21.15e",
-                        outer, inner, lmpar, prered, ratio,
+                        outer, inner, lmpar, prered, actred, ratio,
                         dirder, delta, pnorm, fnorm1 );
                 for (i = 0; i < nout; ++i)
                     fprintf( msgfile, " %16.9g", wa2[i] );
@@ -470,7 +471,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 		if (actred >= 0.)
 		    temp = 0.5;
 		else
-		    temp = 0.5 * dirder / (dirder + 0.55 * actred);
+		    temp = 0.5 * dirder / (dirder + 0.5 * actred);
 		if (p1 * fnorm1 >= fnorm || temp < p1)
 		    temp = p1;
 		delta = temp * MIN(delta, pnorm / p1);
