@@ -426,7 +426,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             dirder = -temp1 + temp2; /* scaled directional derivative */
 
             /* at first call, adjust the initial step bound. */
-            if ( !outer && pnorm < delta )
+            if ( !outer && !inner && pnorm < delta )
                 delta = pnorm;
 
 /***  [inner]  Evaluate the function at x + p.  ***/
@@ -468,7 +468,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
             /* update the step bound */
 	    if (ratio <= 0.25) {
-		if (actred >= 0.)
+		if (actred >= 0)
 		    temp = 0.5;
 		else
 		    temp = 0.5 * dirder / (dirder + 0.5 * actred);
@@ -476,8 +476,8 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 		    temp = p1;
 		delta = temp * MIN(delta, pnorm / p1);
 		lmpar /= temp;
-	    } else if (lmpar == 0. || ratio >= 0.75) {
-		delta = pnorm / 0.5;
+	    } else if (lmpar == 0 || ratio >= 0.75) {
+		delta = 2 * pnorm;
 		lmpar *= 0.5;
 	    }
 
