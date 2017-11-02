@@ -114,8 +114,9 @@ const char *lm_shortmsg[] = {
 
 void lm_print_pars( const int nout, const double *par, FILE* fout )
 {
+    fprintf( fout, "  pars:" );
     for (int i = 0; i < nout; ++i)
-        fprintf( fout, " %16.9g", par[i] );
+        fprintf( fout, " %23.16g", par[i] );
     fprintf( fout, "\n" );
 }
 
@@ -221,28 +222,25 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
 /***  Evaluate function at starting point and calculate norm.  ***/
 
-    if( C->verbosity ) {
+    if( C->verbosity&1 )
         fprintf( msgfile, "lmmin start (ftol=%g gtol=%g xtol=%g)\n",
                  C->ftol, C->gtol, C->xtol );
+    if( C->verbosity&2 )
         lm_print_pars( nout, x, msgfile );
-    }
     (*evaluate)( x, m, data, fvec, &(S->userbreak) );
-    if( C->verbosity>4 )
+    if( C->verbosity&&8 )
         for( i=0; i<m; ++i )
             fprintf( msgfile, "    fvec[%4i] = %18.8g\n", i, fvec[i] );
     S->nfev = 1;
     if ( S->userbreak )
         goto terminate;
     if ( n == 0 ) {
-        if( C->verbosity )
-            fprintf( msgfile, "lmmin: no free parameters\n" );
         S->outcome = 13; /* won't fit */
         goto terminate;
     }
     fnorm = lm_enorm(m, fvec);
-    if( C->verbosity )
+    if( C->verbosity&2 )
         fprintf( msgfile, "  fnorm = %24.16g\n", fnorm );
-
     if( !isfinite(fnorm) ){
         if( C->verbosity )
             fprintf( msgfile, "nan case 1\n" );
@@ -271,7 +269,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 fjac[j*m+i] = (wf[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
         }
-        if ( C->verbosity >6 ) {
+        if ( C->verbosity&16 ) {
             /* print the entire matrix */
             printf("\nlmmin Jacobian\n");
             for (i = 0; i < m; i++) {
@@ -355,11 +353,6 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 for (j = 0; j < n; j++)
                     wa3[j] = diag[j] * x[j];
                 xnorm = lm_enorm(n, wa3);
-                if( C->verbosity >= 2 ) {
-                    fprintf( msgfile, "lmmin diag  " );
-                    lm_print_pars( nout, x, msgfile ); // xnorm
-                    fprintf( msgfile, "  xnorm = %18.8g\n", xnorm );
-                }
             } else {
                 xnorm = lm_enorm(n, x);
             }
@@ -375,7 +368,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             else
                 delta = C->stepbound;
             /* only now print the header for the loop table */
-            if( C->verbosity >=3 ) {
+            if( C->verbosity&2 ) {
                 fprintf( msgfile, " #o #i     lmpar    prered"
                          "  actred"
                          "        ratio    dirder      delta"
@@ -453,10 +446,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
 
-            if( C->verbosity == 2 ) {
-                fprintf( msgfile, "lmmin (%i:%i) ", outer, inner );
-                lm_print_pars( nout, wa2, msgfile ); // fnorm1,
-            } else if( C->verbosity >= 3 ) {
+            if( C->verbosity&2 ) {
                 printf( "%3i %2i %9.2g %9.2g %9.2g %14.6g"
                         " %9.2g %10.3e %10.3e %21.15e",
                         outer, inner, lmpar, prered, actred, ratio,
@@ -552,11 +542,15 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
 terminate:
     S->fnorm = lm_enorm(m, fvec);
-    if( C->verbosity >= 1 ) {
-        fprintf( msgfile, "lmmin terminates with outcome %i", S->outcome);
+    if( C->verbosity&1 )
+        fprintf( msgfile, "lmmin terminates with outcome %i\n", S->outcome);
+    if( C->verbosity&2 )
         lm_print_pars( nout, x, msgfile );
+    if( C->verbosity&&8 )
+        for( i=0; i<m; ++i )
+            fprintf( msgfile, "    fvec[%4i] = %18.8g\n", i, fvec[i] );
+    if( C->verbosity&2 )
         fprintf( msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm );
-    }
     if ( S->userbreak ) /* user-requested break */
         S->outcome = 11;
 
