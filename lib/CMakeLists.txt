@@ -1,0 +1,14 @@
+set(library_name lmfit)
+set(${library_name}_LIBRARY ${library_name} PARENT_SCOPE)
+set(${library_name}_LIBRARY_TYPE SHARED)
+
+set(src_files lmcurve.c lmmin.c)
+set(inc_files lmcurve.h lmmin.h)
+
+add_library(${library_name} SHARED ${src_files})
+
+set_target_properties(${library_name} PROPERTIES OUTPUT_NAME ${library_name})
+
+target_link_libraries(${library_name} m)
+
+install(TARGETS ${library_name} LIBRARY DESTINATION ${destination_lib} COMPONENT Libraries)
