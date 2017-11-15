@@ -12,13 +12,13 @@
 # Redistribution permitted.
 
 find_path(FitTest_INCLUDE_DIR fittest.h)
-find_library(FitTest_LIBRARY NAMES fittest FitTest)
+find_library(FitTest_LIBRARIES NAMES fittest FitTest)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(FitTest DEFAULT_MSG FitTest_LIBRARY FitTest_INCLUDE_DIR)
+find_package_handle_standard_args(FitTest DEFAULT_MSG FitTest_LIBRARIES FitTest_INCLUDE_DIR)
 
 include(AssertLibraryFunction)
-#assert_library_function(FitTest print_help "")
-#assert_library_function(FitTest run_tests "")
+assert_library_function(FitTest print_help "")
+assert_library_function(FitTest run_tests "")
 
-mark_as_advanced(FitTest_INCLUDE_DIR FitTest_LIBRARY)
+mark_as_advanced(FitTest_INCLUDE_DIR FitTest_LIBRARIES)

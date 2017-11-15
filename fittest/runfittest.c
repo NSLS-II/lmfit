@@ -60,5 +60,5 @@ int main( int argc, char **argv )
         }
     }
     // Run.
-    run_tests(argc, argv);
+    run_tests(argc, argv, minimizer);
 }
