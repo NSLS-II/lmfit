@@ -7,8 +7,15 @@ set(inc_files lmcurve.h lmmin.h)
 
 add_library(${library_name} SHARED ${src_files})
 
-set_target_properties(${library_name} PROPERTIES OUTPUT_NAME ${library_name})
+set_target_properties(
+    ${library_name} PROPERTIES
+    OUTPUT_NAME ${library_name}
+    VERSION ${lmfit_VERSION}
+    SOVERSION ${lmfit_SOVERSION})
 
 target_link_libraries(${library_name} m)
 
-install(TARGETS ${library_name} LIBRARY DESTINATION ${destination_lib} COMPONENT Libraries)
+install(
+    TARGETS ${library_name} LIBRARY
+    DESTINATION ${destination_lib}
+    COMPONENT Libraries)
