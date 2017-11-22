@@ -1,3 +1,10 @@
+Changes in lmfit-5.2, released 23oct14
+
+- bug fix:
+  - correct man page (5.0 API change)
+- acceleration(?):
+  - revert to just one malloc for all workspaces, now based on a char array
+
 Changes in lmfit-5.1, released 29aug13
 
 - bug fix:
