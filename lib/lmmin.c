@@ -60,10 +60,10 @@ void lm_qrsolv( int n, double *r, int ldr, int *ipvt, double *diag,
 
 const lm_control_struct lm_control_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1, 
-    &stdout, 0, -1, -1 };
+    NULL, 0, -1, -1 };
 const lm_control_struct lm_control_float = {
     1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 1,
-    &stdout, 0, -1, -1 };
+    NULL, 0, -1, -1 };
 
 
 /*****************************************************************************/
@@ -105,13 +105,12 @@ const char *lm_shortmsg[] = {
 /*  Monitoring auxiliaries.                                                  */
 /*****************************************************************************/
 
-void lm_print_pars( int nout, const double *par, double fnorm,
-                    const lm_control_struct *C )
+void lm_print_pars( int nout, const double *par, double fnorm, FILE* fout )
 {
     int i;
     for (i = 0; i < nout; ++i)
-        fprintf( *(C->stream), " %16.9g", par[i] );
-    fprintf( *(C->stream), " => %18.11g\n", fnorm );
+        fprintf( fout, " %16.9g", par[i] );
+    fprintf( fout, " => %18.11g\n", fnorm );
 }
 
 
@@ -142,6 +141,10 @@ void lmmin( int n, double *x, int m, const void *data,
 
     int nout = C->n_maxpri==-1 ? n : MIN( C->n_maxpri, n );
 
+    /* The workaround msgfile=NULL is needed for default initialization */
+    FILE* msgfile = C->msgfile ? C->msgfile : stdout;
+
+    /* Default status info; must be set ahead of first return statements */    
     S->outcome = 0;      /* status code */
     S->userbreak = 0;
     S->nfev = 0;      /* function evaluation counter */
@@ -212,8 +215,8 @@ void lmmin( int n, double *x, int m, const void *data,
         goto terminate;
     fnorm = lm_enorm(m, fvec);
     if( C->verbosity ) {
-        fprintf( *(C->stream), "lmmin start " );
-        lm_print_pars( nout, x, fnorm, C );
+        fprintf( msgfile, "lmmin start " );
+        lm_print_pars( nout, x, fnorm, msgfile );
     }
     if( fnorm <= LM_DWARF ){
         S->outcome = 0; /* sum of squares almost zero, nothing to do */
@@ -323,17 +326,17 @@ void lmmin( int n, double *x, int m, const void *data,
                     wa3[j] = diag[j] * x[j];
                 xnorm = lm_enorm(n, wa3);
                 if( C->verbosity >= 2 ) {
-                    fprintf( *(C->stream), "lmmin diag  " );
-                    lm_print_pars( nout, x, xnorm, C );
+                    fprintf( msgfile, "lmmin diag  " );
+                    lm_print_pars( nout, x, xnorm, msgfile );
                 }
                 /* only now print the header for the loop table */
                 if( C->verbosity >=3 ) {
-                    fprintf( *(C->stream), "  o  i     lmpar    prered"
+                    fprintf( msgfile, "  o  i     lmpar    prered"
                              "          ratio    dirder      delta"
                              "      pnorm                 fnorm" );
                     for (i = 0; i < nout; ++i)
-                        fprintf( *(C->stream), "               p%i", i );
-                    fprintf( *(C->stream), "\n" );
+                        fprintf( msgfile, "               p%i", i );
+                    fprintf( msgfile, "\n" );
                 }
             } else {
                 xnorm = lm_enorm(n, x);
@@ -396,16 +399,16 @@ void lmmin( int n, double *x, int m, const void *data,
             ratio = prered ? actred/prered : 0;
 
             if( C->verbosity == 2 ) {
-                fprintf( *(C->stream), "lmmin (%i:%i) ", outer, inner );
-                lm_print_pars( nout, wa2, fnorm1, C );
+                fprintf( msgfile, "lmmin (%i:%i) ", outer, inner );
+                lm_print_pars( nout, wa2, fnorm1, msgfile );
             } else if( C->verbosity >= 3 ) {
                 printf( "%3i %2i %9.2g %9.2g %14.6g"
                         " %9.2g %10.3e %10.3e %21.15e",
                         outer, inner, lmpar, prered, ratio,
                         dirder, delta, pnorm, fnorm1 );
                 for (i = 0; i < nout; ++i)
-                    fprintf( *(C->stream), " %16.9g", wa2[i] );
-                fprintf( *(C->stream), "\n" );
+                    fprintf( msgfile, " %16.9g", wa2[i] );
+                fprintf( msgfile, "\n" );
             }
 
             /* update the step bound */
@@ -494,8 +497,8 @@ terminate:
         printf("lmmin outcome (%i) xnorm %g ftol %g xtol %g\n",
                S->outcome, xnorm, C->ftol, C->xtol );
     if( C->verbosity & 1 ) {
-        fprintf( *(C->stream), "lmmin final " );
-        lm_print_pars( nout, x, S->fnorm, C  );
+        fprintf( msgfile, "lmmin final " );
+        lm_print_pars( nout, x, S->fnorm, msgfile );
     }
     if ( S->userbreak ) /* user-requested break */
         S->outcome = 11;

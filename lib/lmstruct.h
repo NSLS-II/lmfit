@@ -14,10 +14,16 @@
  
 #ifndef LMSTRUCT_H
 #define LMSTRUCT_H
-
+#undef __BEGIN_DECLS
+#undef __END_DECLS
 #ifdef __cplusplus
-extern "C" {
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
 #endif
+__BEGIN_DECLS
 
 #include <stdio.h>
 
@@ -47,7 +53,7 @@ typedef struct {
                          to patience*(number_of_parameters+1). */
     int scale_diag;   /* If 1, the variables will be rescaled internally.
                          Recommended value is 1. */
-    FILE** stream;    /* Pointer to output stream to write to. */
+    FILE* msgfile;    /* Progress messages will be written to this file. */
     int verbosity;    /* OR'ed: 1: print some messages; 2: print Jacobian. */
     int n_maxpri;     /* -1, or max number of parameters to print. */
     int m_maxpri;     /* -1, or max number of residuals to print. */
@@ -71,8 +77,5 @@ extern const lm_control_struct lm_control_float;
 extern const char *lm_infmsg[];
 extern const char *lm_shortmsg[];
 
-#ifdef __cplusplus
-}
-#endif
-
+__END_DECLS
 #endif /* LMSTRUCT_H */

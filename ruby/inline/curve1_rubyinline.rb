@@ -1,3 +1,5 @@
+#! /usr/bin/env ruby
+
 # This is 'curve1.c' demo done with RubyInline gem (instead of using swig)
 # Contributed by Igor Drozdov <idrozdov@gmail.com> 2012
 # $ ruby curve1_rubyinline.rb
@@ -6,10 +8,8 @@
 # 
 # $ gem install RubyInline
 #
-# Make sure header files and shared librares can be found.
-# For example, if you have *.h and *.so files are in the current directory:
-# $ export LD_LIBRARY_PATH=`pwd`
-# $ export C_INCLUDE_PATH=`pwd`
+# To make sure header files and shared librares can be found,
+# export appropriate LD_LIBRARY_PATH and C_INCLUDE_PATH.
 
 require 'rubygems'
 require 'inline'
@@ -22,12 +22,14 @@ class Curve
     builder.include("<stdio.h>")
     builder.include("<ruby.h>)")
     builder.add_link_flags("-llmmin")
-    builder.c_raw <<OEF
+
+    builder.c_raw <<EOC
 double f( double t, const double *p )
 {
     return p[0] + p[1]*(t-p[2])*(t-p[2]);
 }
-OEF
+EOC
+
     builder.c <<EOC
 VALUE demo(VALUE t_ary, VALUE y_ary) {
     /* parameter vector */
@@ -54,7 +56,6 @@ VALUE demo(VALUE t_ary, VALUE y_ary) {
     /* auxiliary parameters */
     lm_status_struct status;
     lm_control_struct control = lm_control_double;
-    control.printflags = 3; // monitor status (+1) and parameters (+2)
 
     for (i = 0; i < t_len; i++) {	
       t[i] = NUM2DBL(t_arr[i]);
@@ -66,7 +67,7 @@ VALUE demo(VALUE t_ary, VALUE y_ary) {
 
     printf( "\\nResults:\\n" );
     printf( "status after %d function evaluations:\\n  %s\\n",
-            status.nfev, lm_infmsg[status.info] );
+            status.nfev, lm_infmsg[status.outcome] );
 
     printf("obtained parameters:\\n");
     for ( i = 0; i < n_par; ++i)
