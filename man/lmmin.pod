@@ -110,9 +110,9 @@ Used to set the maximum number of function evaluations to patience*n_par.
 
 Logical switch (0 or 1). If 1, then scale parameters to their initial value. This is the recommended setting.
 
-=item B<FILE**> I<control.stream>
+=item B<FILE*> I<control.msgfile>
 
-Pointer to the stream the output shall be writen to. Typically &I<stdout> or &I<stderr>.
+Progress messages will be written to this file. Typically I<stdout> or I<stderr>. The value I<NULL> will be interpreted as I<stdout>.
 
 =item B<int> I<control.verbosity>
 
