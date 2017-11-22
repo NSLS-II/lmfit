@@ -1,3 +1,10 @@
+Changes in lmfit-6.3, release 3nov17:
+
+- two small corrections in core algorithm:
+  - 0.5 had become .55 at some point in the past
+  - Delta was initialized more than once
+- also changed verbosity codes and deep info formats
+
 Changes in lmfit-6.2, released 27oct17:
 
 - algorithm improvement:
