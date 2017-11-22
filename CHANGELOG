@@ -1,3 +1,9 @@
+Changes in lmfit-6.4, release 22nov17:
+
+- First version with CMake
+- First version with fittest
+- Probably last version with automake support
+
 Changes in lmfit-6.3, release 3nov17:
 
 - two small corrections in core algorithm:
