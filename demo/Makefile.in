@@ -88,7 +88,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = curve1$(EXEEXT) nonlin1$(EXEEXT) surface1$(EXEEXT)
+noinst_PROGRAMS = curve1$(EXEEXT) curve2$(EXEEXT) nonlin1$(EXEEXT) \
+	surface1$(EXEEXT)
 subdir = demo
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -110,6 +111,9 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_curve2_OBJECTS = curve2.$(OBJEXT)
+curve2_OBJECTS = $(am_curve2_OBJECTS)
+curve2_LDADD = $(LDADD)
 am_nonlin1_OBJECTS = nonlin1.$(OBJEXT)
 nonlin1_OBJECTS = $(am_nonlin1_OBJECTS)
 nonlin1_LDADD = $(LDADD)
@@ -150,8 +154,9 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(curve1_SOURCES) $(nonlin1_SOURCES) $(surface1_SOURCES)
-DIST_SOURCES = $(curve1_SOURCES) $(nonlin1_SOURCES) \
+SOURCES = $(curve1_SOURCES) $(curve2_SOURCES) $(nonlin1_SOURCES) \
+	$(surface1_SOURCES)
+DIST_SOURCES = $(curve1_SOURCES) $(curve2_SOURCES) $(nonlin1_SOURCES) \
 	$(surface1_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -298,6 +303,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 curve1_SOURCES = curve1.c
+curve2_SOURCES = curve2.c
 nonlin1_SOURCES = nonlin1.c
 surface1_SOURCES = surface1.c
 AM_LDFLAGS = -lm -L../lib -llmfit
@@ -348,6 +354,10 @@ curve1$(EXEEXT): $(curve1_OBJECTS) $(curve1_DEPENDENCIES) $(EXTRA_curve1_DEPENDE
 	@rm -f curve1$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(curve1_OBJECTS) $(curve1_LDADD) $(LIBS)
 
+curve2$(EXEEXT): $(curve2_OBJECTS) $(curve2_DEPENDENCIES) $(EXTRA_curve2_DEPENDENCIES) 
+	@rm -f curve2$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(curve2_OBJECTS) $(curve2_LDADD) $(LIBS)
+
 nonlin1$(EXEEXT): $(nonlin1_OBJECTS) $(nonlin1_DEPENDENCIES) $(EXTRA_nonlin1_DEPENDENCIES) 
 	@rm -f nonlin1$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(nonlin1_OBJECTS) $(nonlin1_LDADD) $(LIBS)
@@ -363,6 +373,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/curve2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nonlin1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/surface1.Po@am__quote@
 
