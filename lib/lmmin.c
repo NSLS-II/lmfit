@@ -86,23 +86,25 @@ const char *lm_infmsg[] = {
     "crashed    (not enough memory)",
     "exploded   (fatal coding error: improper input parameters)",
     "stopped    (break requested within function evaluation)",
-    "found nan  (function value is not-a-number or infinite)"
+    "found nan  (function value is not-a-number or infinite)",
+    "won't fit  (no free parameter)"
 };
 
 const char *lm_shortmsg[] = {
-    "found zero",
-    "converged (f)",
-    "converged (p)",
-    "converged (2)",
-    "degenerate",
-    "call limit",
-    "failed (f)",
-    "failed (p)",
-    "failed (o)",
-    "no memory",
-    "invalid input",
-    "user break",
-    "found nan"
+    "found zero",      //  0
+    "converged (f)",   //  1
+    "converged (p)",   //  2
+    "converged (2)",   //  3
+    "degenerate",      //  4
+    "call limit",      //  5
+    "failed (f)",      //  6
+    "failed (p)",      //  7
+    "failed (o)",      //  8
+    "no memory",       //  9
+    "invalid input",   // 10
+    "user break",      // 11
+    "found nan",       // 12
+    "no free par"      // 13
 };
 
 
@@ -112,8 +114,9 @@ const char *lm_shortmsg[] = {
 
 void lm_print_pars( const int nout, const double *par, FILE* fout )
 {
+    fprintf( fout, "  pars:" );
     for (int i = 0; i < nout; ++i)
-        fprintf( fout, " %16.9g", par[i] );
+        fprintf( fout, " %23.16g", par[i] );
     fprintf( fout, "\n" );
 }
 
@@ -131,7 +134,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
         prered, ratio, step, sum, temp, temp1, temp2, temp3;
-    static double p0001 = 1.0e-4;
+    static double p1 = 0.1, p0001 = 1.0e-4;
 
     int maxfev = C->patience * (n+1);
 
@@ -153,7 +156,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
 /***  Check input parameters for errors.  ***/
 
-    if ( n <= 0 ) {
+    if ( n < 0 ) {
         fprintf( stderr, "lmmin: invalid number of parameters %i\n", n );
         S->outcome = 10; /* invalid parameter */
         return;
@@ -219,21 +222,25 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
 /***  Evaluate function at starting point and calculate norm.  ***/
 
-    if( C->verbosity ) {
-        fprintf( msgfile, "lmmin start " );
+    if( C->verbosity&1 )
+        fprintf( msgfile, "lmmin start (ftol=%g gtol=%g xtol=%g)\n",
+                 C->ftol, C->gtol, C->xtol );
+    if( C->verbosity&2 )
         lm_print_pars( nout, x, msgfile );
-    }
     (*evaluate)( x, m, data, fvec, &(S->userbreak) );
-    if( C->verbosity>4 )
+    if( C->verbosity&&8 )
         for( i=0; i<m; ++i )
             fprintf( msgfile, "    fvec[%4i] = %18.8g\n", i, fvec[i] );
     S->nfev = 1;
     if ( S->userbreak )
         goto terminate;
+    if ( n == 0 ) {
+        S->outcome = 13; /* won't fit */
+        goto terminate;
+    }
     fnorm = lm_enorm(m, fvec);
-    if( C->verbosity )
-        fprintf( msgfile, "  fnorm = %18.8g\n", fnorm );
-
+    if( C->verbosity&2 )
+        fprintf( msgfile, "  fnorm = %24.16g\n", fnorm );
     if( !isfinite(fnorm) ){
         if( C->verbosity )
             fprintf( msgfile, "nan case 1\n" );
@@ -262,7 +269,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 fjac[j*m+i] = (wf[i] - fvec[i]) / step;
             x[j] = temp; /* restore */
         }
-        if ( C->verbosity >6 ) {
+        if ( C->verbosity&16 ) {
             /* print the entire matrix */
             printf("\nlmmin Jacobian\n");
             for (i = 0; i < m; i++) {
@@ -346,20 +353,6 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 for (j = 0; j < n; j++)
                     wa3[j] = diag[j] * x[j];
                 xnorm = lm_enorm(n, wa3);
-                if( C->verbosity >= 2 ) {
-                    fprintf( msgfile, "lmmin diag  " );
-                    lm_print_pars( nout, x, msgfile ); // xnorm
-                    fprintf( msgfile, "  xnorm = %18.8g\n", xnorm );
-                }
-                /* only now print the header for the loop table */
-                if( C->verbosity >=3 ) {
-                    fprintf( msgfile, " #o #i     lmpar    prered"
-                             "          ratio    dirder      delta"
-                             "      pnorm                 fnorm" );
-                    for (i = 0; i < nout; ++i)
-                        fprintf( msgfile, "               p%i", i );
-                    fprintf( msgfile, "\n" );
-                }
             } else {
                 xnorm = lm_enorm(n, x);
             }
@@ -374,6 +367,16 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
                 delta = C->stepbound * xnorm;
             else
                 delta = C->stepbound;
+            /* only now print the header for the loop table */
+            if( C->verbosity&2 ) {
+                fprintf( msgfile, " #o #i     lmpar    prered"
+                         "  actred"
+                         "        ratio    dirder      delta"
+                         "      pnorm                 fnorm" );
+                for (i = 0; i < nout; ++i)
+                    fprintf( msgfile, "               p%i", i );
+                fprintf( msgfile, "\n" );
+            }
         } else {
             if (C->scale_diag) {
                 for (j = 0; j < n; j++)
@@ -416,7 +419,7 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             dirder = -temp1 + temp2; /* scaled directional derivative */
 
             /* at first call, adjust the initial step bound. */
-            if ( !outer && pnorm < delta )
+            if ( !outer && !inner && pnorm < delta )
                 delta = pnorm;
 
 /***  [inner]  Evaluate the function at x + p.  ***/
@@ -435,18 +438,18 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 /***  [inner]  Evaluate the scaled reduction.  ***/
 
             /* actual scaled reduction (supports even the case fnorm1=infty) */
-            actred = fnorm1 < 10*fnorm ? 1 - SQR(fnorm1/fnorm) : -1;
+	    if (p1 * fnorm1 < fnorm)
+		actred = 1 - SQR(fnorm1 / fnorm);
+	    else
+		actred = -1;
 
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
 
-            if( C->verbosity == 2 ) {
-                fprintf( msgfile, "lmmin (%i:%i) ", outer, inner );
-                lm_print_pars( nout, wa2, msgfile ); // fnorm1,
-            } else if( C->verbosity >= 3 ) {
-                printf( "%3i %2i %9.2g %9.2g %14.6g"
+            if( C->verbosity&2 ) {
+                printf( "%3i %2i %9.2g %9.2g %9.2g %14.6g"
                         " %9.2g %10.3e %10.3e %21.15e",
-                        outer, inner, lmpar, prered, ratio,
+                        outer, inner, lmpar, prered, actred, ratio,
                         dirder, delta, pnorm, fnorm1 );
                 for (i = 0; i < nout; ++i)
                     fprintf( msgfile, " %16.9g", wa2[i] );
@@ -454,22 +457,19 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
             }
 
             /* update the step bound */
-            if        ( ratio <= 0.25 ) {
-                if      ( actred >= 0 ) {
-                    temp = 0.5;
-                } else if ( actred > -99 ) { /* -99 = 1-1/0.1^2 */
-                    temp = MAX( dirder / (2*dirder + actred), 0.1 );
-                } else {
-                    temp = 0.1;
-                }
-                delta = temp * MIN(delta, pnorm / 0.1);
-                lmpar /= temp;
-            } else if ( ratio >= 0.75 ) {
-                delta = 2*pnorm;
-                lmpar *= 0.5;
-            } else if ( !lmpar ) {
-                delta = 2*pnorm;
-            }
+	    if (ratio <= 0.25) {
+		if (actred >= 0)
+		    temp = 0.5;
+		else
+		    temp = 0.5 * dirder / (dirder + 0.5 * actred);
+		if (p1 * fnorm1 >= fnorm || temp < p1)
+		    temp = p1;
+		delta = temp * MIN(delta, pnorm / p1);
+		lmpar /= temp;
+	    } else if (lmpar == 0 || ratio >= 0.75) {
+		delta = 2 * pnorm;
+		lmpar *= 0.5;
+	    }
 
 /***  [inner]  On success, update solution, and test for convergence.  ***/
 
@@ -542,14 +542,15 @@ void lmmin( const int n, double *const x, const int m, const void *const data,
 
 terminate:
     S->fnorm = lm_enorm(m, fvec);
-    if ( C->verbosity >= 2 )
-        printf("lmmin outcome (%i) xnorm %g ftol %g xtol %g\n",
-               S->outcome, xnorm, C->ftol, C->xtol );
-    if( C->verbosity & 1 ) {
-        fprintf( msgfile, "lmmin final " );
-        lm_print_pars( nout, x, msgfile ); // S->fnorm,
-        fprintf( msgfile, "  fnorm = %18.8g\n", S->fnorm );
-    }
+    if( C->verbosity&1 )
+        fprintf( msgfile, "lmmin terminates with outcome %i\n", S->outcome);
+    if( C->verbosity&2 )
+        lm_print_pars( nout, x, msgfile );
+    if( C->verbosity&&8 )
+        for( i=0; i<m; ++i )
+            fprintf( msgfile, "    fvec[%4i] = %18.8g\n", i, fvec[i] );
+    if( C->verbosity&2 )
+        fprintf( msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm );
     if ( S->userbreak ) /* user-requested break */
         S->outcome = 11;
 

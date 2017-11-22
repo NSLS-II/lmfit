@@ -29,11 +29,11 @@
 __BEGIN_DECLS
 
 /* Levenberg-Marquardt minimization. */
-void lmmin( const int n_par, double *par, const int m_dat, const void *data,
+void lmmin( const int n_par, double* par, const int m_dat, const void* data,
             void (*evaluate) (
-                const double *par, const int m_dat, const void *data,
-                double *fvec, int *userbreak),
-            const lm_control_struct *control, lm_status_struct *status );
+                const double* par, const int m_dat, const void* data,
+                double* fvec, int* userbreak),
+            const lm_control_struct* control, lm_status_struct* status );
 /*
  *   This routine contains the core algorithm of our library.
  *
