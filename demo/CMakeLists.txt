@@ -2,11 +2,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${lmfit_SOURCE_DIR}/lib)
 
 set(demos
     curve1
-    fourexp
-    hat
-    morobropro
-    powell
     surface1
+    nonlin1
     )
 
 foreach(demo ${demos})
