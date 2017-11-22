@@ -8,7 +8,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 project(lmfit)
 set(lmfit_SOVERSION                  6) # API version
-set(lmfit_VERSION ${lmfit_SOVERSION}.0) # lib version
+set(lmfit_VERSION ${lmfit_SOVERSION}.1) # lib version
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
