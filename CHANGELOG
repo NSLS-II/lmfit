@@ -1,4 +1,11 @@
-lmfit-6.1, released 2dec15:
+Changes in lmfit-6.2, released 27oct17:
+
+- algorithm improvement:
+  - removed test for infinity in one case where we can proceed nonetheless
+- code cleanup:
+  - added 'const' qualifiers
+
+Changes in lmfit-6.1, released 2dec15:
 
 - docs:
   - new man page lmfit(7)
@@ -6,7 +13,7 @@ lmfit-6.1, released 2dec15:
 - code cleanup:
   - lmcurve_tyd in separate source file
 
-lmfit-6.0, released 24nov15:
+Changes in lmfit-6.0, released 24nov15:
 
 - API changes:
   - a few more 'const' qualifiers in lmmin and lmcurve.
@@ -15,7 +22,7 @@ lmfit-6.0, released 24nov15:
   - further unify code layout
   - use temporary variable for readability in lmcurve (suggested by T. Klauser)
 
-lmfit-5.3, released 24nov15:
+Changes in lmfit-5.3, released 24nov15:
 
 - autotools:
   - set default optimization -O3
@@ -25,20 +32,16 @@ lmfit-5.3, released 24nov15:
 - docs:
   - correct typo in lmmin(3)
 - code cleanup:
-  - uniform code layout, starting from clang-format
-  - correct and improve comments, especially in qrfac
-  - uppercase matrix names
-- testing:
-  - new unit test directory test/, for development purposes only
+  - correct and improve comments in qrfac
 
-lmfit-5.2, released 23oct14:
+Changes in lmfit-5.2, released 23oct14
 
 - bug fix:
   - correct man page (5.0 API change)
 - acceleration(?):
   - revert to just one malloc for all workspaces, now based on a char array
 
-lmfit-5.1, released 29aug13:
+Changes in lmfit-5.1, released 29aug13
 
 - bug fix:
   - FILE** initialization from &stdout was not standard compliant
@@ -47,7 +50,7 @@ lmfit-5.1, released 29aug13:
 - code cleanup:
   - better wrapper for "extern C" declaration
 
-lmfit-5.0, released 9aug13:
+Changes in lmfit-5.0, released 9aug13
 
 - API changes:
   - removed callback function for printout
@@ -65,7 +68,7 @@ lmfit-5.0, released 9aug13:
   - otherwise testsuite started as new project fittest
 - packaging: configure now supports pkg-config
 
-lmfit-4.0, released 16jul13:
+Changes in lmfit-4.0, released 16jul13
 
 - binary library renamed: lmmin -> lmfit
 - API changes:
@@ -88,13 +91,13 @@ lmfit-4.0, released 16jul13:
   - new entry page (dokuwiki) instead of man page
   - man page split and largely rewritten: lmcurve(3), lmmin(3)
 
-lmfit-3.5, released 3feb13:
+Changes in lmfit-3.5, released 3feb13
 
 - changed overall license to FreeBSD to facilitate inclusion in Linux
   distributions (request by M. Hroncok)
 - directory doc renamed man
 
-lmfit-3.4, released 21jan13:
+Changes in lmfit-3.4, released 21jan13
 
 - only one malloc call to allocate all arrays (proposal by F. Polchow)
 - liblmmin_la_LDFLAGS += -lm (required by Ubuntu, report by J. M. Agosta)
@@ -103,7 +106,7 @@ lmfit-3.4, released 21jan13:
 - long message for degenerate case now suggests increasing epsilon
   (suggestion by Nghia Ho)
 
-lmfit-3.3, released 12sep12:
+Changes in lmfit-3.3, released 12sep12
 
 - moved "int" declarations to top of lm_printout_std() and lmmin()
   (required by Visual Studio 2005: bug report M. Beek)
@@ -111,17 +114,17 @@ lmfit-3.3, released 12sep12:
 - man pages now produced by make; finally got rid of dmake
 - untabified code (hint by W. Pimenta)
 
-lmfit-3.2, released 28mar10 (preview 27mar10):
+Changes in lmfit-3.2, released 28mar10 (preview 27mar10):
 
 - shared library is given correct version number (set in configure.ac)
 - man page lmfit(3) is copied by dmake to lmmin(3) and lmcurve_fit(3)
 
-lmfit-3.1, released 12mar10:
+Changes in lmfit-3.1, released 12mar10:
 
 - debian directory not part of tgz distribution
 - temporarily removed lmmin.3 (was symlink -> lmfit.3)
 
-lmfit-3.0, released 2mar10 (preview 27feb10):
+Changes in lmfit-3.0, released 2mar10 (preview 27feb10):
 
 - for parameter close to zero, change step width for calculation of jabobian
 - outer iteration counter starting at zero (C style)
@@ -141,12 +144,12 @@ lmfit-3.0, released 2mar10 (preview 27feb10):
 - provide vector minimization demos
 - test for fnorm<=LM_DWARF, renumbered info values 0, 10, 11
 
-lmfit-2.6, released 29sep09:
+Changes in lmfit-2.6, released 29sep09:
 
 - nfev incrementation even if printout=0 (bug report C. Tanner)
 - correct t->tvec, y->yvec in man page  (bug report C. Tanner)
 
-lmfit-2.5, released 20sep09:
+Changes in lmfit-2.5, released 20sep09:
 
 - malloc==NULL ? (suggestion R. Strickland)
 - allow printout=NULL (suggestion J. Lodewyck)
@@ -154,14 +157,14 @@ lmfit-2.5, released 20sep09:
 - eliminate some static variables (p25, p5, p75, ..)
 - eliminate function data types; they obscure more than they help
 
-lmfit-2.4, released 27jul08:
+Changes in lmfit-2.4, released 27jul08:
 
 - clearer file headers
 - clearer licence (everything has ever been in the public domain)
 - machine-dependent arithmetic constants from float.h (suggestion M. Bydder)
 - minor improvements of comments
 
-lmfit-2.3, released 5apr08:
+Changes in lmfit-2.3, released 5apr08:
 
 - fixed bug sf#1817631: replaced confusing variable names in lmmin.c:lm_qrsolv()
 - accepted feature request 1814970: inclusion protection in headers
@@ -172,7 +175,7 @@ lmfit-2.3, released 5apr08:
 - reverted comments in lmmin.c to pure C style
 - improved documentation of interfaces
 
-lmfit-2.2, released 20sep07:
+Changes up to lmfit-2.2, released 20sep07:
 
 - no change log has been maintained,
   there are just the sourceforge release notes

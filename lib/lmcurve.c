@@ -12,39 +12,40 @@
  *
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  *
- * Note to programmers: Don't patch and fork, but copy and variate!
+ * Note to programmers: Don't patch and fork, but copy and modify!
  *   If you need to compute residues differently, then please do not patch
- * lmcurve.c, but copy it to a differently named file, and rename lmcurve(),
- * lmcurve_evaluate() and lmcurve_data_struct before adapting them to your
- * needs, like we have done in lmcurve_tyd.c.
+ * lmcurve.h and lmcurve.c, but copy them, and create differently named
+ * versions of lmcurve_data_struct, lmcurve_evaluate, and lmcurve of your own.
  */
 
 #include "lmmin.h"
 
+
 typedef struct {
-    const double* t;
-    const double* y;
-    double (*f)(const double t, const double* par);
+    const double *const t;
+    const double *const y;
+    double (*const f) (const double t, const double *par);
 } lmcurve_data_struct;
 
-void lmcurve_evaluate(
-    const double* par, const int m_dat, const void* data, double* fvec,
-    int* info)
+
+void lmcurve_evaluate( const double *const par, const int m_dat, const void *const data,
+                       double *const fvec, int *const info )
 {
-    lmcurve_data_struct* D = (lmcurve_data_struct*)data;
-    int i;
-    for (i = 0; i < m_dat; i++)
-        fvec[i] = D->y[i] - D->f(D->t[i], par);
+    for (int i = 0; i < m_dat; i++ )
+        fvec[i] =
+            ((lmcurve_data_struct*)data)->y[i] -
+            ((lmcurve_data_struct*)data)->f(
+                ((lmcurve_data_struct*)data)->t[i], par );
 }
 
-void lmcurve(
-    const int n_par, double* par, const int m_dat,
-    const double* t, const double* y,
-    double (*f)(const double t, const double* par),
-    const lm_control_struct* control, lm_status_struct* status)
-{
-    lmcurve_data_struct data = { t, y, f };
 
-    lmmin(n_par, par, m_dat, (const void*)&data, lmcurve_evaluate,
-          control, status);
+void lmcurve( const int n_par, double *const par, const int m_dat,
+              const double *const t, const double *const y,
+              double (*const f)(const double t, const double *const par ),
+              const lm_control_struct *const control,
+              lm_status_struct *const status )
+{
+    lmcurve_data_struct data = {t, y, f};
+    lmmin( n_par, par, m_dat, (const void *const) &data,
+           lmcurve_evaluate, control, status );
 }
