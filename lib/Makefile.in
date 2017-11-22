@@ -134,7 +134,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 liblmfit_la_LIBADD =
 am__objects_1 =
-am_liblmfit_la_OBJECTS = $(am__objects_1) lmmin.lo lmcurve.lo
+am_liblmfit_la_OBJECTS = $(am__objects_1) lmmin.lo lmcurve.lo \
+	lmcurve_tyd.lo
 liblmfit_la_OBJECTS = $(am_liblmfit_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -324,9 +325,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-include_HEADERS = lmstruct.h lmmin.h lmcurve.h
+include_HEADERS = lmstruct.h lmmin.h lmcurve.h lmcurve_tyd.h
 lib_LTLIBRARIES = liblmfit.la
-liblmfit_la_SOURCES = $(include_HEADERS) lmmin.c lmcurve.c
+liblmfit_la_SOURCES = $(include_HEADERS) lmmin.c lmcurve.c lmcurve_tyd.c
 liblmfit_la_LDFLAGS = -lm -version-info $(VERSION)
 all: all-am
 
@@ -407,6 +408,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmcurve.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmcurve_tyd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lmmin.Plo@am__quote@
 
 .c.o:

@@ -1,3 +1,11 @@
+lmfit-6.1, released 2dec15:
+
+- docs:
+  - new man page lmfit(7)
+  - 'BUGS' section in man pages
+- code cleanup:
+  - lmcurve_tyd in separate source file
+
 lmfit-6.0, released 24nov15:
 
 - API changes:

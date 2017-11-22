@@ -29,8 +29,7 @@
    Dependences: lmmin calls lmpar, which calls qrfac and qrsolv. */
 void lm_lmpar(const int n, double* r, const int ldr, const int* Pivot,
               const double* diag, const double* qtb, const double delta,
-              double* par, double* x, double* Sdiag, double* aux,
-              double* xdi);
+              double* par, double* x, double* Sdiag, double* aux, double* xdi);
 void lm_qrfac(const int m, const int n, double* A, int* Pivot, double* Rdiag,
               double* Acnorm, double* W);
 void lm_qrsolv(const int n, double* r, const int ldr, const int* Pivot,
@@ -387,8 +386,8 @@ void lmmin(const int n, double* x, const int m, const void* data,
         do {
 
             /** Determine the Levenberg-Marquardt parameter. **/
-            lm_lmpar(n, fjac, m, Pivot, diag, qtf, delta, &lmpar, wa1, wa2, wf,
-                     wa3);
+            lm_lmpar(n, fjac, m, Pivot, diag, qtf, delta, &lmpar,
+                     wa1, wa2, wf, wa3);
             /* used return values are fjac (partly), lmpar, wa1=x, wa3=diag*x */
 
             /* Predict scaled reduction. */
@@ -442,8 +441,8 @@ void lmmin(const int n, double* x, const int m, const void* data,
             } else if (C->verbosity >= 3) {
                 printf("%3i %2i %9.2g %9.2g %14.6g"
                        " %9.2g %10.3e %10.3e %21.15e",
-                       outer, inner, lmpar, prered, ratio, dirder, delta, pnorm,
-                       fnorm1);
+                       outer, inner, lmpar, prered, ratio,
+                       dirder, delta, pnorm, fnorm1);
                 for (i = 0; i < nout; ++i)
                     fprintf(msgfile, " %16.9g", wa2[i]);
                 fprintf(msgfile, "\n");
@@ -553,8 +552,7 @@ terminate:
 
 void lm_lmpar(const int n, double* r, const int ldr, const int* Pivot,
               const double* diag, const double* qtb, const double delta,
-              double* par, double* x, double* Sdiag, double* aux,
-              double* xdi)
+              double* par, double* x, double* Sdiag, double* aux, double* xdi)
 /*     Given an m by n matrix A, an n by n nonsingular diagonal matrix D,
  *     an m-vector b, and a positive number delta, the problem is to
  *     determine a parameter value par such that if x solves the system
@@ -658,8 +656,7 @@ void lm_lmpar(const int n, double* r, const int ldr, const int* Pivot,
     fp = dxnorm - delta;
     if (fp <= p1 * delta) {
 #ifdef LMFIT_DEBUG_MESSAGES
-        printf("debug lmpar nsing %d n %d, terminate (fp<p1*delta)\n", nsing,
-               n);
+        printf("debug lmpar nsing=%d, n=%d, terminate[fp<=p1*del]\n", nsing, n);
 #endif
         *par = 0;
         return;
@@ -731,8 +728,8 @@ void lm_lmpar(const int n, double* r, const int ldr, const int* Pivot,
         if (fabs(fp) <= p1 * delta ||
             (parl == 0 && fp <= fp_old && fp_old < 0) || iter == 10) {
 #ifdef LMFIT_DEBUG_MESSAGES
-            printf("debug lmpar nsing %d iter %d "
-                   "par %.4e [%.4e %.4e] delta %.4e fp %.4e\n",
+            printf("debug lmpar nsing=%d, iter=%d, "
+                   "par=%.4e [%.4e %.4e], delta=%.4e, fp=%.4e\n",
                    nsing, iter, *par, parl, paru, delta, fp);
 #endif
             break; /* the only exit from the iteration. */
@@ -982,52 +979,51 @@ void lm_qrsolv(const int n, double* r, const int ldr, const int* Pivot,
     for (j = 0; j < n; j++) {
 
         /*** Prepare the row of D to be eliminated, locating the diagonal
-           element
-             using P from the QR factorization. ***/
+             element using P from the QR factorization. ***/
 
-        if (diag[Pivot[j]] == 0)
-            goto L90;
-        for (k = j; k < n; k++)
-            Sdiag[k] = 0;
-        Sdiag[j] = diag[Pivot[j]];
+        if (diag[Pivot[j]] != 0) {
+            for (k = j; k < n; k++)
+                Sdiag[k] = 0;
+            Sdiag[j] = diag[Pivot[j]];
 
-        /*** The transformations to eliminate the row of D modify only a single
-             element of Q^T*b beyond the first n, which is initially 0. ***/
+            /*** The transformations to eliminate the row of D modify only
+                 a single element of Q^T*b beyond the first n, which is
+                 initially 0. ***/
 
-        qtbpj = 0;
-        for (k = j; k < n; k++) {
+            qtbpj = 0;
+            for (k = j; k < n; k++) {
 
-            /** Determine a Givens rotation which eliminates the
-                appropriate element in the current row of D. **/
-            if (Sdiag[k] == 0)
-                continue;
-            kk = k + ldr * k;
-            if (fabs(r[kk]) < fabs(Sdiag[k])) {
-                _cot = r[kk] / Sdiag[k];
-                _sin = 1 / hypot(1, _cot);
-                _cos = _sin * _cot;
-            } else {
-                _tan = Sdiag[k] / r[kk];
-                _cos = 1 / hypot(1, _tan);
-                _sin = _cos * _tan;
-            }
+                /** Determine a Givens rotation which eliminates the
+                    appropriate element in the current row of D. **/
+                if (Sdiag[k] == 0)
+                    continue;
+                kk = k + ldr * k;
+                if (fabs(r[kk]) < fabs(Sdiag[k])) {
+                    _cot = r[kk] / Sdiag[k];
+                    _sin = 1 / hypot(1, _cot);
+                    _cos = _sin * _cot;
+                } else {
+                    _tan = Sdiag[k] / r[kk];
+                    _cos = 1 / hypot(1, _tan);
+                    _sin = _cos * _tan;
+                }
 
-            /** Compute the modified diagonal element of R and
-                the modified element of (Q^T*b,0). **/
-            r[kk] = _cos * r[kk] + _sin * Sdiag[k];
-            temp = _cos * W[k] + _sin * qtbpj;
-            qtbpj = -_sin * W[k] + _cos * qtbpj;
-            W[k] = temp;
+                /** Compute the modified diagonal element of R and
+                    the modified element of (Q^T*b,0). **/
+                r[kk] = _cos * r[kk] + _sin * Sdiag[k];
+                temp = _cos * W[k] + _sin * qtbpj;
+                qtbpj = -_sin * W[k] + _cos * qtbpj;
+                W[k] = temp;
 
-            /** Accumulate the tranformation in the row of S. **/
-            for (i = k+1; i < n; i++) {
-                temp = _cos * r[k*ldr+i] + _sin * Sdiag[i];
-                Sdiag[i] = -_sin * r[k*ldr+i] + _cos * Sdiag[i];
-                r[k*ldr+i] = temp;
+                /** Accumulate the tranformation in the row of S. **/
+                for (i = k+1; i < n; i++) {
+                    temp = _cos * r[k*ldr+i] + _sin * Sdiag[i];
+                    Sdiag[i] = -_sin * r[k*ldr+i] + _cos * Sdiag[i];
+                    r[k*ldr+i] = temp;
+                }
             }
         }
 
-    L90:
         /** Store the diagonal element of S and restore
             the corresponding diagonal element of R. **/
         Sdiag[j] = r[j*ldr+j];
