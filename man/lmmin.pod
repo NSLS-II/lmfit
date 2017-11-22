@@ -1,0 +1,271 @@
+=pod
+
+=begin html
+
+<link rel="stylesheet" href="podstyle.css" type="text/css" />
+
+=end html
+
+=head1 NAME
+
+lmmin - Levenberg-Marquardt least-squares minimization
+
+
+=head1 SYNOPSIS
+
+B<#include <lmmin.h>>
+
+B<void lmmin( int> I<n_par>B<, double *>I<par>B<, int> I<m_dat>B<, constS< >void *>I<data>B<,
+            void (*>I<evaluate>B<)(
+                constS< >double *>I<par>B<, int >I<m_dat>B<, constS< >void *>I<data>B<,
+                double *>I<fvec>B<, int *>I<info>B< ),
+            void (*>I<printout>B<)(
+                int> I<n_par>B<, constS< >double *>I<par>B<, int >I<m_dat>B<,
+                constS< >void *>I<data>B<, double *>I<fvec>B<, 
+                constS< >lm_princon_struct *>I<princon>B<,
+                int >I<iflag>B<, int >I<iter>B<, int >I<nfev>B< ),
+            constS< >lm_control_struct *>I<control>B<,
+            constS< >lm_princon_struct *>I<princon>B<,
+            lm_status_struct *>I<status>B< );>
+
+B<void lm_printout_std(
+            int >I<n_par>B<, constS< >double *>I<par>B<, int >I<m_dat>B<,
+            constS< >void *>I<data>B<, double *>I<fvec>B<, 
+            constS< >lm_princon_struct *>I<princon>B<,
+            int >I<iflag>B<, int >I<iter>B<, int >I<nfev>B< );>
+
+B<extern const lm_control_struct lm_control_double;>
+
+B<extern const lm_control_struct lm_control_float;>
+
+B<extern const lm_princon_struct lm_princon_std;>
+
+B<extern const char *lm_infmsg[];>
+
+B<extern const char *lm_shortmsg[];>
+
+=head1 DESCRIPTION
+
+B<lmmin()> determines a vector I<par> that minimizes the sum of squared elements of a vector I<fvec> that is computed by a user-supplied function I<evaluate>().
+On success, I<par> represents a local minimum, not necessarily a global one; it may depend on its starting value.
+
+For applications in curve fitting, the wrapper function B<lmcurve(3)> offers a simplified API.
+
+The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method. For more background, see Moré 1978, Madsen et al. 2004, and comments in the source code.
+
+Function arguments:
+
+=over
+
+=item I<n_par>
+
+Number of free variables. Dimension of parameter vector I<par>.
+
+=item I<par>
+
+Parameter vector. On input, it must contain a reasonable guess; on output, it contains the solution found to minimize ||I<fvec>||.
+
+=item I<m_dat>
+
+Dimension of vector I<fvec>.
+Must statisfy I<n_par> <= I<m_dat>.
+
+=item I<data>
+
+This pointer is ignored by the fit algorithm,
+except for appearing as an argument in all calls to the user-supplied
+routines I<evaluate> and I<printout>.
+
+=item I<evaluate>
+
+Pointer to a user-supplied function that computes I<m_dat> elements of vector I<fvec> for a given parameter vector I<par>. If I<evaluate> return with *I<info> set to a negative value, B<lmmin()> will interrupt the fitting and terminate.
+
+=item I<printout>
+
+A function that prints messages about the fit progress. Legitimate values of this pointer argument are NULL (to indicate that no messages are wanted), &I<lm_printout_std> (pointer to a default implementation), or a pointer to a user-supplied function.
+
+=item I<control>
+
+Parameter collection for tuning the fit procedure.
+In most cases, the default &I<lm_control_double> is adequate.
+If I<f> is only computed with single-precision accuracy,
+I<&lm_control_float> should be used.
+See also below, NOTES on initializing parameter records.
+
+I<control> has the following members (for more details, see the source file I<lmstruct.h>):
+
+=over
+
+=item B<double> I<control.ftol>
+
+Relative error desired in the sum of squares; recommended setting: somewhat above machine precision; less if I<fvec> is computed with reduced accuracy.
+
+=item B<double> I<control.xtol>
+
+Relative error between last two approximations; recommended setting: as I<ftol>.
+
+=item B<double> I<control.gtol>
+
+A measure for degeneracy; recommended setting: as I<ftol>.
+
+=item B<double> I<control.epsilon>
+
+Step used to calculate the Jacobian; recommended setting: as I<ftol>, but definitely less than the accuracy of I<fvec>.
+
+=item B<double> I<control.stepbound>
+
+Initial bound to steps in the outer loop, generally between 0.01 and 100; recommended value is 100.
+
+=item B<int> I<control.patience>
+
+Used to set the maximum number of function evaluations to patience*n_par.
+
+=item B<int> I<control.scale_diag>
+
+Logical switch (0 or 1). If 1, then scale parameters to their initial value. This is the recommended setting.
+
+=item B<int> I<control.pivot>
+
+Logical switch (0 or 1). If 1, then use pivots in matrix operations. This is the recommended setting.
+
+=back
+
+=item I<princon>
+
+Parameter collection for tuning the default printout function
+&I<lm_printout_std>
+(user-supplied printout functions are free to use this record or not).
+For values NULL or &I<lm_princon_def>, the fit is silent. 
+See also below, NOTES on initializing parameter records.
+
+I<princon> has the following members:
+
+=over
+
+=item B<FILE**> I<princon.stream>
+
+Pointer to the stream the output shall be writen to. Typically &I<stdout> or &I<stderr>.
+
+=item B<int> I<princon.form>
+
+To select one out of several forms. In I<lm_princon_def>, form=0 yields verbose output, form=1 yields one compact line per call.
+
+=item B<int> I<princon.flags>
+
+OR'ed bit values to print (1) status, (2) parameters and norm, (4) residues at end of fit, (8) residues at every step;
+
+=item B<int> I<princon.n_maxpri>
+
+-1, or maximum number of parameters to print.
+
+=item B<int> I<princon.m_maxpri>
+
+-1, or maximum number of residuals to print.
+
+=back 
+
+=item I<status>
+
+A record used to return information about the minimization process:
+
+=over
+
+=item B<double> I<status.fnorm>
+
+Norm of the vector I<fvec>;
+
+=item B<int> I<status.nfev>
+
+Actual number of iterations;
+
+=item B<int> I<status.info>
+
+Status of minimization;
+for the corresponding text message, print I<lm_infmsg>B<[>I<status.info>B<]>;
+for a short code, print I<lm_shortmsg>B<[>I<status.info>B<]>.
+
+=back
+
+=back
+
+
+=head1 NOTES
+
+=head2 Initializing parameter records.
+
+The parameter records I<control> and I<princon> should always be initialized
+from supplied default records:
+
+    lm_control_struct control = lm_control_double; /* or _float */
+    lm_princon_struct princon = lm_princon_std;
+
+After this, parameters may be overwritten:
+
+    control.patience = 500; /* allow more iterations */
+    princon.flags    =  15; /* require most verbose monitoring */
+
+An application written this way is guaranteed to work even if new parameters
+are added to I<control> or I<princon>.
+
+Conversely, addition of parameters is not considered an API change; it may happen without increment of the major version number.
+
+=head1 EXAMPLES
+
+See directory I<demo/> in the source distribution.
+
+=head2 One-dimensional curve fitting:
+
+See application sample F<demo/curve1.c>.
+
+=head2 Fitting a function of a vectorial argument:
+
+See application sample F<demo/surface1.c>.
+
+
+=head2 Minimize the norm of a vectorial function:
+
+Several application samples are provided;
+they also serve as test suite to ascertain that the fit algorithm
+overcomes well-known numerical problems:
+
+F<demo/morobropro.c>: I<m>=3, I<n>=2, modified Rosenbrock problem, testing robustness for widely different vectorial components.
+
+F<demo/powell.c>: I<m>=2, I<n>=2, Powell 1970, with singular Jacobian at the solution par=0.
+
+F<demo/hat.c>: I<m>=2, I<n>=1, asymetric mexican hat function ||I<F>(I<p>)||. Fit result depends on starting value - lmfit does not strive to overcome the limitation to local optimisation.
+
+
+=head1 VERSIONS
+
+The first public release was 2.0 (December 2004). The API has changed with version 3.0 (March 2010), and again with version 4.0 (July 2013).
+
+
+=head1 COPYING
+
+Copyright (C):
+   1980-1999 University of Chicago
+   2004-2013 Joachim Wuttke, Forschungszentrum Juelich GmbH
+
+Software: FreeBSD License
+
+Documentation: Creative Commons Attribution Share Alike
+
+
+=head1 SEE ALSO
+
+=begin html
+
+<a href="http://apps.jcns.fz-juelich.de/man/lmcurve.html"><b>lmcurve</b>(3)</a>
+
+=end html
+
+=begin man
+
+\fBlmcurve\fR(3)
+.PP
+
+=end man
+
+Homepage: http://apps.jcns.fz-juelich.de/lmfit
+
+Please report bugs to the author <j.wuttke@fz-juelich.de>

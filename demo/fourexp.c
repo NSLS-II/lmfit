@@ -12,6 +12,8 @@
  * Author:   Joachim Wuttke 2010
  * 
  * Homepage: joachimwuttke.de/lmfit
+ *
+ * Licence:  see ../COPYING (FreeBSD)
  */
  
 #include "lmcurve.h"
@@ -67,12 +69,13 @@ int main()
 
         lm_status_struct status;
         lm_control_struct control = lm_control_double;
-        control.maxcall = 8000;
-        control.printflags = 0;
+        lm_princon_struct princon = lm_princon_std;
+        control.patience = 8000;
+        princon.flags = 0;
 
         /* perform the fit */
 
-        lmcurve_fit( n_par, par, m_dat, t, y, f, &control, &status );
+        lmcurve( n_par, par, m_dat, t, y, f, &control, &princon, &status );
 
         /* print results */
 

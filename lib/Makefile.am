@@ -1,4 +1,4 @@
-include_HEADERS = lmmin.h lmcurve.h
-lib_LTLIBRARIES = liblmmin.la
-liblmmin_la_SOURCES = lmmin.c lmmin.h lmcurve.c lmcurve.h
-liblmmin_la_LDFLAGS = -lm -version-info $(VERSION)
+include_HEADERS = lmstruct.h lmmin.h lmcurve.h
+lib_LTLIBRARIES = liblmfit.la
+liblmfit_la_SOURCES = $(include_HEADERS) lmmin.c lmcurve.c
+liblmfit_la_LDFLAGS = -lm -version-info $(VERSION)

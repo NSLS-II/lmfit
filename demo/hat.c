@@ -9,25 +9,24 @@
  *           of a 1-dimensional parameter: F(p) = ( p+1, lambda*p^2+p-1 ).
  *           So, ||F|| is kind of an asymetric mexican hat function.
  *
- *           There is a stationary point at par = 0. Madsen et al. indicate
- *           incorrectly that it is a global minimum for lambda<1.
- *           It is so only for lambda below about 0.5. For higher values
- *           of lambda, this example allows to study the dependence of
- *           fit results on starting values.
+ *           There is a stationary point at par = 0. Madsen et al. incorrectly
+ *           indicate that it is a global minimum for lambda<1. It is so only
+ *           for lambda below about 0.5. For larger lambda, this example allows
+ *           to study the dependence of fit results on starting values.
  *
  * Author:   Joachim Wuttke 2010
  * 
  * Homepage: joachimwuttke.de/lmfit
  *
- * Licence:  The Mexican-Hat-Do-What-You-Want-License Rev. 7.31
+ * Licence:  see ../COPYING (FreeBSD)
  */
  
-#include "lmcurve.h"
+#include "lmmin.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 
-void evaluate_m2n1( const double *par, int m_dat, const void *data,
+void evaluate_hat( const double *par, int m_dat, const void *data,
                     double *fvec, int *info )
 {
     fvec[0] = par[0]+1;
@@ -40,7 +39,7 @@ int main( int argc, char **argv )
     /* parameter lambda */
 
     if( argc!=3 ){
-        fprintf( stderr, "usage: m2n1 lambda p_start\n" );
+        fprintf( stderr, "usage: hat lambda p_start\n" );
         exit(-1);
     }
     double lambda = atof( argv[1] );
@@ -58,13 +57,14 @@ int main( int argc, char **argv )
 
     lm_status_struct status; // to receive status information
     lm_control_struct control = lm_control_double;
-    control.printflags = 3; // monitor status (+1) and parameters (+2)
+    lm_princon_struct princon = lm_princon_std;
+    princon.flags = 3; // monitor status (+1) and parameters (+2)
 
     /* perform the fit */
 
     printf( "Fitting:\n" );
     lmmin( n_par, par, m_dat, (const void*) &lambda,
-           evaluate_m2n1, &control, &status, lm_printout_std );
+           evaluate_hat, lm_printout_std, &control, &princon, &status );
 
     /* print results */
 
