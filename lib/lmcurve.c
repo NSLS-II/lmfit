@@ -1,7 +1,7 @@
 /*
  * Library:   lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:      lmmin.c
+ * File:      lmcurve.c
  *
  * Contents:  Levenberg-Marquardt curve-fitting
  *
@@ -38,7 +38,6 @@ void lmcurve( int n_par, double *par, int m_dat,
               const double *t, const double *y,
               double (*f)( double t, const double *par ),
               const lm_control_struct *control,
-              const lm_princon_struct *princon,
               lm_status_struct *status )
 {
     lmcurve_data_struct data;
@@ -47,6 +46,5 @@ void lmcurve( int n_par, double *par, int m_dat,
     data.f = f;
 
     lmmin( n_par, par, m_dat, (const void*) &data,
-           lmcurve_evaluate, lm_printout_std,
-           control, princon, status );
+           lmcurve_evaluate, control, status );
 }

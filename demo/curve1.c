@@ -3,11 +3,11 @@
  *
  * File:     demo/curve1.c
  *
- * Contents: Example for one-dimensional curve fitting,
- *           using the simplified interface from lmcurve.h.
+ * Contents: Example for curve fitting with lmcurve():
+ *           fit a data set y(x) by a curve f(x;p).
  *
  * Note:     Any modification of this example should be copied to
- *           the manual page lmcurve(3) and to the wiki.
+ *           the manual page source lmcurve.pod and to the wiki.
  *
  * Author:   Joachim Wuttke <j.wuttke@fz-juelich.de> 2004-2013
  * 
@@ -38,18 +38,16 @@ int main()
     double y[9] = { 16.6, 9.9, 4.4, 1.1, 0., 1.1, 4.2, 9.3, 16.4 };
 
     lm_control_struct control = lm_control_double;
-    lm_princon_struct princon = lm_princon_std;
     lm_status_struct status;
-    princon.form  = 0; /* 1 would give more compact output */
-    princon.flags = 3; /* decent level of progress info */
+    control.verbosity = 9;
 
     printf( "Fitting ...\n" );
     /* now the call to lmfit */
-    lmcurve( n, par, m, t, y, f, &control, &princon, &status );
+    lmcurve( n, par, m, t, y, f, &control, &status );
         
     printf( "Results:\n" );
     printf( "status after %d function evaluations:\n  %s\n",
-            status.nfev, lm_infmsg[status.info] );
+            status.nfev, lm_infmsg[status.outcome] );
 
     printf("obtained parameters:\n");
     for ( i = 0; i < n; ++i)

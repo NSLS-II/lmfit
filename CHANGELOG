@@ -1,3 +1,21 @@
+Changes in lmfit-5.0, released 9aug13
+
+- API changes:
+  - removed callback function for printout
+  - removed control structure for printout; some par's go to lm_control_struct
+  - pivoting can no longer be switched off
+  - from now on, addition of par's to lm_control_struct is not an API change
+- bug fix:
+  - correct memory leak introduced by reversal of mallock trick
+  - restore default scale_diag=1
+- monitoring:
+  - improved text messages ("success" -> "converged", we should not say more)
+- demo: reworked examples
+  - new example nonlin1: solution of 2 nonlinear equations in 2 variables
+  - example surface1 improved and included in man page lmmin(3)
+  - otherwise testsuite started as new project fittest
+- packaging: configure now supports pkg-config
+
 Changes in lmfit-4.0, released 16jul13
 
 - binary library renamed: lmmin -> lmfit
@@ -16,8 +34,8 @@ Changes in lmfit-4.0, released 16jul13
 - build scripts cleanup:
   - demo programs are no longer installed to $bindir
   - configure.ac: cleaned up, and inserted comments
-- Documentation:
-  - new web location: apps.jcns.fz-juelich.de/lmfit.
+- documentation:
+  - new web location: apps.jcns.fz-juelich.de/lmfit
   - new entry page (dokuwiki) instead of man page
   - man page split and largely rewritten: lmcurve(3), lmmin(3)
 

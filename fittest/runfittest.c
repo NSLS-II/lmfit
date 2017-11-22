@@ -24,8 +24,8 @@ void minimizer(int n, double* x, int m, ffunc_type f, int* outcome, int* nfev)
     lm_status_struct status;
     eval_data_struct edata;
     edata.f = f;
-    lmmin( n, x, m, (void*) &edata, evaluate, NULL, &control, NULL, &status );
-    *outcome = status.info;
+    lmmin( n, x, m, (void*) &edata, evaluate, &control, &status );
+    *outcome = status.outcome;
     *nfev = status.nfev;
 }
 
