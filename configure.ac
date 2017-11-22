@@ -13,14 +13,15 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/lmfit
 
-AC_INIT([lmfit], [5:1], [http://apps.jcns.fz-juelich.de/lmfit])
+AC_INIT([lmfit], [5:2], [http://apps.jcns.fz-juelich.de/lmfit])
 
 # standard configuration for shared libraries
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([foreign]) # don't insert GNU standard text files
+AM_INIT_AUTOMAKE([foreign]) # don't insert GNU standard blabla
 LT_INIT([disable-static])
+AM_MAINTAINER_MODE([disable]) # work around rebuild rules
 
 AC_PROG_CC_C99
 AC_SUBST(AM_CFLAGS,"-g -pedantic -Wall -Werror")
