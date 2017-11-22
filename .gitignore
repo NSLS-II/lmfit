@@ -41,6 +41,7 @@ config.status
 config.h
 .libs/
 .deps/
+build-aux/
 *.pc
 stamp*
 libtool
