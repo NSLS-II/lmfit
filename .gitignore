@@ -2,24 +2,12 @@
 *.patch
 *.tmp
 
-a.out
 *.o
 *.a
 *.so
 *.so.*
 *.la
 *.lo
-*.lai
-*.Po
-*.Plo
-
-# TeX auxiliaries
-*.aux
-*.dvi
-*.bbl
-*.blg
-*.log
-*.swp
 
 # manual sections
 *.1
@@ -32,20 +20,6 @@ a.out
 *.8
 *.9
 *~
-
-# autotools generated
-Makefile
-autom4te.cache/
-config.log
-config.status
-config.h
-.libs/
-.deps/
-build-aux/
-*.pc
-stamp*
-libtool
-test-driver
 
 # doxygen generated
 dox/
