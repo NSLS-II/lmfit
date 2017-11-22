@@ -13,7 +13,7 @@
 # Website:
 #   http://apps.jcns.fz-juelich.de/lmfit
 
-AC_INIT([lmfit], [5:2], [http://apps.jcns.fz-juelich.de/lmfit])
+AC_INIT([lmfit], [5:3], [http://apps.jcns.fz-juelich.de/lmfit])
 
 # standard configuration for shared libraries
 AC_CONFIG_AUX_DIR([build-aux])
@@ -24,7 +24,7 @@ LT_INIT([disable-static])
 AM_MAINTAINER_MODE([disable]) # work around rebuild rules
 
 AC_PROG_CC_C99
-AC_SUBST(AM_CFLAGS,"-g -pedantic -Wall -Werror")
+AC_SUBST(AM_CFLAGS,"-O3 -g -pedantic -Wall -Werror")
 AC_CONFIG_HEADERS([config.h]) # to avoid endless -D options
 AC_HEADER_STDC
 
@@ -32,5 +32,5 @@ AC_HEADER_STDC
 AC_CONFIG_SRCDIR([lib/lmmin.c], [demo/curve1.c])
 
 # make these Makefiles
-AC_CONFIG_FILES([Makefile lib/Makefile man/Makefile demo/Makefile lmfit.pc])
+AC_CONFIG_FILES([Makefile lib/Makefile test/Makefile man/Makefile demo/Makefile lmfit.pc])
 AC_OUTPUT

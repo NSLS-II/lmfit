@@ -63,3 +63,4 @@ man/*.html
 demo/*1
 
 build
+test/test_qr
