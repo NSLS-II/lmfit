@@ -12,7 +12,8 @@ typedef struct {
     ffunc_type f;
 } eval_data_struct;
 
-void evaluate (const double *x, int m, const void *data, double *fvec, int *outcome)
+void evaluate(
+    const double *x, int m, const void *data, double *fvec, int *outcome)
 {
     const eval_data_struct* edata = (const eval_data_struct*) data;
     ffunc_type f = edata->f;

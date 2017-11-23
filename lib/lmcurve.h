@@ -39,7 +39,7 @@ void lmcurve(
     const int n_par, double* par, const int m_dat,
     const double* t, const double* y,
     double (*g)(const double t, const double* par),
-    const lm_control_struct* control, lm_status_struct* status );
+    const lm_control_struct* control, lm_status_struct* status);
 
 __END_DECLS
 #endif /* LMCURVE_H */

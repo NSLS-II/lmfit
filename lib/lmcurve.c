@@ -30,7 +30,7 @@ typedef struct {
 
 void lmcurve_evaluate(
     const double *const par, const int m_dat, const void *const data,
-    double *const fvec, int *const info )
+    double *const fvec, int *const info)
 {
     for (int i = 0; i < m_dat; i++ )
         fvec[i] =
@@ -43,8 +43,8 @@ void lmcurve_evaluate(
 void lmcurve(
     const int n_par, double *const par, const int m_dat,
     const double *const t, const double *const y,
-    double (*const g)(const double t, const double *const par ),
-    const lm_control_struct *const control, lm_status_struct *const status )
+    double (*const g)(const double t, const double *const par),
+    const lm_control_struct *const control, lm_status_struct *const status)
 {
     lmcurve_data_struct data = {t, y, g};
     lmmin( n_par, par, m_dat, (const void *const) &data,

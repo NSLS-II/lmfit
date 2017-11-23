@@ -27,13 +27,18 @@
 /* Declare functions that do the heavy numerics.
    Implementions are in this source file, below lmmin.
    Dependences: lmmin calls qrfac and lmpar; lmpar calls qrsolv. */
-void lm_lmpar( const int n, double *const r, const int ldr, int *const ipvt, double *const diag,
-               double *const qtb, double delta, double *const par, double *const x,
-               double *const sdiag, double *const aux, double *const xdi );
-void lm_qrfac( const int m, const int n, double *const a, int *const ipvt,
-               double *const rdiag, double *const acnorm, double *const wa );
-void lm_qrsolv( const int n, double *const r, const int ldr, int *const ipvt, double *const diag,
-                double *const qtb, double *const x, double *const sdiag, double *const wa );
+void lm_lmpar(
+    const int n, double *const r, const int ldr, int *const ipvt,
+    double *const diag, double *const qtb, double delta, double *const par,
+    double *const x,
+    double *const sdiag, double *const aux, double *const xdi);
+void lm_qrfac(
+    const int m, const int n, double *const a, int *const ipvt,
+    double *const rdiag, double *const acnorm, double *const wa );
+void lm_qrsolv(
+    const int n, double *const r, const int ldr, int *const ipvt,
+    double *const diag, double *const qtb, double *const x,
+    double *const sdiag, double *const wa);
 
 
 /*****************************************************************************/
@@ -112,7 +117,7 @@ const char *lm_shortmsg[] = {
 /*  Monitoring auxiliaries.                                                  */
 /*****************************************************************************/
 
-void lm_print_pars( const int nout, const double *par, FILE* fout )
+void lm_print_pars(const int nout, const double *par, FILE* fout)
 {
     fprintf( fout, "  pars:" );
     for (int i = 0; i < nout; ++i)
@@ -125,11 +130,12 @@ void lm_print_pars( const int nout, const double *par, FILE* fout )
 /*  lmmin (main minimization routine)                                        */
 /*****************************************************************************/
 
-void lmmin( const int n, double *const x, const int m, const void *const data,
-            void (*const evaluate)(
-                const double *const par, const int m_dat, const void *const data,
-                double *const fvec, int *const userbreak),
-            const lm_control_struct *const C, lm_status_struct *const S )
+void lmmin(
+    const int n, double *const x, const int m, const void *const data,
+    void (*const evaluate)(
+        const double *const par, const int m_dat, const void *const data,
+        double *const fvec, int *const userbreak),
+    const lm_control_struct *const C, lm_status_struct *const S)
 {
     int j, i;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
@@ -564,9 +570,10 @@ terminate:
 /*  lm_lmpar (determine Levenberg-Marquardt parameter)                       */
 /*****************************************************************************/
 
-void lm_lmpar(const int n, double *const r, const int ldr, int *const ipvt, double *const diag,
-              double *const qtb, double delta, double *const par, double *const x,
-              double *const sdiag, double *const aux, double *const xdi)
+void lm_lmpar(
+    const int n, double *const r, const int ldr, int *const ipvt,
+    double *const diag, double *const qtb, double delta, double *const par,
+    double *const x, double *const sdiag, double *const aux, double *const xdi)
 {
 /*     Given an m by n matrix A, an n by n nonsingular diagonal matrix D,
  *     an m-vector b, and a positive number delta, the problem is to
@@ -791,8 +798,9 @@ void lm_lmpar(const int n, double *const r, const int ldr, int *const ipvt, doub
 /*  lm_qrfac (QR factorization, from lapack)                                 */
 /*****************************************************************************/
 
-void lm_qrfac(const int m, const int n, double *const A, int *const Pivot,
-              double *const Rdiag, double *const Acnorm, double *const W)
+void lm_qrfac(
+    const int m, const int n, double *const A, int *const Pivot,
+    double *const Rdiag, double *const Acnorm, double *const W)
 {
 /*
  *     This subroutine uses Householder transformations with column pivoting
@@ -932,8 +940,10 @@ void lm_qrfac(const int m, const int n, double *const A, int *const Pivot,
 /*  lm_qrsolv (linear least-squares)                                         */
 /*****************************************************************************/
 
-void lm_qrsolv(const int n, double *const r, const int ldr, int *const ipvt, double *const diag,
-               double *const qtb, double *const x, double *const sdiag, double *const wa)
+void lm_qrsolv(
+    const int n, double *const r, const int ldr, int *const ipvt,
+    double *const diag, double *const qtb, double *const x,
+    double *const sdiag, double *const wa)
 {
 /*
  *     Given an m by n matrix A, an n by n diagonal matrix D, and an
@@ -1099,7 +1109,7 @@ void lm_qrsolv(const int n, double *const r, const int ldr, int *const ipvt, dou
 /*  lm_enorm (Euclidean norm)                                                */
 /*****************************************************************************/
 
-double lm_enorm( const int n, const double *const x )
+double lm_enorm(const int n, const double *const x)
 {
 /*     This function calculates the Euclidean norm of an n-vector x.
  *
