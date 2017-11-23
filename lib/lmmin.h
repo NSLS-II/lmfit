@@ -30,7 +30,8 @@ __BEGIN_DECLS
 
 /* Levenberg-Marquardt minimization. */
 void lmmin(
-    const int n_par, double* par, const int m_dat, const void* data,
+    const int n_par, double* par, const int m_dat, const double* y,
+    const void* data,
     void (*evaluate)(
         const double* par, const int m_dat, const void* data,
         double* fvec, int* userbreak),
@@ -53,6 +54,8 @@ void lmmin(
  *
  *      m is the number of functions to be minimized (INPUT, positive integer).
  *        It must fulfill m>=n.
+ *
+ *      y contains data points to be fitted.
  *
  *      data is a pointer that is ignored by lmmin; it is however forwarded
  *        to the user-supplied functions evaluate and printout.

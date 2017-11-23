@@ -25,12 +25,12 @@ void minimizer(int n, double* x, int m, ffunc_type f, int* outcome, int* nfev)
     lm_status_struct status;
     eval_data_struct edata;
     edata.f = f;
-    lmmin( n, x, m, (void*) &edata, evaluate, &control, &status );
+    lmmin( n, x, m, NULL, (void*) &edata, evaluate, &control, &status );
     *outcome = status.outcome;
     *nfev = status.nfev;
 }
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
     control = lm_control_double;
     control.patience = 1000;

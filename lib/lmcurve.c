@@ -47,6 +47,6 @@ void lmcurve(
     const lm_control_struct *const control, lm_status_struct *const status)
 {
     lmcurve_data_struct data = {t, y, g};
-    lmmin( n_par, par, m_dat, (const void *const) &data,
-           lmcurve_evaluate, control, status );
+    lmmin(n_par, par, m_dat, NULL, (const void *const) &data,
+          lmcurve_evaluate, control, status);
 }

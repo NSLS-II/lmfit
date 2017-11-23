@@ -66,8 +66,8 @@ int main()
 
     /* perform the fit */
     printf( "Fitting:\n" );
-    lmmin( n_par, par, m_dat, (const void*) &data,
-           evaluate_surface, &control, &status );
+    lmmin(n_par, par, m_dat, NULL, (const void*) &data,
+          evaluate_surface, &control, &status);
 
     /* print results */
     printf( "\nResults:\n" );

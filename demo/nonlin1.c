@@ -39,22 +39,22 @@ int main( int argc, char **argv )
 
     /* get start values from command line */
     if( argc!=3 ){
-        fprintf( stderr, "usage: nonlin1 x_start y_start\n" );
+        fprintf(stderr, "usage: nonlin1 x_start y_start\n");
         exit(-1);
     }
     p[0] = atof( argv[1] );
     p[1] = atof( argv[2] );
 
     /* the minimization */
-    printf( "Minimization:\n" );
-    lmmin( n, p, n, NULL, evaluate_nonlin1, &control, &status );
+    printf("Minimization:\n");
+    lmmin(n, p, n, NULL, NULL, evaluate_nonlin1, &control, &status);
 
     /* print results */
-    printf( "\n" );
-    printf( "lmmin status after %d function evaluations:\n  %s\n",
-            status.nfev, lm_infmsg[status.outcome] );
+    printf("\n");
+    printf("lmmin status after %d function evaluations:\n  %s\n",
+           status.nfev, lm_infmsg[status.outcome]);
 
-    printf( "\n" );
+    printf("\n");
     printf("Solution:\n");
     printf("  x = %19.11f\n", p[0]);
     printf("  y = %19.11f\n", p[1]);
@@ -62,10 +62,10 @@ int main( int argc, char **argv )
 
     /* convergence of lmfit is not enough to ensure validity of the solution */
     if( status.fnorm >= control.ftol )
-        printf( "not a valid solution, try other starting values\n" );
+        printf("not a valid solution, try other starting values\n");
     else
-        printf( "valid, though not the only solution: "
-                "try other starting values\n" );
+        printf("valid, though not the only solution: "
+               "try other starting values\n");
 
     return 0;
 }

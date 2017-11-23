@@ -131,7 +131,8 @@ void lm_print_pars(const int nout, const double *par, FILE* fout)
 /*****************************************************************************/
 
 void lmmin(
-    const int n, double *const x, const int m, const void *const data,
+    const int n, double *const x, const int m, const double* y,
+    const void *const data,
     void (*const evaluate)(
         const double *const par, const int m_dat, const void *const data,
         double *const fvec, int *const userbreak),
