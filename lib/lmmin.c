@@ -237,7 +237,7 @@ void lmmin(
     (*evaluate)( x, m, data, fvec, &(S->userbreak) );
     if( C->verbosity&&8 )
         for( i=0; i<m; ++i )
-            fprintf( msgfile, "    fvec[%4i] = %18.8g\n", i, fvec[i] );
+            fprintf( msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n", i, fvec[i], y[i]-fvec[i] );
     S->nfev = 1;
     if ( S->userbreak )
         goto terminate;
@@ -278,7 +278,7 @@ void lmmin(
         }
         if ( C->verbosity&16 ) {
             /* print the entire matrix */
-            printf("\nlmmin Jacobian\n");
+            printf("Jacobian\n");
             for (i = 0; i < m; i++) {
                 printf("  ");
                 for (j = 0; j < n; j++)
@@ -453,6 +453,10 @@ void lmmin(
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
 
+            if( C->verbosity&&32 )
+                for( i=0; i<m; ++i )
+                    fprintf( msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
+                             i, fvec[i], y[i]-fvec[i] );
             if( C->verbosity&2 ) {
                 printf( "%3i %2i %9.2g %9.2g %9.2g %14.6g"
                         " %9.2g %10.3e %10.3e %21.15e",
@@ -555,7 +559,7 @@ terminate:
         lm_print_pars( nout, x, msgfile );
     if( C->verbosity&&8 )
         for( i=0; i<m; ++i )
-            fprintf( msgfile, "    fvec[%4i] = %18.8g\n", i, fvec[i] );
+            fprintf( msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n", i, fvec[i], y[i]-fvec[i] );
     if( C->verbosity&2 )
         fprintf( msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm );
     if ( S->userbreak ) /* user-requested break */
