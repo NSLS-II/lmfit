@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     control.patience = 1000;
     // Parse minimizer-specific options.
     int c;
-    while ((c = getopt (argc, argv, "he:t:")) != -1) {
+    while ((c = getopt (argc, argv, "he:t:v:")) != -1) {
         switch (c) {
         case 'e':
             control.epsilon = atof(optarg);
@@ -52,10 +52,10 @@ int main(int argc, char **argv)
         case 'p':
             control.patience = atoi(optarg);
             break;
-        case 'V':
+            */
+        case 'v':
             control.verbosity = atoi(optarg);
             break;
-            */
         case 'h':
             print_help();
         }
