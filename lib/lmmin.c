@@ -245,7 +245,7 @@ void lmmin(
         S->outcome = 13; /* won't fit */
         goto terminate;
     }
-    fnorm = lm_enorm(m, fvec);
+    fnorm = lm_fnorm(m, fvec, y);
     if( C->verbosity&2 )
         fprintf( msgfile, "  fnorm = %24.16g\n", fnorm );
     if( !isfinite(fnorm) ){
@@ -315,7 +315,7 @@ void lmmin(
 /***  [outer]  Form Q^T * fvec, and store first n components in qtf.  ***/
 
         for (i = 0; i < m; i++)
-            wf[i] = fvec[i];
+            wf[i] = fvec[i] - y[i];
 
         for (j = 0; j < n; j++) {
             temp3 = fjac[j*m+j];
@@ -438,7 +438,7 @@ void lmmin(
             ++(S->nfev);
             if ( S->userbreak )
                 goto terminate;
-            fnorm1 = lm_enorm(m, wf);
+            fnorm1 = lm_fnorm(m, wf, y);
             // exceptionally, for this norm we do not test for infinity
             // because we can deal with it without terminating.
 
@@ -548,7 +548,7 @@ void lmmin(
     };
 
 terminate:
-    S->fnorm = lm_enorm(m, fvec);
+    S->fnorm = lm_fnorm(m, fvec, y);
     if( C->verbosity&1 )
         fprintf( msgfile, "lmmin terminates with outcome %i\n", S->outcome);
     if( C->verbosity&2 )
@@ -1179,3 +1179,78 @@ double lm_enorm(const int n, const double *const x)
         return x3max * sqrt(s3);
 
 } /*** lm_enorm. ***/
+
+
+/*****************************************************************************/
+/*  lm_fnorm (Euclidean norm of difference)                                                */
+/*****************************************************************************/
+
+double lm_fnorm(const int n, const double *const x, const double *const y)
+{
+/*     This function calculates the Euclidean norm of an n-vector x-y.
+ *
+ *     The Euclidean norm is computed by accumulating the sum of
+ *     squares in three different sums. The sums of squares for the
+ *     small and large components are scaled so that no overflows
+ *     occur. Non-destructive underflows are permitted. Underflows
+ *     and overflows do not occur in the computation of the unscaled
+ *     sum of squares for the intermediate components.
+ *     The definitions of small, intermediate and large components
+ *     depend on two constants, LM_SQRT_DWARF and LM_SQRT_GIANT. The main
+ *     restrictions on these constants are that LM_SQRT_DWARF**2 not
+ *     underflow and LM_SQRT_GIANT**2 not overflow.
+ *
+ *     Parameters:
+ *
+ *      n is a positive integer INPUT variable.
+ *
+ *      x is an INPUT array of length n.
+ */
+    int i;
+    double agiant, s1, s2, s3, xabs, x1max, x3max, temp;
+
+    s1 = 0;
+    s2 = 0;
+    s3 = 0;
+    x1max = 0;
+    x3max = 0;
+    agiant = LM_SQRT_GIANT / n;
+
+    /** sum squares. **/
+
+    for (i = 0; i < n; i++) {
+        xabs = fabs(x[i]-y[i]);
+        if (xabs > LM_SQRT_DWARF) {
+            if ( xabs < agiant ) {
+                s2 += xabs * xabs;
+            } else if ( xabs > x1max ) {
+                temp = x1max / xabs;
+                s1 = 1 + s1 * SQR(temp);
+                x1max = xabs;
+            } else {
+                temp = xabs / x1max;
+                s1 += SQR(temp);
+            }
+        } else if ( xabs > x3max ) {
+            temp = x3max / xabs;
+            s3 = 1 + s3 * SQR(temp);
+            x3max = xabs;
+        } else if (xabs != 0) {
+            temp = xabs / x3max;
+            s3 += SQR(temp);
+        }
+    }
+
+    /** calculation of norm. **/
+
+    if (s1 != 0)
+        return x1max * sqrt(s1 + (s2 / x1max) / x1max);
+    else if (s2 != 0)
+        if (s2 >= x3max)
+            return sqrt(s2 * (1 + (x3max / s2) * (x3max * s3)));
+        else
+            return sqrt(x3max * ((s2 / x3max) + (x3max * s3)));
+    else
+        return x3max * sqrt(s3);
+
+} /*** lm_fnorm. ***/

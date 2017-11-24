@@ -78,6 +78,7 @@ void lmmin(
 
 /* Refined calculation of Eucledian norm. */
 double lm_enorm(const int, const double*);
+double lm_fnorm(const int, const double*, const double*);
 
 __END_DECLS
 #endif /* LMMIN_H */

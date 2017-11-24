@@ -10,7 +10,6 @@ lm_control_struct control;
 
 typedef struct {
     ffunc_type f;
-    double* y;
 } eval_data_struct;
 
 void evaluate(
@@ -18,10 +17,7 @@ void evaluate(
 {
     const eval_data_struct* edata = (const eval_data_struct*) data;
     ffunc_type f = edata->f;
-    double* y = edata->y;
     (*f)(x, m, fvec);
-    for (int i=0; i<m; ++i)
-        fvec[i] -= y[i];
 }
 
 void minimizer(int n, double* x, int m, double* y, ffunc_type f, int* outcome, int* nfev)
@@ -29,8 +25,7 @@ void minimizer(int n, double* x, int m, double* y, ffunc_type f, int* outcome, i
     lm_status_struct status;
     eval_data_struct edata;
     edata.f = f;
-    edata.y = y;
-    lmmin( n, x, m, NULL, (void*) &edata, evaluate, &control, &status );
+    lmmin( n, x, m, y, (void*) &edata, evaluate, &control, &status );
     *outcome = status.outcome;
     *nfev = status.nfev;
 }
