@@ -119,10 +119,10 @@ const char *lm_shortmsg[] = {
 
 void lm_print_pars(const int nout, const double *par, FILE* fout)
 {
-    fprintf( fout, "  pars:" );
+    fprintf(fout, "  pars:");
     for (int i = 0; i < nout; ++i)
-        fprintf( fout, " %23.16g", par[i] );
-    fprintf( fout, "\n" );
+        fprintf(fout, " %23.16g", par[i]);
+    fprintf(fout, "\n");
 }
 
 
@@ -151,7 +151,7 @@ void lmmin(
     double xnorm = 0;
     double eps = sqrt(MAX(C->epsilon, LM_MACHEP)); /* for forward differences */
 
-    int nout = C->n_maxpri==-1 ? n : MIN( C->n_maxpri, n );
+    int nout = C->n_maxpri==-1 ? n : MIN(C->n_maxpri, n);
 
     /* The workaround msgfile=NULL is needed for default initialization */
     FILE* msgfile = C->msgfile ? C->msgfile : stdout;
@@ -164,37 +164,37 @@ void lmmin(
 /***  Check input parameters for errors.  ***/
 
     if ( n < 0 ) {
-        fprintf( stderr, "lmmin: invalid number of parameters %i\n", n );
+        fprintf(stderr, "lmmin: invalid number of parameters %i\n", n);
         S->outcome = 10; /* invalid parameter */
         return;
     }
     if (m < n) {
-        fprintf( stderr, "lmmin: number of data points (%i) "
-                 "smaller than number of parameters (%i)\n", m, n );
+        fprintf(stderr, "lmmin: number of data points (%i) "
+                "smaller than number of parameters (%i)\n", m, n);
         S->outcome = 10;
         return;
     }
     if (C->ftol < 0 || C->xtol < 0 || C->gtol < 0) {
-        fprintf( stderr,
-                 "lmmin: negative tolerance (at least one of %g %g %g)\n",
-                 C->ftol, C->xtol, C->gtol );
+        fprintf(stderr,
+                "lmmin: negative tolerance (at least one of %g %g %g)\n",
+                C->ftol, C->xtol, C->gtol);
         S->outcome = 10;
         return;
     }
     if (maxfev <= 0) {
-        fprintf( stderr, "lmmin: nonpositive function evaluations limit %i\n",
-                 maxfev );
+        fprintf(stderr, "lmmin: nonpositive function evaluations limit %i\n",
+                maxfev);
         S->outcome = 10;
         return;
     }
     if (C->stepbound <= 0) {
-        fprintf( stderr, "lmmin: nonpositive stepbound %g\n", C->stepbound );
+        fprintf(stderr, "lmmin: nonpositive stepbound %g\n", C->stepbound);
         S->outcome = 10;
         return;
     }
     if (C->scale_diag != 0 && C->scale_diag != 1) {
-        fprintf( stderr, "lmmin: logical variable scale_diag=%i, "
-                 "should be 0 or 1\n", C->scale_diag );
+        fprintf(stderr, "lmmin: logical variable scale_diag=%i, "
+                "should be 0 or 1\n", C->scale_diag);
         S->outcome = 10;
         return;
     }
@@ -230,14 +230,19 @@ void lmmin(
 /***  Evaluate function at starting point and calculate norm.  ***/
 
     if( C->verbosity&1 )
-        fprintf( msgfile, "lmmin start (ftol=%g gtol=%g xtol=%g)\n",
-                 C->ftol, C->gtol, C->xtol );
+        fprintf(msgfile, "lmmin start (ftol=%g gtol=%g xtol=%g)\n",
+                C->ftol, C->gtol, C->xtol);
     if( C->verbosity&2 )
-        lm_print_pars( nout, x, msgfile );
-    (*evaluate)( x, m, data, fvec, &(S->userbreak) );
+        lm_print_pars(nout, x, msgfile);
+    (*evaluate)(x, m, data, fvec, &(S->userbreak));
     if( C->verbosity&&8 )
-        for( i=0; i<m; ++i )
-            fprintf( msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n", i, fvec[i], y[i]-fvec[i] );
+        if (y)
+            for( i=0; i<m; ++i )
+                fprintf(msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
+                        i, fvec[i], y[i]-fvec[i]);
+        else
+            for( i=0; i<m; ++i )
+                fprintf(msgfile, "    i, f: %4i %18.8g\n", i, fvec[i]);
     S->nfev = 1;
     if ( S->userbreak )
         goto terminate;
@@ -247,10 +252,10 @@ void lmmin(
     }
     fnorm = lm_fnorm(m, fvec, y);
     if( C->verbosity&2 )
-        fprintf( msgfile, "  fnorm = %24.16g\n", fnorm );
+        fprintf(msgfile, "  fnorm = %24.16g\n", fnorm);
     if( !isfinite(fnorm) ){
         if( C->verbosity )
-            fprintf( msgfile, "nan case 1\n" );
+            fprintf(msgfile, "nan case 1\n");
         S->outcome = 12; /* nan */
         goto terminate;
     } else if( fnorm <= LM_DWARF ){
@@ -268,7 +273,7 @@ void lmmin(
             temp = x[j];
             step = MAX(eps*eps, eps * fabs(temp));
             x[j] += step; /* replace temporarily */
-            (*evaluate)( x, m, data, wf, &(S->userbreak) );
+            (*evaluate)(x, m, data, wf, &(S->userbreak));
             ++(S->nfev);
             if ( S->userbreak )
                 goto terminate;
@@ -314,8 +319,12 @@ void lmmin(
 
 /***  [outer]  Form Q^T * fvec, and store first n components in qtf.  ***/
 
-        for (i = 0; i < m; i++)
-            wf[i] = fvec[i] - y[i];
+        if (y)
+            for (i = 0; i < m; i++)
+                wf[i] = fvec[i] - y[i];
+        else
+            for (i = 0; i < m; i++)
+                wf[i] = fvec[i];
 
         for (j = 0; j < n; j++) {
             temp3 = fjac[j*m+j];
@@ -340,7 +349,7 @@ void lmmin(
             sum = 0;
             for (i = 0; i <= j; i++)
                 sum += fjac[j*m+i] * qtf[i];
-            gnorm = MAX( gnorm, fabs( sum / wa2[ipvt[j]] / fnorm ) );
+            gnorm = MAX(gnorm, fabs( sum / wa2[ipvt[j]] / fnorm ));
         }
 
         if (gnorm <= C->gtol) {
@@ -365,7 +374,7 @@ void lmmin(
             }
             if( !isfinite(xnorm) ){
                 if( C->verbosity )
-                    fprintf( msgfile, "nan case 2\n" );
+                    fprintf(msgfile, "nan case 2\n");
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
@@ -376,13 +385,12 @@ void lmmin(
                 delta = C->stepbound;
             /* only now print the header for the loop table */
             if( C->verbosity&2 ) {
-                fprintf( msgfile, " #o #i     lmpar    prered"
-                         "  actred"
-                         "        ratio    dirder      delta"
-                         "      pnorm                 fnorm" );
+                fprintf(msgfile, " #o #i     lmpar    prered  actred"
+                        "        ratio    dirder      delta"
+                        "      pnorm                 fnorm");
                 for (i = 0; i < nout; ++i)
-                    fprintf( msgfile, "               p%i", i );
-                fprintf( msgfile, "\n" );
+                    fprintf(msgfile, "               p%i", i);
+                fprintf(msgfile, "\n");
             }
         } else {
             if (C->scale_diag) {
@@ -397,15 +405,15 @@ void lmmin(
 
 /***  [inner]  Determine the Levenberg-Marquardt parameter.  ***/
 
-            lm_lmpar( n, fjac, m, ipvt, diag, qtf, delta, &lmpar,
-                      wa1, wa2, wf, wa3 );
+            lm_lmpar(n, fjac, m, ipvt, diag, qtf, delta, &lmpar,
+                     wa1, wa2, wf, wa3);
             /* used return values are fjac (partly), lmpar, wa1=x, wa3=diag*x */
 
             /* predict scaled reduction */
             pnorm = lm_enorm(n, wa3);
             if( !isfinite(pnorm) ){
                 if( C->verbosity )
-                    fprintf( msgfile, "nan case 3\n" );
+                    fprintf(msgfile, "nan case 3\n");
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
@@ -418,7 +426,7 @@ void lmmin(
             temp1 = SQR( lm_enorm(n, wa3) / fnorm );
             if( !isfinite(temp1) ){
                 if( C->verbosity )
-                    fprintf( msgfile, "nan case 4\n" );
+                    fprintf(msgfile, "nan case 4\n");
                 S->outcome = 12; /* nan */
                 goto terminate;
             }
@@ -454,17 +462,22 @@ void lmmin(
             ratio = prered ? actred/prered : 0;
 
             if( C->verbosity&&32 )
-                for( i=0; i<m; ++i )
-                    fprintf( msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
-                             i, fvec[i], y[i]-fvec[i] );
+                if (y)
+                    for( i=0; i<m; ++i )
+                        fprintf(msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
+                                i, fvec[i], y[i]-fvec[i]);
+                else
+                    for( i=0; i<m; ++i )
+                        fprintf(msgfile, "    i, f, y-f: %4i %18.8g\n",
+                                i, fvec[i]);
             if( C->verbosity&2 ) {
-                printf( "%3i %2i %9.2g %9.2g %9.2g %14.6g"
-                        " %9.2g %10.3e %10.3e %21.15e",
-                        outer, inner, lmpar, prered, actred, ratio,
-                        dirder, delta, pnorm, fnorm1 );
+                printf("%3i %2i %9.2g %9.2g %9.2g %14.6g"
+                       " %9.2g %10.3e %10.3e %21.15e",
+                       outer, inner, lmpar, prered, actred, ratio,
+                       dirder, delta, pnorm, fnorm1);
                 for (i = 0; i < nout; ++i)
-                    fprintf( msgfile, " %16.9g", wa2[i] );
-                fprintf( msgfile, "\n" );
+                    fprintf(msgfile, " %16.9g", wa2[i]);
+                fprintf(msgfile, "\n");
             }
 
             /* update the step bound */
@@ -502,7 +515,7 @@ void lmmin(
                 xnorm = lm_enorm(n, wa2);
                 if( !isfinite(xnorm) ){
                     if( C->verbosity )
-                        fprintf( msgfile, "nan case 6\n" );
+                        fprintf(msgfile, "nan case 6\n");
                     S->outcome = 12; /* nan */
                     goto terminate;
                 }
@@ -554,14 +567,19 @@ void lmmin(
 terminate:
     S->fnorm = lm_fnorm(m, fvec, y);
     if( C->verbosity&1 )
-        fprintf( msgfile, "lmmin terminates with outcome %i\n", S->outcome);
+        fprintf(msgfile, "lmmin terminates with outcome %i\n", S->outcome);
     if( C->verbosity&2 )
-        lm_print_pars( nout, x, msgfile );
+        lm_print_pars(nout, x, msgfile);
     if( C->verbosity&&8 )
-        for( i=0; i<m; ++i )
-            fprintf( msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n", i, fvec[i], y[i]-fvec[i] );
+        if (y)
+            for( i=0; i<m; ++i )
+                fprintf(msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
+                        i, fvec[i], y[i]-fvec[i] );
+        else
+            for( i=0; i<m; ++i )
+                fprintf(msgfile, "    i, f, y-f: %4i %18.8g\n", i, fvec[i]);
     if( C->verbosity&2 )
-        fprintf( msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm );
+        fprintf(msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm);
     if ( S->userbreak ) /* user-requested break */
         S->outcome = 11;
 
@@ -746,7 +764,7 @@ void lm_lmpar(
         for (j = 0; j < n; j++)
             aux[j] = temp * diag[j];
 
-        lm_qrsolv( n, r, ldr, ipvt, aux, qtb, x, sdiag, xdi );
+        lm_qrsolv(n, r, ldr, ipvt, aux, qtb, x, sdiag, xdi);
         /* return values are r, x, sdiag */
 
         for (j = 0; j < n; j++)
@@ -1208,8 +1226,10 @@ double lm_fnorm(const int n, const double *const x, const double *const y)
  *
  *      n is a positive integer INPUT variable.
  *
- *      x is an INPUT array of length n.
+ *      x, y are INPUT arrays of length n.
  */
+    if (!y)
+        return lm_enorm(n, x);
     int i;
     double agiant, s1, s2, s3, xabs, x1max, x3max, temp;
 
