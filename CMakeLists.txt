@@ -13,7 +13,7 @@ set(lmfit_VERSION ${lmfit_SOVERSION}.4) # lib version
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
 
-set(destination_lib ${CMAKE_INSTALL_PREFIX}/lib)
+set(destination ${CMAKE_INSTALL_PREFIX})
 
 set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -pedantic -Wall -Wno-sign-compare -Wno-unused-result -Wno-parentheses  -Wno-unknown-pragmas -Werror")
 

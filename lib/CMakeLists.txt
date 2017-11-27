@@ -3,7 +3,7 @@ set(${library_name}_LIBRARY ${library_name} PARENT_SCOPE)
 set(${library_name}_LIBRARY_TYPE SHARED)
 
 set(src_files lmcurve.c lmmin.c)
-set(inc_files lmcurve.h lmmin.h)
+set(inc_files lmcurve.h lmmin.h lmstruct.h)
 
 add_library(${library_name} SHARED ${src_files})
 
@@ -17,5 +17,9 @@ target_link_libraries(${library_name} m)
 
 install(
     TARGETS ${library_name} LIBRARY
-    DESTINATION ${destination_lib}
+    DESTINATION ${destination}/lib
     COMPONENT Libraries)
+install(
+    FILES ${inc_files}
+    DESTINATION ${destination}/include
+    COMPONENT Headers)
