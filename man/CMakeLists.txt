@@ -21,14 +21,13 @@ endfunction()
 
 add_custom_target(
     man ALL
-    DEPENDS lmcurve.3 lmmin.3 lmfit.7
+    DEPENDS lmmin.3 lmfit.7
 )
 
 add_custom_target(
     html ALL
-    DEPENDS lmcurve.html lmmin.html lmfit.html
+    DEPENDS lmmin.html lmfit.html
 )
 
-one_page(lmcurve 3)
 one_page(lmmin 3)
 one_page(lmfit 7)
