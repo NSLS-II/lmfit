@@ -16,7 +16,7 @@ lmmin - Levenberg-Marquardt least-squares minimization
 B<#include <lmmin.h>>
 
 B<void lmmin( const int> I<n_par>B<, double *>I<par>B<, const int> I<m_dat>B<,
-            constS< >void *>I<data>B<,
+            constS< >void *>I<y>B<, constS< >void *>I<data>B<,
             void *>I<evaluate>B<(
                  constS< >double *>I<par>B<, const int >I<m_dat>B<,
                  constS< >void *>I<data>B<, double *>I<fvec>B<, int *>I<userbreak>B<),
@@ -33,7 +33,7 @@ B<extern const char *lm_shortmsg[];>
 
 =head1 DESCRIPTION
 
-B<lmmin()> determines a vector I<par> that minimizes the sum of squared elements of a vector I<fvec> that is computed by a user-supplied function I<evaluate>().
+B<lmmin()> determines a vector I<par> that minimizes the sum of squared elements of I<fvec>-I<y>. The vector I<fvec> is computed by a user-supplied function I<evaluate>(); the vector I<y> contains user-provided values.
 On success, I<par> represents a local minimum, not necessarily a global one; it may depend on its starting value.
 
 For applications in curve fitting, the wrapper function B<lmcurve(3)> offers a simplified API.
@@ -59,6 +59,11 @@ On output, it contains the solution found to minimize ||I<fvec>||.
 
 Length of vector I<fvec>.
 Must statisfy I<n_par> <= I<m_dat>.
+
+=item I<y>
+
+Input vector of length I<m_dat>.
+May also be the null pointer; in this case, B<lmmin()> minimizes the squared sum of I<fvec> instead of I<fvec>-I<y>.
 
 =item I<data>
 
