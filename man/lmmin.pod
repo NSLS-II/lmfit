@@ -292,6 +292,8 @@ Documentation: Creative Commons Attribution Share Alike
 =begin html
 
 <a href="http://apps.jcns.fz-juelich.de/man/lmcurve.html"><b>lmcurve</b>(3)</a>
+<p>
+Homepage: <a href="http://apps.jcns.fz-juelich.de/lmfit">http://apps.jcns.fz-juelich.de/lmfit</a>
 
 =end html
 
@@ -300,9 +302,9 @@ Documentation: Creative Commons Attribution Share Alike
 \fBlmcurve\fR(3)
 .PP
 
-=end man
-
 Homepage: http://apps.jcns.fz-juelich.de/lmfit
+
+=end man
 
 =head1 BUGS
 

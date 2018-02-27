@@ -38,6 +38,8 @@ Documentation: Creative Commons Attribution Share Alike
 
 <a href="http://apps.jcns.fz-juelich.de/man/lmcurve.html"><b>lmcurve</b>(3)</a>,
 <a href="http://apps.jcns.fz-juelich.de/man/lmmin.html"><b>lmmin</b>(3)</a>
+<p>
+Homepage: <a href="http://apps.jcns.fz-juelich.de/lmfit">http://apps.jcns.fz-juelich.de/lmfit</a>
 
 =end html
 
@@ -45,10 +47,9 @@ Documentation: Creative Commons Attribution Share Alike
 
 \fBlmcurve\fR(3), \fBlmmin\fR(3)
 .PP
+Homepage: http://apps.jcns.fz-juelich.de/lmfit
 
 =end man
-
-Homepage: http://apps.jcns.fz-juelich.de/lmfit
 
 =head1 BUGS
 
