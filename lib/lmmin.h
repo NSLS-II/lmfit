@@ -46,16 +46,16 @@ void lmmin(
  *
  *   Parameters:
  *
- *      n is the number of variables (INPUT, positive integer).
+ *      n_par is the number of variables (INPUT, positive integer).
  *
- *      x is the solution vector (INPUT/OUTPUT, array of length n).
+ *      par is the solution vector (INPUT/OUTPUT, array of length n).
  *        On input it must be set to an estimated solution.
  *        On output it yields the final estimate of the solution.
  *
- *      m is the number of functions to be minimized (INPUT, positive integer).
+ *      m_dat is the number of functions to be minimized (INPUT, positive integer).
  *        It must fulfill m>=n.
  *
- *      y contains data points to be fitted.
+ *      y contains data to be fitted. Use a null pointer if there are no data.
  *
  *      data is a pointer that is ignored by lmmin; it is however forwarded
  *        to the user-supplied functions evaluate and printout.

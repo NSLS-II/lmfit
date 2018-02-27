@@ -1,10 +1,16 @@
-Changes in lmfit-6.4, release 22nov17:
+Changes in lmfit-7.0, released 27feb18:
+- Automake support removed
+- API changed:
+  - compute f-y only when needed
+- Man page built under CMake
+
+Changes in lmfit-6.4, released 22nov17:
 
 - First version with CMake
 - First version with fittest
 - Probably last version with automake support
 
-Changes in lmfit-6.3, release 3nov17:
+Changes in lmfit-6.3, released 3nov17:
 
 - two small corrections in core algorithm:
   - 0.5 had become .55 at some point in the past
