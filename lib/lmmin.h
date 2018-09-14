@@ -29,9 +29,9 @@
 __BEGIN_DECLS
 
 /* Levenberg-Marquardt minimization. */
-void lmmin(
-    const int n_par, double* par, const int m_dat, const double* y,
-    const void* data,
+void lmmin2(
+    const int n_par, double* par, double* parerr, double* covar,
+    const int m_dat, const double* y, const void* data,
     void (*evaluate)(
         const double* par, const int m_dat, const void* data,
         double* fvec, int* userbreak),
@@ -51,6 +51,12 @@ void lmmin(
  *      par is the solution vector (INPUT/OUTPUT, array of length n).
  *        On input it must be set to an estimated solution.
  *        On output it yields the final estimate of the solution.
+ *
+ *      parerr (either NULL or OUTPUT array of length n)
+ *        yields parameter error estimates.
+ *
+ *      covar (either NULL or OUTPUT array of length n*n)
+ *        yields the parameter covariance matrix (not yet implemented).
  *
  *      m_dat is the number of functions to be minimized (INPUT, integer).
  *        It must fulfill m>=n.
@@ -75,6 +81,15 @@ void lmmin(
  *      status contains OUTPUT variables that inform about the fit result,
  *        as declared and explained in lmstruct.h
  */
+
+/* old, simpler interface, preserved for API compatibility */
+void lmmin(
+    const int n_par, double* par, const int m_dat, const double* y,
+    const void* data,
+    void (*evaluate)(
+        const double* par, const int m_dat, const void* data,
+        double* fvec, int* userbreak),
+    const lm_control_struct* control, lm_status_struct* status);
 
 /* Refined calculation of Eucledian norm. */
 double lm_enorm(const int, const double*);

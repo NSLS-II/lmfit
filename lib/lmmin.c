@@ -127,7 +127,7 @@ void lm_print_pars(const int nout, const double *par, FILE* fout)
 
 
 /*****************************************************************************/
-/*  lmmin (main minimization routine)                                        */
+/*  lmmin (simple/legacy API)                                                */
 /*****************************************************************************/
 
 void lmmin(
@@ -138,7 +138,22 @@ void lmmin(
         double *const fvec, int *const userbreak),
     const lm_control_struct *const C, lm_status_struct *const S)
 {
-    int j, i;
+    lmmin2(n, x, NULL, NULL, m, y, data, evaluate, C, S);
+}
+
+/*****************************************************************************/
+/*  lmmin2 (main minimization routine)                                       */
+/*****************************************************************************/
+
+void lmmin2(
+    const int n, double *const x, double *const dx, double *const covar,
+    const int m, const double* y, const void *const data,
+    void (*const evaluate)(
+        const double *const par, const int m_dat, const void *const data,
+        double *const fvec, int *const userbreak),
+    const lm_control_struct *const C, lm_status_struct *const S)
+{
+    int j, i, failure;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
         prered, ratio, step, sum, temp, temp1, temp2, temp3;
     static double p1 = 0.1, p0001 = 1.0e-4;
@@ -563,9 +578,47 @@ void lmmin(
 /***  [outer]  End of the loop. ***/
 
     };
-
 terminate:
+
+/***  Set status.  ***/
     S->fnorm = lm_fnorm(m, fvec, y);
+    if ( S->userbreak ) /* user-requested break */
+        S->outcome = 11;
+
+/***  Compute error estimates.  ***/
+    if (dx) {
+        if( S->fnorm <= LM_DWARF ) {
+            for (j = 0; j < n; j++)
+                dx[j] = 0.;
+
+        } else {
+            for (j = 0; j < n; j++) {
+                sum = 0;
+                temp = x[j];
+                step = MAX(eps*eps, eps * fabs(temp));
+                x[j] += step; /* replace temporarily */
+                failure = 0;
+                (*evaluate)(x, m, data, wf, &failure);
+                if ( failure ) {
+                    dx[j] = 0;
+                    continue;
+                }
+                for (i = 0; i < m; i++)
+                    sum += SQR((wf[i] - fvec[i]) / step / S->fnorm);
+                dx[j] = 1 / sqrt(sum);
+                x[j] = temp; /* restore */
+            }
+        }
+    }
+
+/***  Compute covariance matrix.  ***/
+    if (covar) {
+        fprintf(stderr, "lmmin: covar computation not yet implemented");
+        S->outcome = 10;
+        return;
+    }
+
+/***  Messages.  ***/
     if( C->verbosity&1 )
         fprintf(msgfile, "lmmin terminates with outcome %i\n", S->outcome);
     if( C->verbosity&2 )
@@ -580,8 +633,6 @@ terminate:
                 fprintf(msgfile, "    i, f, y-f: %4i %18.8g\n", i, fvec[i]);
     if( C->verbosity&2 )
         fprintf(msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm);
-    if ( S->userbreak ) /* user-requested break */
-        S->outcome = 11;
 
 /***  Deallocate the workspace.  ***/
     free(ws);
