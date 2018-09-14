@@ -8,15 +8,15 @@
 
 =head1 NAME
 
-lmmin - Levenberg-Marquardt least-squares minimization (simple/legacy API without error estimates)
+lmmin2 - Levenberg-Marquardt least-squares minimization with error estimation
 
 
 =head1 SYNOPSIS
 
 B<#include <lmmin.h>>
 
-B<void lmmin( const int> I<n_par>B<, double *>I<par>B<, const int> I<m_dat>B<,
-            constS< >void *>I<y>B<, constS< >void *>I<data>B<,
+B<void lmmin2( const int> I<n_par>B<, double *>I<par>B<, double *>I<parerr>B<, double *>I<covar>B<,
+            const int> I<m_dat>B<, constS< >void *>I<y>B<, constS< >void *>I<data>B<,
             void *>I<evaluate>B<(
                  constS< >double *>I<par>B<, const int >I<m_dat>B<,
                  constS< >void *>I<data>B<, double *>I<fvec>B<, int *>I<userbreak>B<),
@@ -33,11 +33,10 @@ B<extern const char *lm_shortmsg[];>
 
 =head1 DESCRIPTION
 
-B<lmmin()> determines a vector I<par> that minimizes the sum of squared elements of I<fvec>-I<y>. The vector I<fvec> is computed by a user-supplied function I<evaluate>(); the vector I<y> contains user-provided values.
+B<lmmin2()> determines a vector I<par> that minimizes the sum of squared elements of I<fvec>-I<y>. The vector I<fvec> is computed by a user-supplied function I<evaluate>(); the vector I<y> contains user-provided values.
 On success, I<par> represents a local minimum, not necessarily a global one; it may depend on its starting value.
 
-This is a simple wrapper of the function B<lmmin2(3)>, which also returns error estimates.
-Conversely, the function B<lmcurve(3)> provides an even simpler wrapper, for use in curve fitting.
+The legacy function B<lmmin(3)> provides a simplified API without error estimates.
 
 The Levenberg-Marquardt minimization starts with a steepest-descent exploration of the parameter space, and achieves rapid convergence by crossing over into the Newton-Gauss method.
 
@@ -52,9 +51,21 @@ Length of parameter vector I<par>.
 
 =item I<par>
 
-Parameter vector.
+Parameter vector, of length I<n_par>.
 On input, it must contain a reasonable guess.
 On output, it contains the solution found to minimize ||I<fvec>||.
+
+=item I<parerr>
+
+Parameter error vector, either of length I<n_par>, or B<NULL>.
+On output, unless it is B<NULL>, it contains the parameter uncertainties,
+estimated from the diagonal elements of the covariance matrix.
+
+=item I<covar>
+
+Covariance matrix, stored as vector of length I<n_par>*I<n_par>, or B<NULL>.
+On output, unless it is B<NULL>, it contains the covariance matrix.
+NOT YET IMPLEMENTED!
 
 =item I<m_dat>
 
@@ -232,6 +243,8 @@ Fit a data set y(t) by a function f(t;p) where t is a two-dimensional vector:
         /* parameter vector */
         int n_par = 3; /* number of parameters in model function f */
         double par[3] = { -1, 0, 1 }; /* arbitrary starting value */
+        double parerr[3];
+        double covar[9];
 
         /* data points */
         int m_dat = 4;
@@ -248,8 +261,8 @@ Fit a data set y(t) by a function f(t;p) where t is a two-dimensional vector:
 
         /* perform the fit */
         printf( "Fitting:\n" );
-        lmmin( n_par, par, m_dat, (const void*) &data, evaluate_surface,
-               &control, &status );
+        lmmin2( n_par, par, parerr, covar, m_dat, (const void*) &data,
+                evaluate_surface, &control, &status );
 
         /* print results */
         printf( "\nResults:\n" );
@@ -259,7 +272,7 @@ Fit a data set y(t) by a function f(t;p) where t is a two-dimensional vector:
         printf("obtained parameters:\n");
         int i;
         for ( i=0; i<n_par; ++i )
-    	printf("  par[%i] = %12g\n", i, par[i]);
+    	printf("  par[%i] = %12g +- %12g\n", i, par[i], parerr[i]);
         printf("obtained norm:\n  %12g\n", status.fnorm );
 
         printf("fitting data as follows:\n");
@@ -292,7 +305,7 @@ Documentation: Creative Commons Attribution Share Alike
 
 =begin html
 
-<a href="http://apps.jcns.fz-juelich.de/man/lmmin2.html"><b>lmmin2</b>(3)</a>,
+<a href="http://apps.jcns.fz-juelich.de/man/lmmin.html"><b>lmmin</b>(3)</a>
 <a href="http://apps.jcns.fz-juelich.de/man/lmcurve.html"><b>lmcurve</b>(3)</a>
 <p>
 Homepage: <a href="http://apps.jcns.fz-juelich.de/lmfit">http://apps.jcns.fz-juelich.de/lmfit</a>
@@ -301,7 +314,7 @@ Homepage: <a href="http://apps.jcns.fz-juelich.de/lmfit">http://apps.jcns.fz-jue
 
 =begin man
 
-\fBlmmin2\fR(3),
+\fBlmmin\fR(3),
 \fBlmcurve\fR(3)
 .PP
 

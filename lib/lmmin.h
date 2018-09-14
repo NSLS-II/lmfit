@@ -5,7 +5,7 @@
  *
  * Contents:  Declarations for Levenberg-Marquardt minimization.
  *
- * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
+ * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2018)
  *
  * License:   see ../COPYING (FreeBSD)
  *

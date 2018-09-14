@@ -6,7 +6,7 @@
  * Contents:  Levenberg-Marquardt minimization.
  *
  * Copyright: MINPACK authors, The University of Chikago (1980-1999)
- *            Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
+ *            Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2018)
  *
  * License:   see ../COPYING (FreeBSD)
  *
