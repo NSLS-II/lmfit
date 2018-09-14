@@ -22,6 +22,7 @@
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
 /* machine-dependent constants from float.h */
 #define LM_MACHEP     DBL_EPSILON   /* resolution of arithmetic */
+#define LM_DWARF      DBL_MIN       /* smallest nonzero number */
 
 /*****************************************************************************/
 /*  lmerr (diagonal error estimates)                                         */
@@ -36,7 +37,7 @@ void lmerr(
     const lm_control_struct *const C, int* failure)
 {
     int j, i;
-    double temp, fnorm, step, df;
+    double temp, fnorm, step, df, sum;
     double eps = sqrt(MAX(C->epsilon, LM_MACHEP)); /* for forward differences */
     *failure = 0;
 
@@ -68,21 +69,30 @@ void lmerr(
 /***  Calculate the Jacobian.  ***/
 
     (*evaluate)(x, m, data, fvec, failure);
+    if ( *failure )
+        return;
     fnorm = lm_fnorm(m, fvec, y);
 
-    for (j = 0; j < n; j++) {
-        dx[j] = 0;
-        temp = x[j];
-        step = MAX(eps*eps, eps * fabs(temp));
-        x[j] += step; /* replace temporarily */
-        (*evaluate)(x, m, data, wf, failure);
-        if ( *failure )
-            return;
-        for (i = 0; i < m; i++) {
-            df = (wf[i] - fvec[i]) / step;
-            dx[j] += SQR(df/fnorm);
+    if( fnorm <= LM_DWARF ) {
+        for (j = 0; j < n; j++)
+            dx[j] = 0.;
+
+    } else {
+        for (j = 0; j < n; j++) {
+            sum = 0;
+            temp = x[j];
+            step = MAX(eps*eps, eps * fabs(temp));
+            x[j] += step; /* replace temporarily */
+            (*evaluate)(x, m, data, wf, failure);
+            if ( *failure )
+                return;
+            for (i = 0; i < m; i++) {
+                df = (wf[i] - fvec[i]) / step;
+                sum += SQR(df/fnorm);
+            }
+            dx[j] = 1 / sqrt(sum);
+            x[j] = temp; /* restore */
         }
-        x[j] = temp; /* restore */
     }
 
 /***  Cleanup.  ***/
