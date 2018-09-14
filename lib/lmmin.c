@@ -13,12 +13,12 @@
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
 
+#include "lmmin.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
-#include "lmmin.h"
 
 #define MIN(a,b) (((a)<=(b)) ? (a) : (b))
 #define MAX(a,b) (((a)>=(b)) ? (a) : (b))
@@ -1204,7 +1204,7 @@ double lm_enorm(const int n, const double *const x)
 
 
 /*****************************************************************************/
-/*  lm_fnorm (Euclidean norm of difference)                                                */
+/*  lm_fnorm (Euclidean norm of difference)                                  */
 /*****************************************************************************/
 
 double lm_fnorm(const int n, const double *const x, const double *const y)
