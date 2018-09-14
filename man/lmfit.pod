@@ -17,7 +17,9 @@ B<lmfit> is a C library for Levenberg-Marquardt least-squares minimization and c
 
 For fitting a data set {(x_i,y_i)|i=0,1,..} by a parametric curve f(x,t), see B<lmcurve>(3).
 
-For generic minimization of the Eucledian norm of parametric vector, see B<lmmin>(3).
+For generic minimization of the Eucledian norm of parametric vector, see B<lmmin2>(3).
+
+For the simpler legacy API without error estimates, see B<lmmin>(3).
 
 For an example how to use B<lmmin>, see the source files I<lmcurve.h> and I<lmcurve.c>. Do not patch these files; copy and modify them to create your own, differently named version of I<lmcurve_data_struct>, I<lmcurve_evaluate>, and I<lmcurve>.
 
@@ -38,6 +40,7 @@ Documentation: Creative Commons Attribution Share Alike
 
 <a href="http://apps.jcns.fz-juelich.de/man/lmcurve.html"><b>lmcurve</b>(3)</a>,
 <a href="http://apps.jcns.fz-juelich.de/man/lmmin.html"><b>lmmin</b>(3)</a>
+<a href="http://apps.jcns.fz-juelich.de/man/lmmin2.html"><b>lmmin2</b>(3)</a>
 <p>
 Homepage: <a href="http://apps.jcns.fz-juelich.de/lmfit">http://apps.jcns.fz-juelich.de/lmfit</a>
 
@@ -45,7 +48,7 @@ Homepage: <a href="http://apps.jcns.fz-juelich.de/lmfit">http://apps.jcns.fz-jue
 
 =begin man
 
-\fBlmcurve\fR(3), \fBlmmin\fR(3)
+\fBlmcurve\fR(3), \fBlmmin\fR(3), \fBlmmin2\fR(3)
 .PP
 Homepage: http://apps.jcns.fz-juelich.de/lmfit
 

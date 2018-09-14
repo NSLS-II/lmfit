@@ -14,9 +14,11 @@
  */
 
 #include "lmmin.h"
+#include "lminvert.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <float.h>
 
@@ -153,7 +155,7 @@ void lmmin2(
         double *const fvec, int *const userbreak),
     const lm_control_struct *const C, lm_status_struct *const S)
 {
-    int j, i, failure;
+    int i, j, k, failure;
     double actred, dirder, fnorm, fnorm1, gnorm, pnorm,
         prered, ratio, step, sum, temp, temp1, temp2, temp3;
     static double p1 = 0.1, p0001 = 1.0e-4;
@@ -219,7 +221,7 @@ void lmmin2(
     /* Allocate total workspace with just one system call */
     char *ws;
     if ( ( ws = malloc(
-               (2*m+5*n+m*n)*sizeof(double) + n*sizeof(int) ) ) == NULL ) {
+               (2*m+5*n+m*n+3*n*n)*sizeof(double) + n*sizeof(int) ) ) == NULL ) {
         S->outcome = 9;
         return;
     }
@@ -233,6 +235,9 @@ void lmmin2(
     double *wa1  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
     double *wa2  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
     double *wa3  = (double*) pws; pws += n * sizeof(double)/sizeof(char);
+    double *hesse= (double*) pws; pws += n*n*sizeof(double)/sizeof(char);
+    double *wh1  = (double*) pws; pws += n*n*sizeof(double)/sizeof(char);
+    double *wh2  = (double*) pws; pws += n*n*sizeof(double)/sizeof(char);
     double *wf   = (double*) pws; pws += m * sizeof(double)/sizeof(char);
     int    *ipvt = (int*)    pws; pws += n * sizeof(int)   /sizeof(char);
 
@@ -586,37 +591,48 @@ terminate:
         S->outcome = 11;
 
 /***  Compute error estimates.  ***/
-    if (dx) {
-        if( S->fnorm <= LM_DWARF ) {
-            for (j = 0; j < n; j++)
-                dx[j] = 0.;
-
-        } else {
-            for (j = 0; j < n; j++) {
+    if (dx || covar) {
+        if( S->fnorm <= LM_DWARF )
+            goto no_error_estimate;
+        failure = 0;
+        for (j = 0; j < n; j++) {
+            temp = x[j];
+            step = MAX(eps*eps, eps * fabs(temp));
+            x[j] += step; /* replace temporarily */
+            (*evaluate)(x, m, data, wf, &failure);
+            if ( failure )
+                goto no_error_estimate;
+            for (i = 0; i < m; i++)
+                fjac[j*m+i] = (wf[i] - fvec[i]) / step / S->fnorm;
+            x[j] = temp; /* restore */
+        }
+        for (j = 0; j < n; j++) {
+            for (k = 0; k < n; k++) {
                 sum = 0;
-                temp = x[j];
-                step = MAX(eps*eps, eps * fabs(temp));
-                x[j] += step; /* replace temporarily */
-                failure = 0;
-                (*evaluate)(x, m, data, wf, &failure);
-                if ( failure ) {
-                    dx[j] = 0;
-                    continue;
-                }
                 for (i = 0; i < m; i++)
-                    sum += SQR((wf[i] - fvec[i]) / step / S->fnorm);
-                dx[j] = 1 / sqrt(sum);
-                x[j] = temp; /* restore */
+                    sum += fjac[j*m+i]*fjac[k*m+i];
+                hesse[j*n+k] = sum;
             }
         }
+        lm_invert(hesse, n, ipvt, wh1, wh2, &failure);
+        if ( failure )
+            goto no_error_estimate;
+        if (dx)
+            for (j = 0; j < n; j++)
+                dx[j] = sqrt(wh2[j*n+j]);
+        if (covar)
+            memcpy(covar, wh2, n*n*sizeof(double));
+        goto end_error_estimate;
+    no_error_estimate:
+        if (dx)
+            for (j = 0; j < n; j++)
+                dx[j] = 0.;
+        if (covar)
+            for (i = 0; i < n*n; i++)
+                covar[i] = 0.;
     }
-
-/***  Compute covariance matrix.  ***/
-    if (covar) {
-        fprintf(stderr, "lmmin: covar computation not yet implemented");
-        S->outcome = 10;
-        return;
-    }
+end_error_estimate:
+    ;
 
 /***  Messages.  ***/
     if( C->verbosity&1 )

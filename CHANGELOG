@@ -1,3 +1,7 @@
+Changes in lmfit-8.0, released 19sep18:
+- Most generic API call is now lmmin2,
+  which estimates parameter errors and the covariance matrix
+
 Changes in lmfit-7.0, released 27feb18:
 - Automake support removed
 - API changed:
