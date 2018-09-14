@@ -1,19 +1,19 @@
 /*
  * Library:   lmfit (Levenberg-Marquardt least squares fitting)
  *
- * File:      lmmin.h
+ * File:      lmerr.h
  *
- * Contents:  Declarations for Levenberg-Marquardt minimization.
+ * Contents:  Declarations for error estimation.
  *
- * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2004-2013)
+ * Copyright: Joachim Wuttke, Forschungszentrum Juelich GmbH (2018-)
  *
  * License:   see ../COPYING (FreeBSD)
  *
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
 
-#ifndef LMMIN_H
-#define LMMIN_H
+#ifndef LMERR_H
+#define LMERR_H
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 #ifdef __cplusplus
@@ -28,29 +28,28 @@
 
 __BEGIN_DECLS
 
-/* Levenberg-Marquardt minimization. */
-void lmmin(
-    const int n_par, double* par, const int m_dat, const double* y,
-    const void* data,
+/* Estimation of parameter uncertainties. */
+void lmerr(
+    const int n_par, double* par, double* parerr,
+    const int m_dat, const double* y, const void* data,
     void (*evaluate)(
         const double* par, const int m_dat, const void* data,
         double* fvec, int* userbreak),
-    const lm_control_struct* control, lm_status_struct* status);
+    const lm_control_struct* control, int* failure);
 /*
- *   This routine contains the core algorithm of our library.
- *
- *   It minimizes the sum of the squares of m nonlinear functions
- *   in n variables by a modified Levenberg-Marquardt algorithm.
- *   The function evaluation is done by the user-provided routine 'evaluate'.
- *   The Jacobian is then calculated by a forward-difference approximation.
+ *   To be called after successful least-squares minimization.
+ *   Computes parerr.
+ *   Note that the very concept of parameter uncertainty (= error bar)
+ *   is too naive since it ignores covariances.
+ *   Here, we just use the diagonal elements of the covariance matrix.
  *
  *   Parameters:
  *
  *      n_par is the number of variables (INPUT, positive integer).
  *
- *      par is the solution vector (INPUT/OUTPUT, array of length n).
- *        On input it must be set to an estimated solution.
- *        On output it yields the final estimate of the solution.
+ *      par is the parameter vector (INPUT, array of length n) obtained by lmmin.
+ *
+ *      parerr will contain the error estimates (OUTPUT, array of length n).
  *
  *      m_dat is the number of functions to be minimized (INPUT, integer).
  *        It must fulfill m>=n.
@@ -72,13 +71,8 @@ void lmmin(
  *      control contains INPUT variables that control the fit algorithm,
  *        as declared and explained in lmstruct.h
  *
- *      status contains OUTPUT variables that inform about the fit result,
- *        as declared and explained in lmstruct.h
+ *      *failure (OUTPUT, integer) is set to 0 unless the computation failed.
  */
 
-/* Refined calculation of Eucledian norm. */
-double lm_enorm(const int, const double*);
-double lm_fnorm(const int, const double*, const double*);
-
 __END_DECLS
-#endif /* LMMIN_H */
+#endif /* LMERR_H */
