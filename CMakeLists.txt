@@ -6,7 +6,7 @@ include(PreventInSourceBuilds)
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
-project(lmfit)
+project(lmfit C)
 set(lmfit_SOVERSION                  8) # API version
 set(lmfit_VERSION ${lmfit_SOVERSION}.0) # lib version
 
