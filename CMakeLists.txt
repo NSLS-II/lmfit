@@ -15,7 +15,7 @@ option(FITTEST "Build with FitTest" OFF)
 
 set(destination ${CMAKE_INSTALL_PREFIX})
 
-set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -pedantic -Wall -Wno-sign-compare -Wno-unused-result -Wno-parentheses  -Wno-unknown-pragmas")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2 -pedantic -Wall -Wno-sign-compare -Wno-unused-result -Wno-parentheses  -Wno-unknown-pragmas")
 
 add_subdirectory(lib)
 add_subdirectory(demo)
