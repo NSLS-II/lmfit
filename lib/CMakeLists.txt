@@ -13,7 +13,8 @@ set_target_properties(
     VERSION ${lmfit_VERSION}
     SOVERSION ${lmfit_SOVERSION})
 
-target_link_libraries(${library_name} m)
+include(LinkLibMath)
+link_libm(${library_name})
 
 install(
     TARGETS ${library_name} LIBRARY

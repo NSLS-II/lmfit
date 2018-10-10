@@ -30,12 +30,12 @@ __BEGIN_DECLS
 
 /* Levenberg-Marquardt minimization. */
 void lmmin2(
-    const int n_par, double* par, double* parerr, double* covar,
-    const int m_dat, const double* y, const void* data,
-    void (*evaluate)(
-        const double* par, const int m_dat, const void* data,
-        double* fvec, int* userbreak),
-    const lm_control_struct* control, lm_status_struct* status);
+    const int n_par, double *const par, double *const parerr, double *const covar,
+    const int m_dat, const double *const y, const void *const data,
+    void (*const evaluate)(
+        const double *const par, const int m_dat, const void *const data,
+        double *const fvec, int *const userbreak),
+    const lm_control_struct *const control, lm_status_struct *const status);
 /*
  *   This routine contains the core algorithm of our library.
  *
@@ -84,16 +84,16 @@ void lmmin2(
 
 /* old, simpler interface, preserved for API compatibility */
 void lmmin(
-    const int n_par, double* par, const int m_dat, const double* y,
-    const void* data,
-    void (*evaluate)(
-        const double* par, const int m_dat, const void* data,
-        double* fvec, int* userbreak),
-    const lm_control_struct* control, lm_status_struct* status);
+    const int n_par, double *const par, const int m_dat, const double *const y,
+    const void *const data,
+    void (*const evaluate)(
+        const double *const par, const int m_dat, const void *const data,
+        double *const fvec, int *const userbreak),
+    const lm_control_struct *const control, lm_status_struct *const status);
 
 /* Refined calculation of Eucledian norm. */
-double lm_enorm(const int, const double*);
-double lm_fnorm(const int, const double*, const double*);
+double lm_enorm(const int, const double *const);
+double lm_fnorm(const int, const double *const, const double *const);
 
 __END_DECLS
 #endif /* LMMIN_H */

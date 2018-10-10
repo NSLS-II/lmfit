@@ -12,4 +12,5 @@
  * Homepage:  apps.jcns.fz-juelich.de/lmfit
  */
 
-void lm_invert(double *A, const int n, int *P, double *ws, double *IA, int* failure);
+void lm_invert(double *const A, const int n, int *const P, double *const ws,
+               double *const IA, int*const failure);
