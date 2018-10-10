@@ -12,6 +12,7 @@ set(lmfit_VERSION ${lmfit_SOVERSION}.0) # lib version
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
+option(LIB_MAN "Build library man pages" ON)
 
 set(destination ${CMAKE_INSTALL_PREFIX})
 
@@ -19,7 +20,9 @@ set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -pedantic -Wall -Wno-sign-compare -
 
 add_subdirectory(lib)
 add_subdirectory(demo)
-add_subdirectory(man)
+if (${LIB_MAN})
+    add_subdirectory(man)
+endif()
 if (${FITTEST})
     find_package(FitTest REQUIRED)
     add_subdirectory(fittest)
