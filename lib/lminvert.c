@@ -18,9 +18,11 @@
 #include <string.h>
 #include <math.h>
 
-void lm_decompose_LUP(double *A, int n, double Tol, int *P, int* failure);
-void lm_invert_LUP(double *A, int n, int *P, double *IA);
-void lm_check_inverse(double *A, double *IA, const int n, const double Tol, int* failure);
+void lm_decompose_LUP(double *const A, const int n, const double Tol,
+                      int *const P, int*const  failure);
+void lm_invert_LUP(double *const A, const int n, int *const P, double *const IA);
+void lm_check_inverse(double *const A, double *const IA, const int n,
+                      const double Tol, int*const  failure);
 
 /* INPUT:
  *   A   - square matrix of size n*n, stored as one-dimensional array
@@ -33,7 +35,8 @@ void lm_check_inverse(double *A, double *IA, const int n, const double Tol, int*
  *   P   - now contains column indexes where the permutation matrix has "1".
  *   failure - set to a nonzero value if matrix cannot be inverted.
  */
-void lm_decompose_LUP(double *A, const int n, const double Tol, int *P, int* failure)
+void lm_decompose_LUP(double *const A, const int n, const double Tol,
+                      int *const P, int*const  failure)
 {
     int i, j, k, imax;
     double maxA, absA, tmp;
@@ -80,7 +83,7 @@ void lm_decompose_LUP(double *A, const int n, const double Tol, int *P, int* fai
 
 /*  Computes inverse matrix IA for given decomposition A,P.  */
 
-void lm_invert_LUP(double *A, int n, int *P, double *IA)
+void lm_invert_LUP(double *const A, const int n, int *const P, double *const IA)
 {
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
@@ -112,7 +115,8 @@ void lm_invert_LUP(double *A, int n, int *P, double *IA)
  * OUTPUT:
  *   failure - set to a nonzero value if a deviation is larger than Tol.
  */
-void lm_check_inverse(double *A, double *IA, const int n, const double Tol, int* failure)
+void lm_check_inverse(double *const A, double *const IA, const int n,
+                      const double Tol, int*const  failure)
 {
     for (int j=0; j<n; j++) {
         for (int i=0; i<n; i++) {
@@ -140,7 +144,8 @@ void lm_check_inverse(double *A, double *IA, const int n, const double Tol, int*
  *   IA   - the inverse matrix A^-1
  *   failure - set to a nonzero value if matrix cannot be inverted.
  */
- void lm_invert(double *A, const int n, int *P, double *ws, double *IA, int* failure)
+ void lm_invert(double *const A, const int n, int *const P, double *const ws,
+                double *const IA, int*const  failure)
 {
     memcpy(ws, A, n*n*sizeof(double));
     lm_decompose_LUP(ws, n, 1e-12, P, failure);
