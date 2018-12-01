@@ -125,7 +125,7 @@ void lm_check_inverse(double *const A, double *const IA, const int n,
                 s += IA[j*n+k] * A[k*n+i];
             double expected = (i==j) ? 1. : 0.;
             if (fabs(s-expected)>Tol) {
-                printf("at %i,%i found %g instead of %g\n", j, i, s, expected);
+                printf("lm_check_inverse found %g instead of %g at %i,%i \n", s, expected, j, i);
                 *failure = 22;
                 return;
             }
@@ -152,8 +152,8 @@ void lm_check_inverse(double *const A, double *const IA, const int n,
     if (*failure)
         return;
     lm_invert_LUP(ws, n, P, IA);
-    lm_check_inverse(IA, A, n, 1e-12, failure);
-    lm_check_inverse(A, IA, n, 1e-12, failure);
+    lm_check_inverse(IA, A, n, 1e-6, failure);
+    lm_check_inverse(A, IA, n, 1e-6, failure);
     if (*failure)
         return;
 }
