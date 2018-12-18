@@ -9,7 +9,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 project(lmfit C)
 set(lmfit_SOVERSION                  8) # API version
-set(lmfit_VERSION ${lmfit_SOVERSION}.0) # lib version
+set(lmfit_VERSION ${lmfit_SOVERSION}.1) # lib version
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
@@ -22,6 +22,10 @@ add_compile_options(-g -O2)
 if(PEDANTIC)
     add_compile_options(-pedantic -Wall)
 endif()
+
+configure_file("lmfit.pc.in" "lmfit.pc" @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lmfit.pc"
+    DESTINATION "${destination}/lib/pkgconfig/")
 
 add_subdirectory(lib)
 add_subdirectory(demo)
