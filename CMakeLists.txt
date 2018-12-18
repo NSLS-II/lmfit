@@ -14,10 +14,14 @@ set(lmfit_VERSION ${lmfit_SOVERSION}.0) # lib version
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
 option(LIB_MAN "Build library man pages" ON)
+option(PEDANTIC "Compile with pedantic warnings" ON)
 
 set(destination ${CMAKE_INSTALL_PREFIX})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2 -pedantic -Wall -Wno-sign-compare -Wno-unused-result -Wno-parentheses  -Wno-unknown-pragmas")
+add_compile_options(-g -O2)
+if(PEDANTIC)
+    add_compile_options(-pedantic -Wall)
+endif()
 
 add_subdirectory(lib)
 add_subdirectory(demo)

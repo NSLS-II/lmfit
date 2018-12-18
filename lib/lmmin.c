@@ -255,7 +255,7 @@ void lmmin2(
     if( C->verbosity&2 )
         lm_print_pars(nout, x, msgfile);
     (*evaluate)(x, m, data, fvec, &(S->userbreak));
-    if( C->verbosity&8 )
+    if( C->verbosity&8 ) {
         if (y)
             for( i=0; i<m; ++i )
                 fprintf(msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
@@ -263,6 +263,7 @@ void lmmin2(
         else
             for( i=0; i<m; ++i )
                 fprintf(msgfile, "    i, f: %4i %18.8g\n", i, fvec[i]);
+    }
     S->nfev = 1;
     if ( S->userbreak )
         goto terminate;
@@ -392,7 +393,7 @@ void lmmin2(
             } else {
                 xnorm = lm_enorm(n, x);
             }
-            if( !isfinite(xnorm) ){
+            if( !isfinite(xnorm) ) {
                 if( C->verbosity )
                     fprintf(msgfile, "nan case 2\n");
                 S->outcome = 12; /* nan */
@@ -481,7 +482,7 @@ void lmmin2(
             /* ratio of actual to predicted reduction */
             ratio = prered ? actred/prered : 0;
 
-            if( C->verbosity&32 )
+            if( C->verbosity&32 ) {
                 if (y)
                     for( i=0; i<m; ++i )
                         fprintf(msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
@@ -490,6 +491,7 @@ void lmmin2(
                     for( i=0; i<m; ++i )
                         fprintf(msgfile, "    i, f, y-f: %4i %18.8g\n",
                                 i, fvec[i]);
+            }
             if( C->verbosity&2 ) {
                 printf("%3i %2i %9.2g %9.2g %9.2g %14.6g"
                        " %9.2g %10.3e %10.3e %21.15e",
@@ -639,7 +641,7 @@ end_error_estimate:
         fprintf(msgfile, "lmmin terminates with outcome %i\n", S->outcome);
     if( C->verbosity&2 )
         lm_print_pars(nout, x, msgfile);
-    if( C->verbosity&8 )
+    if( C->verbosity&8 ) {
         if (y)
             for( i=0; i<m; ++i )
                 fprintf(msgfile, "    i, f, y-f: %4i %18.8g %18.8g\n",
@@ -647,6 +649,7 @@ end_error_estimate:
         else
             for( i=0; i<m; ++i )
                 fprintf(msgfile, "    i, f, y-f: %4i %18.8g\n", i, fvec[i]);
+    }
     if( C->verbosity&2 )
         fprintf(msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm);
 
