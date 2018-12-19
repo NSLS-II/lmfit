@@ -4,9 +4,6 @@ cmake_policy(SET CMP0048 NEW)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(PreventInSourceBuilds)
 
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-
 project(lmfit C)
 set(lmfit_SOVERSION                  8) # API version
 set(lmfit_VERSION ${lmfit_SOVERSION}.1) # lib version
@@ -18,9 +15,11 @@ option(PEDANTIC "Compile with pedantic warnings" ON)
 
 set(destination ${CMAKE_INSTALL_PREFIX})
 
-add_compile_options(-g -O2)
-if(PEDANTIC)
-    add_compile_options(-pedantic -Wall)
+if(MSVC)
+    add_compile_options(-O2)
+    if(PEDANTIC)
+        add_compile_options(-pedantic -Wall)
+    endif()
 endif()
 
 configure_file("lmfit.pc.in" "lmfit.pc" @ONLY)
