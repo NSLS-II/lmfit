@@ -16,6 +16,7 @@ option(PEDANTIC "Compile with pedantic warnings" ON)
 set(destination ${CMAKE_INSTALL_PREFIX})
 
 if(MSVC)
+else()
     add_compile_options(-O2)
     if(PEDANTIC)
         add_compile_options(-pedantic -Wall)
