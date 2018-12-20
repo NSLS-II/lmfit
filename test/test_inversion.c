@@ -1,4 +1,6 @@
-#include "luinvert.h"
+#include "lminvert.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void show_matrix(double *A, int n) {
     printf("\n");
@@ -15,7 +17,7 @@ void test(int n, double* A)
     double* inv = (double*)calloc(n*n, sizeof(double));
     int*    P = (int*)calloc(n, sizeof(int));
     if (!ws || !inv)
-        exit(EXIT_FAILURE);
+        exit(1);
     show_matrix(A, n);
     int failure = 0;
     lm_invert(A, n, P, ws, inv, &failure);

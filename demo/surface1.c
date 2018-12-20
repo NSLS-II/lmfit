@@ -78,7 +78,6 @@ int main()
     int i;
     for ( i=0; i<n_par; ++i )
 	printf("  par[%i] = %12g\n", i, par[i]);
-    printf("obtained norm:\n  %12g\n", status.fnorm );
 
     printf("fitting data as follows:\n");
     double ff;
@@ -88,5 +87,11 @@ int main()
                 i, tx[i], tz[i], y[i], ff, y[i] - ff );
     }
 
-    return 0;
+    if (status.fnorm<1e-14) {
+        printf("SUCCESS (obtained norm = %g)\n", status.fnorm);
+        return 0;
+    } else {
+        printf("FAILURE (obtained norm = %g is too large)\n", status.fnorm);
+        return 1;
+    }
 }

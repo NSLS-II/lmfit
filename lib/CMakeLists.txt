@@ -3,7 +3,7 @@ set(${library_name}_LIBRARY ${library_name} PARENT_SCOPE)
 set(${library_name}_LIBRARY_TYPE SHARED)
 
 set(src_files lmcurve.c lmmin.c lminvert.c)
-set(inc_files lmcurve.h lmmin.h lminvert.h lmstruct.h)
+set(inc_files lmcurve.h lmmin.h lmstruct.h)
 
 add_library(${library_name} SHARED ${src_files})
 

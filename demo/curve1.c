@@ -59,5 +59,11 @@ int main()
         printf( "  t[%2d]=%4g y=%6g fit=%10g residue=%12g\n",
                 i, t[i], y[i], f(t[i],par), y[i] - f(t[i],par) );
 
-    return 0;
+    if (status.fnorm<1e-14) {
+        printf("SUCCESS (obtained norm = %g)\n", status.fnorm);
+        return 0;
+    } else {
+        printf("FAILURE (obtained norm = %g is too large)\n", status.fnorm);
+        return 1;
+    }
 }

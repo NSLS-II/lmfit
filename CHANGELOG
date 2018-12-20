@@ -1,5 +1,6 @@
 Changes in lmfit-8.1, released
 
+- Restore lmfit.pc
 - Don't try to link -lm if math functions are already available (for MSVC)
 - Don't require C++ compiler in CMake project command
 - Uniform *const declarations in lmmin.h and lmmin.c
