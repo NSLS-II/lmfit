@@ -90,8 +90,7 @@ int main()
     if (status.fnorm<1e-14) {
         printf("SUCCESS (obtained norm = %g)\n", status.fnorm);
         return 0;
-    } else {
-        printf("FAILURE (obtained norm = %g is too large)\n", status.fnorm);
-        return 1;
     }
+    printf("FAILURE (obtained norm = %g is too large)\n", status.fnorm);
+    return 1;
 }
