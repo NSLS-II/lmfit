@@ -6,7 +6,7 @@ include(PreventInSourceBuilds)
 
 project(lmfit C)
 set(lmfit_SOVERSION                  8) # API version
-set(lmfit_VERSION ${lmfit_SOVERSION}.1) # lib version
+set(lmfit_VERSION ${lmfit_SOVERSION}.2) # lib version
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
