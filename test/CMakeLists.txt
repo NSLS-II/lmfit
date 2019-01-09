@@ -22,5 +22,5 @@ foreach(app ${unit_tests})
 endforeach()
 
 # functional tests
-add_test(curve1 ${CMAKE_BINARY_DIR}/demo/curve1)
-add_test(surface1 ${CMAKE_BINARY_DIR}/demo/surface1)
+add_test(curve1   ${CMAKE_CURRENT_BINARY_DIR}/../demo/curve1)
+add_test(surface1 ${CMAKE_CURRENT_BINARY_DIR}/../demo/surface1)
