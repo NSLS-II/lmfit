@@ -4,15 +4,14 @@ cmake_policy(SET CMP0048 NEW)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(PreventInSourceBuilds)
 
-project(lmfit C)
-set(lmfit_SOVERSION                  8) # API version
-set(lmfit_VERSION ${lmfit_SOVERSION}.2) # lib version
+project(lmfit VERSION 8.2.1 LANGUAGES C)
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
 option(LIB_MAN "Build library man pages" ON)
 option(PEDANTIC "Compile with pedantic warnings" ON)
 
+set(CMAKE_C_STANDARD 99)
 if(MSVC)
 else()
     add_compile_options(-O2)

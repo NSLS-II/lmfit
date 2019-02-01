@@ -10,8 +10,8 @@ add_library(${library_name} SHARED ${src_files})
 set_target_properties(
     ${library_name} PROPERTIES
     OUTPUT_NAME ${library_name}
-    VERSION ${lmfit_VERSION}
-    SOVERSION ${lmfit_SOVERSION})
+    VERSION ${lmfit_VERSION_MAJOR}
+    SOVERSION ${lmfit_VERSION_MINOR})
 
 include(LinkLibMath)
 link_libm(${library_name})

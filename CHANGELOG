@@ -1,3 +1,7 @@
+Changes in lmfit-8.2.1, uploaded 1feb19
+
+- Require C99 (otherwise some constructs are refused by gcc 4.8.5)
+
 Changes in lmfit-8.2, released 8jan19
 
 - Relax precision requirement in test (failed ppc64le, aarch64 and s390x in Fedora)
