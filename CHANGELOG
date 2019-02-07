@@ -1,3 +1,7 @@
+Changes in lmfit-8.2.2, uploaded 7feb19
+
+- Set option LIB_MAN only if variable LIB_MAN is not set (for CMake<3.13)
+
 Changes in lmfit-8.2.1, uploaded 1feb19
 
 - Require C99 (otherwise some constructs are refused by gcc 4.8.5)

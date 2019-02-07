@@ -8,7 +8,9 @@ project(lmfit VERSION 8.2.1 LANGUAGES C)
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
-option(LIB_MAN "Build library man pages" ON)
+if(NOT DEFINED LIB_MAN)
+    option(LIB_MAN "Build library man pages" ON)
+endif()
 option(PEDANTIC "Compile with pedantic warnings" ON)
 
 set(CMAKE_C_STANDARD 99)
