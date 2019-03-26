@@ -1,3 +1,5 @@
+Homepage moved to https://jugit.fz-juelich.de/mlz/lmfit, 17mar19
+
 Changes in lmfit-8.2.2, uploaded 7feb19
 
 - Set option LIB_MAN only if variable LIB_MAN is not set (for CMake<3.13)
