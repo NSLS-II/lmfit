@@ -1,9 +1,9 @@
 stages:
   - build
 
-debian_stable_gcc:
+deb_stable_gcc:
   tags: &unix
-  - docker
+  - Linux
   image: debian:stable
   before_script: &debian_gcc
     - apt-get -y update
@@ -17,7 +17,7 @@ debian_stable_gcc:
     - make
     - ctest --output-on-failure
 
-debian_stable_clang:
+deb_stable_clang:
   tags: *unix
   image: debian:testing
   before_script: &debian_clang
@@ -27,21 +27,21 @@ debian_stable_clang:
   stage: build
   script: *scr
 
-debian_testing_gcc:
+deb_test_gcc:
   tags: *unix
   image: debian:testing
   before_script: *debian_gcc
   stage: build
   script: *scr
 
-debian_sid_gcc:
+deb_sid_gcc:
   tags: *unix
   image: debian:testing
   before_script: *debian_gcc
   stage: build
   script: *scr
 
-debian_sid_clang:
+deb_sid_clang:
   tags: *unix
   image: debian:testing
   before_script: *debian_clang
