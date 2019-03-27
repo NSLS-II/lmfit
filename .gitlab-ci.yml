@@ -1,0 +1,98 @@
+stages:
+  - build
+
+debian_stable_gcc:
+  tags: &unix
+  - docker
+  image: debian:stable
+  before_script: &debian_gcc
+    - apt-get -y update
+    - apt-get -y upgrade
+    - apt-get -y install cmake g++ perl
+  stage: build
+  script: &scr
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    - ctest --output-on-failure
+
+debian_stable_clang:
+  tags: *unix
+  image: debian:testing
+  before_script: &debian_clang
+    - apt-get -y update
+    - apt-get -y upgrade
+    - apt-get -y install cmake clang perl
+  stage: build
+  script: *scr
+
+debian_testing_gcc:
+  tags: *unix
+  image: debian:testing
+  before_script: *debian_gcc
+  stage: build
+  script: *scr
+
+debian_sid_gcc:
+  tags: *unix
+  image: debian:testing
+  before_script: *debian_gcc
+  stage: build
+  script: *scr
+
+debian_sid_clang:
+  tags: *unix
+  image: debian:testing
+  before_script: *debian_clang
+  stage: build
+  script: *scr
+
+suse_current:
+  tags: *unix
+  image: opensuse/tumbleweed
+  # rolling release with infinite life time
+  before_script:
+    - zypper -n patch || echo "do it again"
+    - zypper -n patch
+    - zypper -n ref
+    - zypper -n up
+    - zypper -n dup
+    - zypper -n in cmake gcc-c++ perl
+  stage: build
+  script: *scr
+
+# suse_stable:
+#  opensuse:leap, unsupported here because it is at cmake 3.5, while libcerf requires 3.6
+
+centos7:
+  tags: *unix
+  image: centos:centos7
+  before_script:
+    - yum -y update
+    - yum -y install epel-release
+    - yum repolist
+    - yum -y install make cmake3 gcc-c++ perl
+    - cmake3 --version
+    - ctest3 --version
+    - cpack3 --version
+    - ln -s /usr/bin/cmake3 /usr/bin/cmake
+    - ln -s /usr/bin/ctest3 /usr/bin/ctest
+    - ln -s /usr/bin/cpack3 /usr/bin/cpack
+  stage: build
+  script: *scr
+
+windows:
+  tags:
+  - windows
+  stage: build
+  script:
+    - New-Item -ItemType "directory" -Confirm:$false -Force:$true -Name "build"
+    - cd build
+    - cmd.exe "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+    - cmake -G "Visual Studio 15 2017" -A x64 -T host=x64 -DCERF_CPP=ON -DLIB_MAN=OFF -DLIB_INSTALL=OFF -B. ..
+    - cmake --build . --config Release
+    - Get-Location
+    - dir
+    - dir Release
+    - ctest -C Release --output-on-failure
