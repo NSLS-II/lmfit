@@ -1,11 +1,10 @@
 set(lib lmfit)
 set(${lib}_LIBRARY ${lib} PARENT_SCOPE)
-set(${lib}_LIBRARY_TYPE SHARED)
 
 set(src_files lmcurve.c lmmin.c lminvert.c)
 set(inc_files lmcurve.h lmmin.h lmstruct.h)
 
-add_library(${lib} SHARED ${src_files})
+add_library(${lib} ${src_files})
 
 set_target_properties(
     ${lib} PROPERTIES
