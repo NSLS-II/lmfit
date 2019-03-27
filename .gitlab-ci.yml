@@ -13,7 +13,7 @@ debian_stable_gcc:
   script: &scr
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -DWERROR=ON ..
     - make
     - ctest --output-on-failure
 
@@ -90,7 +90,7 @@ windows:
     - New-Item -ItemType "directory" -Confirm:$false -Force:$true -Name "build"
     - cd build
     - cmd.exe "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-    - cmake -G "Visual Studio 15 2017" -A x64 -T host=x64 -DCERF_CPP=ON -DLIB_MAN=OFF -DLIB_INSTALL=OFF -B. ..
+    - cmake -G "Visual Studio 15 2017" -A x64 -T host=x64 -DWERROR=ON -DLIB_MAN=OFF -DLIB_INSTALL=OFF -B. ..
     - cmake --build . --config Release
     - Get-Location
     - dir
