@@ -15,6 +15,8 @@ endif()
 set(CMAKE_C_STANDARD 99)
 
 if(MSVC)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 else()
     option(PEDANTIC "Compile with pedantic warnings" ON)
     option(WERROR "Treat warnings as errors" OFF)
