@@ -84,7 +84,7 @@ centos7:
 
 windows:
   tags:
-  - windows
+  - Windows
   stage: build
   script:
     - New-Item -ItemType "directory" -Confirm:$false -Force:$true -Name "build"
