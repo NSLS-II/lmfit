@@ -8,6 +8,9 @@ project(lmfit VERSION 8.2.1 LANGUAGES C)
 
 # --- Declare project-wide user flags, and set default values ---
 option(FITTEST "Build with FitTest" OFF)
+if(NOT DEFINED BUILD_SHARED_LIBS)
+    option(BUILD_SHARED_LIBS "Build as shared library" ON)
+endif()
 if(NOT DEFINED LIB_MAN)
     option(LIB_MAN "Build library man pages" ON)
 endif()
