@@ -25,6 +25,12 @@
 #endif
 __BEGIN_DECLS
 
+#if _WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
 #include <stdio.h>
 
 /* Collection of input parameters for fit control. */
@@ -69,13 +75,13 @@ typedef struct {
 } lm_status_struct;
 
 /* Preset (and recommended) control parameter settings. */
-extern const lm_control_struct lm_control_double;
-extern const lm_control_struct lm_control_float;
+EXPORT extern const lm_control_struct lm_control_double;
+EXPORT extern const lm_control_struct lm_control_float;
 
-/* Preset message texts. */
+/* Preset message tEXPORT exts. */
 
-extern const char* lm_infmsg[];
-extern const char* lm_shortmsg[];
+EXPORT extern const char* lm_infmsg[];
+EXPORT extern const char* lm_shortmsg[];
 
 __END_DECLS
 #endif /* LMSTRUCT_H */

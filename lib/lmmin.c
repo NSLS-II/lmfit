@@ -68,10 +68,10 @@ void lm_qrsolv(
  LM_USER_TOL   1.e-14
 */
 
-const lm_control_struct lm_control_double = {
+EXPORT const lm_control_struct lm_control_double = {
     LM_USERTOL, LM_USERTOL, LM_USERTOL, LM_USERTOL, 100., 100, 1,
     NULL, 0, -1, -1 };
-const lm_control_struct lm_control_float = {
+EXPORT const lm_control_struct lm_control_float = {
     1.e-7,      1.e-7,      1.e-7,      1.e-7,      100., 100, 1,
     NULL, 0, -1, -1 };
 
@@ -80,7 +80,7 @@ const lm_control_struct lm_control_float = {
 /*  Message texts (indexed by status.info)                                   */
 /*****************************************************************************/
 
-const char *lm_infmsg[] = {
+EXPORT const char *lm_infmsg[] = {
     "found zero (sum of squares below underflow limit)",
     "converged  (the relative error in the sum of squares is at most tol)",
     "converged  (the relative error of the parameter vector is at most tol)",
@@ -97,7 +97,7 @@ const char *lm_infmsg[] = {
     "won't fit  (no free parameter)"
 };
 
-const char *lm_shortmsg[] = {
+EXPORT const char *lm_shortmsg[] = {
     "found zero",      //  0
     "converged (f)",   //  1
     "converged (p)",   //  2
