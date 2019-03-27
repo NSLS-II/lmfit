@@ -1,24 +1,24 @@
-set(library_name lmfit)
-set(${library_name}_LIBRARY ${library_name} PARENT_SCOPE)
-set(${library_name}_LIBRARY_TYPE SHARED)
+set(lib lmfit)
+set(${lib}_LIBRARY ${lib} PARENT_SCOPE)
+set(${lib}_LIBRARY_TYPE SHARED)
 
 set(src_files lmcurve.c lmmin.c lminvert.c)
 set(inc_files lmcurve.h lmmin.h lmstruct.h)
 
-add_library(${library_name} SHARED ${src_files})
+add_library(${lib} SHARED ${src_files})
 
 set_target_properties(
-    ${library_name} PROPERTIES
-    OUTPUT_NAME ${library_name}
+    ${lib} PROPERTIES
+    OUTPUT_NAME ${lib}
     VERSION ${lmfit_VERSION_MAJOR}
     SOVERSION ${lmfit_VERSION_MINOR})
 
 include(LinkLibMath)
-link_libm(${library_name})
+link_libm(${lib})
 
 if (LIB_INSTALL)
     install(
-        TARGETS ${library_name} LIBRARY
+        TARGETS ${lib} LIBRARY
         DESTINATION ${destination}/lib
         COMPONENT Libraries)
     install(
