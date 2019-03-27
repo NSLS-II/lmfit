@@ -15,6 +15,10 @@ endif()
 set(CMAKE_C_STANDARD 99)
 
 if(MSVC)
+    set(CTEST_CONFIGURATION_TYPE "${JOB_BUILD_CONFIGURATION}")
+    if(BUILD_SHARED_LIBS)
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    endif()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 else()
@@ -31,11 +35,12 @@ endif()
 
 include(CTest)
 
-set(destination ${CMAKE_INSTALL_PREFIX})
-
-configure_file("lmfit.pc.in" "lmfit.pc" @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lmfit.pc"
-    DESTINATION "${destination}/lib/pkgconfig/")
+if(LIB_INSTALL)
+    set(destination ${CMAKE_INSTALL_PREFIX})
+    configure_file("lmfit.pc.in" "lmfit.pc" @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lmfit.pc"
+        DESTINATION "${destination}/lib/pkgconfig/")
+endif()
 
 add_subdirectory(lib)
 add_subdirectory(demo)
