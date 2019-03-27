@@ -16,11 +16,11 @@ set(unit_tests
 
 foreach(app ${unit_tests})
     add_executable(${app} ${app}.c)
-    add_test(NAME ${app} COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${app})
+    add_test(NAME ${app} COMMAND ${app})
     target_include_directories(${app} PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${lmfit_SOURCE_DIR}/lib)
     target_link_libraries(${app} ${lmfit_LIBRARY})
 endforeach()
 
 # functional tests
-add_test(curve1   ${CMAKE_CURRENT_BINARY_DIR}/../demo/curve1)
-add_test(surface1 ${CMAKE_CURRENT_BINARY_DIR}/../demo/surface1)
+add_test(NAME curve1   COMMAND curve1)
+add_test(NAME surface1 COMMAND surface1)
