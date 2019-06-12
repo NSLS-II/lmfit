@@ -14,7 +14,7 @@ if(NOT DEFINED LIB_MAN)
     option(LIB_MAN "Build library man pages" ON)
 endif()
 if(NOT DEFINED LIB_INSTALL)
-    option(LIB_INSTALL "Install libcerf" ON)
+    option(LIB_INSTALL "Install library" ON)
 endif()
 
 set(CMAKE_C_STANDARD 99)
