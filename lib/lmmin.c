@@ -304,12 +304,12 @@ void lmmin2(
         }
         if ( C->verbosity&16 ) {
             /* print the entire matrix */
-            printf("Jacobian\n");
+            fprintf(msgfile, "Jacobian\n");
             for (i = 0; i < m; i++) {
-                printf("  ");
+                fprintf(msgfile, "  ");
                 for (j = 0; j < n; j++)
-                    printf("%.5e ", fjac[j*m+i]);
-                printf("\n");
+                    fprintf(msgfile, "%.5e ", fjac[j*m+i]);
+                fprintf(msgfile, "\n");
             }
         }
 
@@ -493,7 +493,7 @@ void lmmin2(
                                 i, fvec[i]);
             }
             if( C->verbosity&2 ) {
-                printf("%3i %2i %9.2g %9.2g %9.2g %14.6g"
+                fprintf(msgfile, "%3i %2i %9.2g %9.2g %9.2g %14.6g"
                        " %9.2g %10.3e %10.3e %21.15e",
                        outer, inner, lmpar, prered, actred, ratio,
                        dirder, delta, pnorm, fnorm1);
