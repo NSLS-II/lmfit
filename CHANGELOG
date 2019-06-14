@@ -1,4 +1,10 @@
-Homepage moved to https://jugit.fz-juelich.de/mlz/lmfit, 17mar19
+Changes in lmfit-8.3
+
+- Add parameter file for continuous integration tests
+- Add dllimport/export attributes for use under Windows
+- Correct print statements (thanks to Chris Pearson, Teledyne Tekmar)
+
+- Homepage moved to https://jugit.fz-juelich.de/mlz/lmfit, 17mar19
 
 Changes in lmfit-8.2.2, uploaded 7feb19
 
