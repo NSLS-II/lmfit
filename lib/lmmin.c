@@ -489,8 +489,7 @@ void lmmin2(
                                 i, fvec[i], y[i]-fvec[i]);
                 else
                     for( i=0; i<m; ++i )
-                        fprintf(msgfile, "    i, f, y-f: %4i %18.8g\n",
-                                i, fvec[i]);
+                        fprintf(msgfile, "    i, f: %4i %18.8g\n", i, fvec[i]);
             }
             if( C->verbosity&2 ) {
                 fprintf(msgfile, "%3i %2i %9.2g %9.2g %9.2g %14.6g"
@@ -648,7 +647,7 @@ end_error_estimate:
                         i, fvec[i], y[i]-fvec[i] );
         else
             for( i=0; i<m; ++i )
-                fprintf(msgfile, "    i, f, y-f: %4i %18.8g\n", i, fvec[i]);
+                fprintf(msgfile, "    i, f: %4i %18.8g\n", i, fvec[i]);
     }
     if( C->verbosity&2 )
         fprintf(msgfile, "  fnorm=%24.16g xnorm=%24.16g\n", S->fnorm, xnorm);
