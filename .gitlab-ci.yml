@@ -19,7 +19,7 @@ deb_stable_gcc:
 
 deb_stable_clang:
   tags: *unix
-  image: debian:testing
+  image: debian:stable
   before_script: &debian_clang
     - apt-get -y update
     - apt-get -y upgrade
