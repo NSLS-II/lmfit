@@ -2,6 +2,7 @@
 *.bak
 *.patch
 *.tmp
+*.swp
 
 *.o
 *.a
