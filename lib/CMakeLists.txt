@@ -16,12 +16,51 @@ include(LinkLibMath)
 link_libm(${lib})
 
 if (LIB_INSTALL)
-    install(
-        TARGETS ${lib} LIBRARY
-        DESTINATION ${destination}/lib
+	include(GNUInstallDirs)
+	include(CMakePackageConfigHelpers)
+
+    install(TARGETS ${lib} 
+		EXPORT lmfit-targets
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT Libraries)
-    install(
-        FILES ${inc_files}
-        DESTINATION ${destination}/include
+
+    install(FILES ${inc_files}
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         COMPONENT Headers)
+
+	install(EXPORT lmfit-targets
+		FILE lmfit-targets.cmake
+		NAMESPACE lmfit
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lmfit
+	)
+
+	configure_package_config_file(
+		${CMAKE_CURRENT_SOURCE_DIR}/lmfit-config.cmake.in
+		${CMAKE_CURRENT_BINARY_DIR}/lmfit-config.cmake
+		INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lmfit
+	)
+	
+	write_basic_package_version_file(
+		${CMAKE_CURRENT_BINARY_DIR}/lmfit-config-version.cmake
+		VERSION ${lmfit_VERSION_MAJOR}
+		COMPATIBILITY AnyNewerVersion
+	)
+
+	install(
+		FILES ${CMAKE_CURRENT_BINARY_DIR}/lmfit-config.cmake
+		${CMAKE_CURRENT_BINARY_DIR}/lmfit-config-version.cmake
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lmfit
+	)
+
+    configure_file(
+		"${CMAKE_SOURCE_DIR}/lmfit.pc.in" 
+		"${CMAKE_CURRENT_BINARY_DIR}/lmfit.pc" @ONLY
+	)
+
+
+    install(
+		FILES "${CMAKE_CURRENT_BINARY_DIR}/lmfit.pc"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/"
+	)
+
 endif()
