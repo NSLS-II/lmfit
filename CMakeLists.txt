@@ -29,7 +29,7 @@ if(MSVC)
 else()
     option(PEDANTIC "Compile with pedantic warnings" ON)
     option(WERROR "Treat warnings as errors" OFF)
-    add_compile_options(-O2)
+    add_compile_options(-O3)
     if(PEDANTIC)
         add_compile_options(-pedantic -Wall)
     endif()
@@ -40,18 +40,13 @@ endif()
 
 include(CTest)
 
-if(LIB_INSTALL)
-    configure_file("lmfit.pc.in" "lmfit.pc" @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/lmfit.pc"
-        DESTINATION "${destination}/lib/pkgconfig/")
-endif()
-
 add_subdirectory(lib)
 add_subdirectory(demo)
-add_subdirectory(test)
+
 if (LIB_MAN)
     add_subdirectory(man)
 endif()
+
 if (FITTEST)
     find_package(FitTest REQUIRED)
     add_subdirectory(fittest)
