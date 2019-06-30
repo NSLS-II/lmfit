@@ -4,7 +4,7 @@ cmake_policy(SET CMP0048 NEW)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(PreventInSourceBuilds)
 
-project(lmfit VERSION 8.2.1 LANGUAGES C)
+project(lmfit VERSION 8.2.2 LANGUAGES C)
 
 option(FITTEST "Build with FitTest" OFF)
 if(NOT DEFINED BUILD_SHARED_LIBS)
