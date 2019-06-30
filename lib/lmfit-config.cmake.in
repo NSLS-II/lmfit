@@ -1,2 +1,5 @@
 @PACKAGE_INIT@
 
+if(NOT TARGET lmfit::lmfit)
+    include(${CMAKE_CURRENT_LIST_DIR}/lmfit-targets.cmake)
+endif()
