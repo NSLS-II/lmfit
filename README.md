@@ -1,5 +1,7 @@
 # lmfit
 
+[![Build Status](https://dev.azure.com/nsls-ii/lmfit/_apis/build/status/NSLS-II.lmfit?branchName=master)](https://dev.azure.com/nsls-ii/lmfit/_build/latest?definitionId=4&branchName=master)
+
 This is the home page of **lmfit**,
 a self-contained C library for Levenberg-Marquardt
 least-squares minimization and curve fitting.
